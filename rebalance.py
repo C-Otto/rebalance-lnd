@@ -5,6 +5,8 @@ import os
 import math
 from subprocess import check_output
 
+HIGH_FEES_THRESHOLD_MSAT = 3000000
+
 
 def debug(message):
     sys.stderr.write(message + "\n")
@@ -34,17 +36,6 @@ def generate_invoice(remote_pubkey):
 
 def get_channels():
     return lncli("listchannels", "--active_only")["channels"]
-
-
-own_pubkey = get_own_pubkey()
-current_height = get_current_height()
-max_routes = 30
-total_time_lock = 0
-amount = 10000
-channels = get_channels()
-edges = get_edges()
-payment_request_hash = None
-
 
 def get_local_ratio(channel):
     remote = int(channel["remote_balance"])
@@ -76,7 +67,8 @@ def add_channel_to_routes(routes, rebalance_channel):
         # print("Before:")
         # print(json.dumps(route))
         modified_route = add_channel(route, rebalance_channel)
-        if len(modified_route) > 0:
+        # add_channel will return None if something went wrong
+        if modified_route and len(modified_route) > 0:
             # print("After:")
             # print(json.dumps(modified_route))
             result.append(modified_route)
@@ -97,11 +89,11 @@ def add_channel(route, channel):
     global payment_request_hash
     global total_time_lock
     hops = route["hops"]
-    if low_local_ratio_after_sending(hops):
-        # debug("Ignoring route, channel is low on funds")
+    if low_local_ratio(hops):
+        #debug("Ignoring route, channel is low on funds")
         return []
     if is_first_hop(hops, channel):
-        # debug("Ignoring route, channel to add already is part of route")
+        #debug("Ignoring route, channel to add already is part of route")
         return []
     amount_msat = int(hops[-1]["amt_to_forward_msat"])
 
@@ -114,6 +106,9 @@ def add_channel(route, channel):
     hops.append(create_new_hop(amount_msat, channel, expiry_last_hop))
 
     update_route_totals(route)
+    if route["total_fees_msat"] > HIGH_FEES_THRESHOLD_MSAT:
+        debug("Fees for that route are too high, skipping (%d msat" % route["total_fees_msat"])
+        return None
     return route
 
 
@@ -135,14 +130,14 @@ def update_route_totals(route):
         total_fee_msat += int(hop["fee_msat"])
     if total_fee_msat > 3000000:
         debug("High fees! " + str(total_fee_msat))
-        sys.exit()
+        #sys.exit()
 
     total_amount_msat = route["hops"][-1]["amt_to_forward_msat"] + total_fee_msat
 
     route["total_amt_msat"] = total_amount_msat
-    route["total_amt"] = total_amount_msat // 1000
+    route["total_amt"] = total_amount_msat / 1000
     route["total_fees_msat"] = total_fee_msat
-    route["total_fees"] = total_fee_msat // 1000
+    route["total_fees"] = total_fee_msat / 1000
 
     route["total_time_lock"] = total_time_lock
 
@@ -153,7 +148,7 @@ def create_new_hop(amount_msat, channel, expiry):
             "fee": 0,
             "expiry": expiry,
             "amt_to_forward_msat": amount_msat,
-            "amt_to_forward": amount_msat // 1000,
+            "amt_to_forward": amount_msat / 1000,
             "chan_id": channel["chan_id"],
             "pub_key": own_pubkey}
 
@@ -189,14 +184,10 @@ def is_first_hop(hops, channel):
     return hops[0]["pub_key"] == channel["remote_pubkey"]
 
 
-def low_local_ratio_after_sending(hops):
+def low_local_ratio(hops):
     pub_key = hops[0]["pub_key"]
     channel = get_channel(pub_key)
-
-    remote = int(channel["remote_balance"]) + amount
-    local = int(channel["local_balance"]) - amount
-    ratio = float(local) / (remote + local)
-    return ratio < 0.5
+    return get_local_ratio(channel) < 0.5
 
 
 def get_channel(pubkey):
@@ -205,45 +196,14 @@ def get_channel(pubkey):
             return channel
 
 
-def main():
-    if len(sys.argv) != 3:
-        list_candidates()
-        sys.exit()
-
-    global amount
-    amount = int(sys.argv[2])
-
-    global payment_request_hash
-    remote_pubkey = sys.argv[1]
-    rebalance_channel = get_channel(remote_pubkey)
-
-    debug("Sending " + str(amount) + " satoshis to rebalance, remote pubkey: " + remote_pubkey)
-
-    routes = get_routes(remote_pubkey)
-
-    payment_request_hash = generate_invoice(remote_pubkey)
-    modified_routes = add_channel_to_routes(routes, rebalance_channel)
-    if len(modified_routes) == 0:
-        debug("Could not find any suitable route")
-        return
-    debug("Constructed " + str(len(modified_routes)) + " routes to try")
-
-    routes_json = json.dumps({"routes": modified_routes})
-    rebalance(routes_json)
-
-
 def get_capacity_and_ratio_bar(candidate):
     columns = get_columns()
-    max_channel_capacity = 16777215
-    columns_scaled_to_capacity = int(round(columns * float(get_capacity(candidate)) / max_channel_capacity))
-
-    bar_width = columns_scaled_to_capacity - 2
     result = "|"
     ratio = get_local_ratio(candidate)
-    length = int(round(ratio * bar_width))
+    length = int(round(ratio*(columns-2)))
     for x in range(0, length):
         result += "="
-    for x in range(length, bar_width):
+    for x in range(length, columns-2):
         result += " "
     return result + "|"
 
@@ -283,5 +243,42 @@ def rebalance(routes_json):
         debug("Error: " + result["payment_error"])
     print(json.dumps(result))
 
+
+payment_request_hash = None
+own_pubkey = get_own_pubkey()
+current_height = get_current_height()
+max_routes = 30
+total_time_lock = 0
+#amount = 10000
+channels = get_channels()
+edges = get_edges()
+    
+def main():
+    if len(sys.argv) != 3:
+        # when no explicit rabalancing is mentioned, we list the candidates
+        list_candidates()
+        sys.exit()
+
+    # take the amount from the command line
+    global amount
+    amount = int(sys.argv[2])
+
+    global payment_request_hash
+    remote_pubkey = sys.argv[1]
+    rebalance_channel = get_channel(remote_pubkey)  # this is the channel between our node and tha pubkey passed as an argument
+
+    debug("Sending " + str(amount) + " satoshis to rebalance, remote pubkey: " + remote_pubkey)
+
+    routes = get_routes(remote_pubkey)
+
+    payment_request_hash = generate_invoice(remote_pubkey)
+    modified_routes = add_channel_to_routes(routes, rebalance_channel)
+    if len(modified_routes) == 0:
+        debug("Could not find any suitable route")
+        return
+    debug("Constructed " + str(len(modified_routes)) + " routes to try")
+
+    routes_json = json.dumps({"routes": modified_routes})
+    rebalance(routes_json)
 
 main()
