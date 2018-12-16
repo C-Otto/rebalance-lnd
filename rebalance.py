@@ -57,20 +57,16 @@ def get_rebalance_candidates():
 
 
 def get_routes(destination):
-    return lncli("queryroutes", "--dest", destination, "--amt", str(amount), "--num_max_routes", str(max_routes))[
-        "routes"]
+    return lncli("queryroutes", "--dest", destination, "--amt", str(amount),
+                 "--num_max_routes", str(max_routes))["routes"]
 
 
 def add_channel_to_routes(routes, rebalance_channel):
     result = []
     for route in routes:
-        # print("Before:")
-        # print(json.dumps(route))
         modified_route = add_channel(route, rebalance_channel)
         # add_channel will return None if something went wrong
         if modified_route and len(modified_route) > 0:
-            # print("After:")
-            # print(json.dumps(modified_route))
             result.append(modified_route)
     return result
 
@@ -90,10 +86,10 @@ def add_channel(route, channel):
     global total_time_lock
     hops = route["hops"]
     if low_local_ratio(hops):
-        #debug("Ignoring route, channel is low on funds")
+        # Ignoring route, channel is low on funds
         return []
     if is_first_hop(hops, channel):
-        #debug("Ignoring route, channel to add already is part of route")
+        # Ignoring route, channel to add already is part of route
         return []
     amount_msat = int(hops[-1]["amt_to_forward_msat"])
 
@@ -107,7 +103,7 @@ def add_channel(route, channel):
 
     update_route_totals(route)
     if route["total_fees_msat"] > HIGH_FEES_THRESHOLD_MSAT:
-        debug("Fees for that route are too high, skipping (%d msat" % route["total_fees_msat"])
+        debug("Fees for that route are too high, skipping (%d msat)" % route["total_fees_msat"])
         return None
     return route
 
@@ -128,9 +124,8 @@ def update_route_totals(route):
     total_fee_msat = 0
     for hop in route["hops"]:
         total_fee_msat += int(hop["fee_msat"])
-    if total_fee_msat > 3000000:
+    if total_fee_msat > HIGH_FEES_THRESHOLD_MSAT:
         debug("High fees! " + str(total_fee_msat))
-        #sys.exit()
 
     total_amount_msat = route["hops"][-1]["amt_to_forward_msat"] + total_fee_msat
 
