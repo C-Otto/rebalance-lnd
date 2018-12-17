@@ -94,7 +94,7 @@ def get_policy(channel_id, target_pubkey):
             return result
 
 
-# return a route if things went OK, an empty list instead
+# Returns a route if things went OK, an empty list otherwise
 def add_channel(route, channel):
     global payment_request_hash
     global total_time_lock
