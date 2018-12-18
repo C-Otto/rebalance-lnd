@@ -5,6 +5,7 @@ import os
 import math
 from subprocess import check_output
 
+HIGH_FEES_THRESHOLD_MSAT = 3000000
 
 def debug(message):
     sys.stderr.write(message + "\n")
@@ -93,6 +94,7 @@ def get_policy(channel_id, target_pubkey):
             return result
 
 
+# Returns a route if things went OK, an empty list otherwise
 def add_channel(route, channel):
     global payment_request_hash
     global total_time_lock
@@ -113,8 +115,10 @@ def add_channel(route, channel):
 
     hops.append(create_new_hop(amount_msat, channel, expiry_last_hop))
 
-    update_route_totals(route)
-    return route
+    if update_route_totals(route):
+        return route
+    else:
+        return []
 
 
 def get_expiry_delta_last_hop():
@@ -128,14 +132,14 @@ def get_fee_msat(amount_msat, channel_id, target_pubkey):
     result = fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
     return result
 
-
+# Returns True only if everything went well, False otherwise
 def update_route_totals(route):
     total_fee_msat = 0
     for hop in route["hops"]:
         total_fee_msat += int(hop["fee_msat"])
-    if total_fee_msat > 3000000:
-        debug("High fees! " + str(total_fee_msat))
-        sys.exit()
+    if total_fee_msat > HIGH_FEES_THRESHOLD_MSAT:
+        debug("High fees! " + str(total_fee_msat) + " msat")
+        return False
 
     total_amount_msat = route["hops"][-1]["amt_to_forward_msat"] + total_fee_msat
 
@@ -145,6 +149,7 @@ def update_route_totals(route):
     route["total_fees"] = total_fee_msat // 1000
 
     route["total_time_lock"] = total_time_lock
+    return True
 
 
 def create_new_hop(amount_msat, channel, expiry):
@@ -205,33 +210,6 @@ def get_channel(pubkey):
             return channel
 
 
-def main():
-    if len(sys.argv) != 3:
-        list_candidates()
-        sys.exit()
-
-    global amount
-    amount = int(sys.argv[2])
-
-    global payment_request_hash
-    remote_pubkey = sys.argv[1]
-    rebalance_channel = get_channel(remote_pubkey)
-
-    debug("Sending " + str(amount) + " satoshis to rebalance, remote pubkey: " + remote_pubkey)
-
-    routes = get_routes(remote_pubkey)
-
-    payment_request_hash = generate_invoice(remote_pubkey)
-    modified_routes = add_channel_to_routes(routes, rebalance_channel)
-    if len(modified_routes) == 0:
-        debug("Could not find any suitable route")
-        return
-    debug("Constructed " + str(len(modified_routes)) + " routes to try")
-
-    routes_json = json.dumps({"routes": modified_routes})
-    rebalance(routes_json)
-
-
 def get_capacity_and_ratio_bar(candidate):
     columns = get_columns()
     max_channel_capacity = 16777215
@@ -282,6 +260,34 @@ def rebalance(routes_json):
     else:
         debug("Error: " + result["payment_error"])
     print(json.dumps(result))
+
+
+def main():
+    if len(sys.argv) != 3:
+        list_candidates()
+        sys.exit()
+
+    global amount
+    amount = int(sys.argv[2])
+
+    global payment_request_hash
+    remote_pubkey = sys.argv[1]
+    rebalance_channel = get_channel(remote_pubkey)
+
+    debug("Sending " + str(amount) + " satoshis to rebalance, remote pubkey: " + remote_pubkey)
+
+    routes = get_routes(remote_pubkey)
+
+    payment_request_hash = generate_invoice(remote_pubkey)
+    modified_routes = add_channel_to_routes(routes, rebalance_channel)
+    if len(modified_routes) == 0:
+        debug("Could not find any suitable route")
+        return
+    debug("Constructed " + str(len(modified_routes)) + " routes to try")
+
+    routes_json = json.dumps({"routes": modified_routes})
+    rebalance(routes_json)
+
 
 
 main()
