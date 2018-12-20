@@ -10,7 +10,7 @@ import sys
 import rpc_pb2 as ln, rpc_pb2_grpc as lnrpc
 
 HIGH_FEES_THRESHOLD_MSAT = 3000000
-LND_DIR = "/home/wamde/.lnd/"
+LND_DIR = "/PATH/TO/LND/DIR"
 macaroon = codecs.encode(open(LND_DIR + 'data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
 os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
 cert = open(LND_DIR + 'tls.cert', 'rb').read()
