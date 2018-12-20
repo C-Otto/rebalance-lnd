@@ -1,40 +1,63 @@
 #!/usr/bin/env python
+import codecs
+import grpc
 import json
-import sys
-import os
 import math
+import os
 from subprocess import check_output
+import sys
+
+import rpc_pb2 as ln, rpc_pb2_grpc as lnrpc
 
 HIGH_FEES_THRESHOLD_MSAT = 3000000
+LND_DIR = "/home/wamde/.lnd/"
+macaroon = codecs.encode(open(LND_DIR + 'data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
+os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
+cert = open(LND_DIR + 'tls.cert', 'rb').read()
+ssl_creds = grpc.ssl_channel_credentials(cert)
+channel = grpc.secure_channel('localhost:10009', ssl_creds)
+stub = lnrpc.LightningStub(channel)
+
 
 def debug(message):
     sys.stderr.write(message + "\n")
 
 
-def lncli(*arguments):
-    # debug(str(arguments))
-    result = check_output(["lncli"] + list(arguments))
-    return json.loads(result)
-
-
 def get_own_pubkey():
-    return lncli("getinfo")["identity_pubkey"]
+    response = stub.GetInfo(ln.GetInfoRequest(), metadata=[('macaroon', macaroon)])
+    return response.identity_pubkey
 
 
 def get_current_height():
-    return int(lncli("getinfo")["block_height"])
+    response = stub.GetInfo(ln.GetInfoRequest(), metadata=[('macaroon', macaroon)])
+    return response.block_height
 
 
 def get_edges():
-    return lncli("describegraph")["edges"]
+    response = stub.DescribeGraph(ln.ChannelGraphRequest(), metadata=[('macaroon', macaroon)])
+    return response.edges
 
 
 def generate_invoice(remote_pubkey):
-    return lncli("addinvoice", "--memo", "Rebalance of channel to " + remote_pubkey, "--amt", str(amount))["r_hash"]
+    request = ln.Invoice(
+        memo="Rebalance of channel to " + remote_pubkey,
+        amt_paid_sat=amount,
+    )
+    response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
+
+    request = ln.PayReqString(
+        pay_req=response.payment_request,
+    )
+    response = stub.DecodePayReq(request, metadata=[('macaroon', macaroon)])
+    return response.payment_hash
 
 
 def get_channels():
-    return lncli("listchannels", "--active_only")["channels"]
+    request = ln.ListChannelsRequest(
+        active_only=True,
+    )
+    response = stub.ListChannels(request, metadata=[('macaroon', macaroon)])
+    return response.channels
 
 
 own_pubkey = get_own_pubkey()
@@ -48,17 +71,17 @@ payment_request_hash = None
 
 
 def get_local_ratio(channel):
-    remote = int(channel["remote_balance"])
-    local = int(channel["local_balance"])
+    remote = channel.remote_balance
+    local = channel.local_balance
     return float(local) / (remote + local)
 
 
 def get_capacity(channel):
-    return int(channel["capacity"])
+    return channel.capacity
 
 
 def get_remote_surplus(channel):
-    return int(channel["remote_balance"]) - int(channel["local_balance"])
+    return channel.remote_balance - channel.local_balance
 
 
 def get_rebalance_candidates():
@@ -67,30 +90,31 @@ def get_rebalance_candidates():
 
 
 def get_routes(destination):
-    return lncli("queryroutes", "--dest", destination, "--amt", str(amount), "--num_max_routes", str(max_routes))[
-        "routes"]
+    request = ln.QueryRoutesRequest(
+        pub_key=destination,
+        amt=amount,
+        num_routes=max_routes,
+    )
+    response = stub.QueryRoutes(request, metadata=[('macaroon', macaroon)])
+    return response.routes
 
 
 def add_channel_to_routes(routes, rebalance_channel):
     result = []
     for route in routes:
-        # print("Before:")
-        # print(json.dumps(route))
         modified_route = add_channel(route, rebalance_channel)
-        if len(modified_route) > 0:
-            # print("After:")
-            # print(json.dumps(modified_route))
+        if modified_route:
             result.append(modified_route)
     return result
 
 
 def get_policy(channel_id, target_pubkey):
     for edge in edges:
-        if edge["channel_id"] == channel_id:
-            if edge["node1_pub"] == target_pubkey:
-                result = edge["node1_policy"]
+        if edge.channel_id == channel_id:
+            if edge.node1_pub == target_pubkey:
+                result = edge.node1_policy
             else:
-                result = edge["node2_policy"]
+                result = edge.node2_policy
             return result
 
 
@@ -98,14 +122,14 @@ def get_policy(channel_id, target_pubkey):
 def add_channel(route, channel):
     global payment_request_hash
     global total_time_lock
-    hops = route["hops"]
+    hops = route.hops
     if low_local_ratio_after_sending(hops):
         # debug("Ignoring route, channel is low on funds")
-        return []
+        return None
     if is_first_hop(hops, channel):
         # debug("Ignoring route, channel to add already is part of route")
-        return []
-    amount_msat = int(hops[-1]["amt_to_forward_msat"])
+        return None
+    amount_msat = int(hops[-1].amt_to_forward_msat)
 
     expiry_last_hop = current_height + get_expiry_delta_last_hop()
     total_time_lock = expiry_last_hop
@@ -113,100 +137,111 @@ def add_channel(route, channel):
     update_amounts(hops)
     update_expiry(hops)
 
-    hops.append(create_new_hop(amount_msat, channel, expiry_last_hop))
+    hops.extend([create_new_hop(amount_msat, channel, expiry_last_hop)])
 
     if update_route_totals(route):
         return route
     else:
-        return []
+        return None
 
 
 def get_expiry_delta_last_hop():
-    return int(lncli("lookupinvoice", payment_request_hash)["cltv_expiry"])
+    request = ln.PaymentHash(
+        r_hash_str=payment_request_hash,
+    )
+    response = stub.LookupInvoice(request, metadata=[('macaroon', macaroon)])
+    return response.cltv_expiry
 
 
 def get_fee_msat(amount_msat, channel_id, target_pubkey):
     policy = get_policy(channel_id, target_pubkey)
-    fee_base_msat = int(policy["fee_base_msat"])
-    fee_rate_milli_msat = int(policy["fee_rate_milli_msat"])
+    # sometimes that field seems not to be set -- interpret it as 0
+    if hasattr(policy, "fee_base_msat"):
+        fee_base_msat = int(policy.fee_base_msat)
+    else:
+        fee_base_msat = int(0)
+    fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
     result = fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
     return result
 
 # Returns True only if everything went well, False otherwise
 def update_route_totals(route):
     total_fee_msat = 0
-    for hop in route["hops"]:
-        total_fee_msat += int(hop["fee_msat"])
+    for hop in route.hops:
+        total_fee_msat += hop.fee_msat
     if total_fee_msat > HIGH_FEES_THRESHOLD_MSAT:
         debug("High fees! " + str(total_fee_msat) + " msat")
         return False
 
-    total_amount_msat = route["hops"][-1]["amt_to_forward_msat"] + total_fee_msat
+    total_amount_msat = route.hops[-1].amt_to_forward_msat + total_fee_msat
 
-    route["total_amt_msat"] = total_amount_msat
-    route["total_amt"] = total_amount_msat // 1000
-    route["total_fees_msat"] = total_fee_msat
-    route["total_fees"] = total_fee_msat // 1000
+    route.total_amt_msat = total_amount_msat
+    route.total_amt = total_amount_msat // 1000
+    route.total_fees_msat = total_fee_msat
+    route.total_fees = total_fee_msat // 1000
 
-    route["total_time_lock"] = total_time_lock
+    route.total_time_lock = total_time_lock
     return True
 
 
 def create_new_hop(amount_msat, channel, expiry):
-    return {"chan_capacity": channel["capacity"],
-            "fee_msat": 0,
-            "fee": 0,
-            "expiry": expiry,
-            "amt_to_forward_msat": amount_msat,
-            "amt_to_forward": amount_msat // 1000,
-            "chan_id": channel["chan_id"],
-            "pub_key": own_pubkey}
+    new_hop = ln.Hop(
+        chan_capacity=channel.capacity,
+        fee_msat=0,
+        fee=0,
+        expiry=expiry,
+        amt_to_forward_msat=amount_msat,
+        amt_to_forward=amount_msat // 1000,
+        chan_id=channel.chan_id,
+        pub_key=own_pubkey,
+        )
+    return new_hop
 
 
 def update_amounts(hops):
     additional_fees = 0
     for hop in reversed(hops):
-        amount_to_forward_msat = int(hop["amt_to_forward_msat"]) + additional_fees
-        hop["amt_to_forward_msat"] = amount_to_forward_msat
-        hop["amt_to_forward"] = amount_to_forward_msat / 1000
+        amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
+        hop.amt_to_forward_msat = amount_to_forward_msat
+        hop.amt_to_forward = amount_to_forward_msat / 1000
 
-        fee_msat_before = int(hop["fee_msat"])
-        new_fee_msat = get_fee_msat(amount_to_forward_msat, hop["chan_id"], hop["pub_key"])
-        hop["fee_msat"] = new_fee_msat
-        hop["fee"] = new_fee_msat / 1000
+        fee_msat_before = hop.fee_msat
+        new_fee_msat = get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
+        hop.fee_msat = new_fee_msat
+        hop.fee = new_fee_msat / 1000
         additional_fees += new_fee_msat - fee_msat_before
 
 
 def update_expiry(hops):
     global total_time_lock
     for hop in reversed(hops):
-        hop["expiry"] = total_time_lock
+        hop.expiry = total_time_lock
 
-        channel_id = hop["chan_id"]
-        target_pubkey = hop["pub_key"]
+        channel_id = hop.chan_id
+        target_pubkey = hop.pub_key
         policy = get_policy(channel_id, target_pubkey)
 
-        time_lock_delta = policy["time_lock_delta"]
+        time_lock_delta = policy.time_lock_delta
         total_time_lock += time_lock_delta
 
 
 def is_first_hop(hops, channel):
-    return hops[0]["pub_key"] == channel["remote_pubkey"]
+    return hops[0].pub_key == channel.remote_pubkey
 
 
 def low_local_ratio_after_sending(hops):
-    pub_key = hops[0]["pub_key"]
+    pub_key = hops[0].pub_key
     channel = get_channel(pub_key)
 
-    remote = int(channel["remote_balance"]) + amount
-    local = int(channel["local_balance"]) - amount
+    remote = channel.remote_balance + amount
+    local = channel.local_balance - amount
     ratio = float(local) / (remote + local)
     return ratio < 0.5
 
 
 def get_channel(pubkey):
     for channel in channels:
-        if channel["remote_pubkey"] == pubkey:
+        if channel.remote_pubkey == pubkey:
             return channel
 
 
@@ -237,11 +272,11 @@ def list_candidates():
         if rebalance_amount > 4294967:
             rebalance_amount = str(rebalance_amount) + " (max per transaction: 4294967)"
 
-        print("Pubkey:           " + candidate["remote_pubkey"])
+        print("Pubkey:           " + candidate.remote_pubkey)
         print("Local ratio:      " + str(get_local_ratio(candidate)))
-        print("Capacity:         " + candidate["capacity"])
-        print("Remote balance:   " + candidate["remote_balance"])
-        print("Local balance:    " + candidate["local_balance"])
+        print("Capacity:         " + str(candidate.capacity))
+        print("Remote balance:   " + str(candidate.remote_balance))
+        print("Local balance:    " + str(candidate.local_balance))
         print("Amount for 50-50: " + str(rebalance_amount))
         print(get_capacity_and_ratio_bar(candidate))
         print("")
@@ -249,17 +284,23 @@ def list_candidates():
     print("Run with two arguments: 1) pubkey of channel to fill 2) amount")
 
 
-def rebalance(routes_json):
-    result = lncli("sendtoroute", "--pay_hash", payment_request_hash, "--routes", routes_json)
-    if result["payment_error"] == "":
-        fees_msat = result["payment_route"]["total_fees_msat"]
+def rebalance(routes):
+    request = ln.SendToRouteRequest()
+
+    request.payment_hash_string = payment_request_hash
+    request.routes.extend(routes)
+
+    response = stub.SendToRouteSync(request, metadata=[('macaroon', macaroon)])
+
+    if response.payment_error == "":
+        fees_msat = response.payment_route.total_fees_msat
         fees = round(float(fees_msat) / 1000.0, 3)
         debug("Success! Paid fees: " + str(fees) + " Satoshi")
-    elif "TemporaryChannelFailure" in result["payment_error"]:
+    elif "TemporaryChannelFailure" in response.payment_error:
         debug("TemporaryChannelFailure (not enough funds along the route?)")
     else:
-        debug("Error: " + result["payment_error"])
-    print(json.dumps(result))
+        debug("Error: " + response.payment_error)
+    print response
 
 
 def main():
@@ -285,8 +326,7 @@ def main():
         return
     debug("Constructed " + str(len(modified_routes)) + " routes to try")
 
-    routes_json = json.dumps({"routes": modified_routes})
-    rebalance(routes_json)
+    rebalance(modified_routes)
 
 
 
