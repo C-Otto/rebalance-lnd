@@ -9,7 +9,11 @@ You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the sources.
 
-You need to install the lnd gRPC dependencies for Python as documented on https://dev.lightning.community/guides/python-grpc/
+You need to install the gRPC dependencies for Python:
+
+```
+$ pip install grpcio googleapis-common-protos
+```
 
 ## Usage
 
