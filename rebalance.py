@@ -1,56 +1,19 @@
 #!/usr/bin/env python
-import codecs
-import grpc
 import math
 import os
-from os.path import expanduser
 import sys
 
-import rpc_pb2 as ln, rpc_pb2_grpc as lnrpc
+from lnd import rpc_pb2 as ln
+from lnd.lnd import Lnd
 
 
 def debug(message):
     sys.stderr.write(message + "\n")
 
 
-def get_info():
-    return lightning_stub.GetInfo(ln.GetInfoRequest())
-
-
-def get_own_pubkey():
-    return get_info().identity_pubkey
-
-
-def get_current_height():
-    return get_info().block_height
-
-
-def get_edges():
-    graph = lightning_stub.DescribeGraph(ln.ChannelGraphRequest())
-    return graph.edges
-
-
 def generate_invoice(remote_pubkey):
-    invoice_request = ln.Invoice(
-        memo="Rebalance of channel to " + remote_pubkey,
-        amt_paid_sat=amount,
-    )
-    invoice = lightning_stub.AddInvoice(invoice_request)
-    return get_payment_hash(invoice)
-
-
-def get_payment_hash(invoice):
-    request = ln.PayReqString(
-        pay_req=invoice.payment_request,
-    )
-    return lightning_stub.DecodePayReq(request).payment_hash
-
-
-def get_channels():
-    request = ln.ListChannelsRequest(
-        active_only=True,
-    )
-    return lightning_stub.ListChannels(request).channels
+    memo = "Rebalance of channel to " + remote_pubkey
+    return lnd.generate_invoice(memo, amount)
 
 
 def get_local_ratio(channel):
@@ -64,18 +27,14 @@ def get_remote_surplus(channel):
 
 
 def get_rebalance_candidates():
-    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, get_channels()))
+    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
     return sorted(low_local, key=get_remote_surplus, reverse=True)
 
 
 def get_routes(destination):
-    request = ln.QueryRoutesRequest(
-        pub_key=destination,
-        amt=amount,
-        num_routes=MAX_ROUTES,
-    )
-    response = lightning_stub.QueryRoutes(request)
-    return response.routes
+    num_routes = MAX_ROUTES
+    pub_key = destination
+    return lnd.get_routes(pub_key, amount, num_routes)
 
 
 def add_channel_to_routes(routes, rebalance_channel):
@@ -85,16 +44,6 @@ def add_channel_to_routes(routes, rebalance_channel):
         if modified_route:
             result.append(modified_route)
     return result
-
-
-def get_policy(channel_id, target_pubkey):
-    for edge in get_edges():
-        if edge.channel_id == channel_id:
-            if edge.node1_pub == target_pubkey:
-                result = edge.node1_policy
-            else:
-                result = edge.node2_policy
-            return result
 
 
 # Returns a route if things went OK, an empty list otherwise
@@ -110,7 +59,7 @@ def add_channel(route, channel):
         return None
     amount_msat = int(hops[-1].amt_to_forward_msat)
 
-    expiry_last_hop = get_current_height() + get_expiry_delta_last_hop()
+    expiry_last_hop = lnd.get_current_height() + get_expiry_delta_last_hop()
     total_time_lock = expiry_last_hop
 
     update_amounts(hops)
@@ -125,15 +74,11 @@ def add_channel(route, channel):
 
 
 def get_expiry_delta_last_hop():
-    request = ln.PaymentHash(
-        r_hash_str=payment_request_hash,
-    )
-    response = lightning_stub.LookupInvoice(request)
-    return response.cltv_expiry
+    return lnd.get_expiry(payment_request_hash)
 
 
 def get_fee_msat(amount_msat, channel_id, target_pubkey):
-    policy = get_policy(channel_id, target_pubkey)
+    policy = lnd.get_policy(channel_id, target_pubkey)
     fee_base_msat = get_fee_base_msat(policy)
     fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
     return fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
@@ -175,7 +120,7 @@ def create_new_hop(amount_msat, channel, expiry):
         amt_to_forward_msat=amount_msat,
         amt_to_forward=amount_msat // 1000,
         chan_id=channel.chan_id,
-        pub_key=get_own_pubkey(),
+        pub_key=lnd.get_own_pubkey(),
     )
     return new_hop
 
@@ -201,7 +146,7 @@ def update_expiry(hops):
 
         channel_id = hop.chan_id
         target_pubkey = hop.pub_key
-        policy = get_policy(channel_id, target_pubkey)
+        policy = lnd.get_policy(channel_id, target_pubkey)
 
         time_lock_delta = policy.time_lock_delta
         total_time_lock += time_lock_delta
@@ -222,7 +167,7 @@ def low_local_ratio_after_sending(hops):
 
 
 def get_channel(pubkey):
-    for channel in get_channels():
+    for channel in lnd.get_channels():
         if channel.remote_pubkey == pubkey:
             return channel
 
@@ -267,14 +212,10 @@ def list_candidates():
 
 
 def rebalance(routes):
-    request = ln.SendToRouteRequest()
+    response = lnd.send_payment(payment_request_hash, routes)
+    is_successful = response.payment_error == ""
 
-    request.payment_hash_string = payment_request_hash
-    request.routes.extend(routes)
-
-    response = lightning_stub.SendToRouteSync(request)
-
-    if response.payment_error == "":
+    if is_successful:
         fees_msat = response.payment_route.total_fees_msat
         fees = round(float(fees_msat) / 1000.0, 3)
         debug("Success! Paid fees: " + str(fees) + " Satoshi")
@@ -283,17 +224,6 @@ def rebalance(routes):
     else:
         debug("Error: " + response.payment_error)
     print(response)
-
-
-def create_lightning_stub():
-    os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
-    tls_certificate = open(LND_DIR + '/tls.cert', 'rb').read()
-    ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
-    macaroon = codecs.encode(open(LND_DIR + '/data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
-    auth_credentials = grpc.metadata_call_credentials(lambda _, callback: callback([('macaroon', macaroon)], None))
-    combined_credentials = grpc.composite_channel_credentials(ssl_credentials, auth_credentials)
-    grpc_channel = grpc.secure_channel(SERVER, combined_credentials)
-    return lnrpc.LightningStub(grpc_channel)
 
 
 def main():
@@ -323,14 +253,12 @@ def main():
     rebalance(modified_routes)
 
 
-SERVER = 'localhost:10009'
 HIGH_FEES_THRESHOLD_MSAT = 3000000
-LND_DIR = expanduser("~/.lnd")
 MAX_ROUTES = 30
 
 total_time_lock = 0
 amount = 10000
 payment_request_hash = None
 
-lightning_stub = create_lightning_stub()
+lnd = Lnd()
 main()
