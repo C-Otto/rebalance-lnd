@@ -1,73 +1,56 @@
 #!/usr/bin/env python
 import codecs
 import grpc
-import json
 import math
 import os
-from subprocess import check_output
+from os.path import expanduser
 import sys
 
 import rpc_pb2 as ln, rpc_pb2_grpc as lnrpc
-
-HIGH_FEES_THRESHOLD_MSAT = 3000000
-LND_DIR = "/PATH/TO/LND/DIR"
-macaroon = codecs.encode(open(LND_DIR + 'data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
-os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
-cert = open(LND_DIR + 'tls.cert', 'rb').read()
-ssl_creds = grpc.ssl_channel_credentials(cert)
-channel = grpc.secure_channel('localhost:10009', ssl_creds)
-stub = lnrpc.LightningStub(channel)
 
 
 def debug(message):
     sys.stderr.write(message + "\n")
 
 
+def get_info():
+    return lightning_stub.GetInfo(ln.GetInfoRequest())
+
+
 def get_own_pubkey():
-    response = stub.GetInfo(ln.GetInfoRequest(), metadata=[('macaroon', macaroon)])
-    return response.identity_pubkey
+    return get_info().identity_pubkey
 
 
 def get_current_height():
-    response = stub.GetInfo(ln.GetInfoRequest(), metadata=[('macaroon', macaroon)])
-    return response.block_height
+    return get_info().block_height
 
 
 def get_edges():
-    response = stub.DescribeGraph(ln.ChannelGraphRequest(), metadata=[('macaroon', macaroon)])
-    return response.edges
+    graph = lightning_stub.DescribeGraph(ln.ChannelGraphRequest())
+    return graph.edges
 
 
 def generate_invoice(remote_pubkey):
-    request = ln.Invoice(
+    invoice_request = ln.Invoice(
         memo="Rebalance of channel to " + remote_pubkey,
         amt_paid_sat=amount,
     )
-    response = stub.AddInvoice(request, metadata=[('macaroon', macaroon)])
+    invoice = lightning_stub.AddInvoice(invoice_request)
+    return get_payment_hash(invoice)
 
+
+def get_payment_hash(invoice):
     request = ln.PayReqString(
-        pay_req=response.payment_request,
+        pay_req=invoice.payment_request,
     )
-    response = stub.DecodePayReq(request, metadata=[('macaroon', macaroon)])
-    return response.payment_hash
+    return lightning_stub.DecodePayReq(request).payment_hash
 
 
 def get_channels():
     request = ln.ListChannelsRequest(
         active_only=True,
     )
-    response = stub.ListChannels(request, metadata=[('macaroon', macaroon)])
-    return response.channels
-
-
-own_pubkey = get_own_pubkey()
-current_height = get_current_height()
-max_routes = 30
-total_time_lock = 0
-amount = 10000
-channels = get_channels()
-edges = get_edges()
-payment_request_hash = None
+    return lightning_stub.ListChannels(request).channels
 
 
 def get_local_ratio(channel):
@@ -76,16 +59,12 @@ def get_local_ratio(channel):
     return float(local) / (remote + local)
 
 
-def get_capacity(channel):
-    return channel.capacity
-
-
 def get_remote_surplus(channel):
     return channel.remote_balance - channel.local_balance
 
 
 def get_rebalance_candidates():
-    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, channels))
+    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, get_channels()))
     return sorted(low_local, key=get_remote_surplus, reverse=True)
 
 
@@ -93,9 +72,9 @@ def get_routes(destination):
     request = ln.QueryRoutesRequest(
         pub_key=destination,
         amt=amount,
-        num_routes=max_routes,
+        num_routes=MAX_ROUTES,
     )
-    response = stub.QueryRoutes(request, metadata=[('macaroon', macaroon)])
+    response = lightning_stub.QueryRoutes(request)
     return response.routes
 
 
@@ -109,7 +88,7 @@ def add_channel_to_routes(routes, rebalance_channel):
 
 
 def get_policy(channel_id, target_pubkey):
-    for edge in edges:
+    for edge in get_edges():
         if edge.channel_id == channel_id:
             if edge.node1_pub == target_pubkey:
                 result = edge.node1_policy
@@ -131,7 +110,7 @@ def add_channel(route, channel):
         return None
     amount_msat = int(hops[-1].amt_to_forward_msat)
 
-    expiry_last_hop = current_height + get_expiry_delta_last_hop()
+    expiry_last_hop = get_current_height() + get_expiry_delta_last_hop()
     total_time_lock = expiry_last_hop
 
     update_amounts(hops)
@@ -149,20 +128,23 @@ def get_expiry_delta_last_hop():
     request = ln.PaymentHash(
         r_hash_str=payment_request_hash,
     )
-    response = stub.LookupInvoice(request, metadata=[('macaroon', macaroon)])
+    response = lightning_stub.LookupInvoice(request)
     return response.cltv_expiry
 
 
 def get_fee_msat(amount_msat, channel_id, target_pubkey):
     policy = get_policy(channel_id, target_pubkey)
+    fee_base_msat = get_fee_base_msat(policy)
+    fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
+    return fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
+
+
+def get_fee_base_msat(policy):
     # sometimes that field seems not to be set -- interpret it as 0
     if hasattr(policy, "fee_base_msat"):
-        fee_base_msat = int(policy.fee_base_msat)
-    else:
-        fee_base_msat = int(0)
-    fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
-    result = fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
-    return result
+        return int(policy.fee_base_msat)
+    return int(0)
+
 
 # Returns True only if everything went well, False otherwise
 def update_route_totals(route):
@@ -193,8 +175,8 @@ def create_new_hop(amount_msat, channel, expiry):
         amt_to_forward_msat=amount_msat,
         amt_to_forward=amount_msat // 1000,
         chan_id=channel.chan_id,
-        pub_key=own_pubkey,
-        )
+        pub_key=get_own_pubkey(),
+    )
     return new_hop
 
 
@@ -240,7 +222,7 @@ def low_local_ratio_after_sending(hops):
 
 
 def get_channel(pubkey):
-    for channel in channels:
+    for channel in get_channels():
         if channel.remote_pubkey == pubkey:
             return channel
 
@@ -248,7 +230,7 @@ def get_channel(pubkey):
 def get_capacity_and_ratio_bar(candidate):
     columns = get_columns()
     max_channel_capacity = 16777215
-    columns_scaled_to_capacity = int(round(columns * float(get_capacity(candidate)) / max_channel_capacity))
+    columns_scaled_to_capacity = int(round(columns * float(candidate.capacity) / max_channel_capacity))
 
     bar_width = columns_scaled_to_capacity - 2
     result = "|"
@@ -290,7 +272,7 @@ def rebalance(routes):
     request.payment_hash_string = payment_request_hash
     request.routes.extend(routes)
 
-    response = stub.SendToRouteSync(request, metadata=[('macaroon', macaroon)])
+    response = lightning_stub.SendToRouteSync(request)
 
     if response.payment_error == "":
         fees_msat = response.payment_route.total_fees_msat
@@ -300,7 +282,18 @@ def rebalance(routes):
         debug("TemporaryChannelFailure (not enough funds along the route?)")
     else:
         debug("Error: " + response.payment_error)
-    print response
+    print(response)
+
+
+def create_lightning_stub():
+    os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
+    tls_certificate = open(LND_DIR + '/tls.cert', 'rb').read()
+    ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
+    macaroon = codecs.encode(open(LND_DIR + '/data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
+    auth_credentials = grpc.metadata_call_credentials(lambda _, callback: callback([('macaroon', macaroon)], None))
+    combined_credentials = grpc.composite_channel_credentials(ssl_credentials, auth_credentials)
+    grpc_channel = grpc.secure_channel(SERVER, combined_credentials)
+    return lnrpc.LightningStub(grpc_channel)
 
 
 def main():
@@ -311,7 +304,6 @@ def main():
     global amount
     amount = int(sys.argv[2])
 
-    global payment_request_hash
     remote_pubkey = sys.argv[1]
     rebalance_channel = get_channel(remote_pubkey)
 
@@ -319,7 +311,9 @@ def main():
 
     routes = get_routes(remote_pubkey)
 
+    global payment_request_hash
     payment_request_hash = generate_invoice(remote_pubkey)
+
     modified_routes = add_channel_to_routes(routes, rebalance_channel)
     if len(modified_routes) == 0:
         debug("Could not find any suitable route")
@@ -329,5 +323,14 @@ def main():
     rebalance(modified_routes)
 
 
+SERVER = 'localhost:10009'
+HIGH_FEES_THRESHOLD_MSAT = 3000000
+LND_DIR = expanduser("~/.lnd")
+MAX_ROUTES = 30
 
+total_time_lock = 0
+amount = 10000
+payment_request_hash = None
+
+lightning_stub = create_lightning_stub()
 main()
