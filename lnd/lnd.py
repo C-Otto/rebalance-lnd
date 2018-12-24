@@ -71,7 +71,7 @@ class Lnd:
         return response.routes
 
     def get_policy(self, channel_id, target_pubkey):
-        for edge in self.stub.get_edges():
+        for edge in self.get_edges():
             if edge.channel_id == channel_id:
                 if edge.node1_pub == target_pubkey:
                     result = edge.node1_policy
