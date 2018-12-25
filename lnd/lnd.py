@@ -16,6 +16,7 @@ class Lnd:
         combined_credentials = self.get_credentials(Lnd.LND_DIR)
         grpc_channel = grpc.secure_channel(Lnd.SERVER, combined_credentials)
         self.stub = lnrpc.LightningStub(grpc_channel)
+        self.graph = None
 
     @staticmethod
     def get_credentials(lnd_dir):
@@ -30,7 +31,9 @@ class Lnd:
         return self.stub.GetInfo(ln.GetInfoRequest())
 
     def get_graph(self):
-        return self.stub.DescribeGraph(ln.ChannelGraphRequest())
+        if self.graph is None:
+            self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest())
+        return self.graph
 
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
