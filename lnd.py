@@ -52,7 +52,7 @@ class Lnd:
     def generate_invoice(self, memo, amount):
         invoice_request = ln.Invoice(
             memo=memo,
-            amt_paid_sat=amount,
+            value=amount,
         )
         invoice = self.stub.AddInvoice(invoice_request)
         return self.get_payment_hash(invoice)
