@@ -16,12 +16,25 @@ def debug(message):
 
 
 def main():
-    if len(sys.argv) != 3:
+    remote_pubkey = None
+    amount = None
+
+    if len(sys.argv) == 1:
         list_candidates()
         sys.exit()
 
-    remote_pubkey = sys.argv[1]
-    amount = int(sys.argv[2])
+    if len(sys.argv) == 2:
+        index = int(sys.argv[1]) - 1
+        candidates = get_rebalance_candidates()
+        candidate = candidates[index]
+        remote_pubkey = candidate.remote_pubkey
+        amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
+        if amount > MAX_SATOSHIS_PER_TRANSACTION:
+            amount = MAX_SATOSHIS_PER_TRANSACTION
+
+    if len(sys.argv) == 3:
+        remote_pubkey = sys.argv[1]
+        amount = int(sys.argv[2])
 
     response = Logic(lnd, remote_pubkey, amount).rebalance()
     if response:
@@ -29,13 +42,15 @@ def main():
 
 
 def list_candidates():
+    index = 0
     candidates = get_rebalance_candidates()
-    for candidate in reversed(candidates):
+    for candidate in candidates:
+        index += 1
         rebalance_amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
         if rebalance_amount > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount = str(rebalance_amount) + " (max per transaction: %d)" % MAX_SATOSHIS_PER_TRANSACTION
 
-        print("Pubkey:           " + candidate.remote_pubkey)
+        print("(%2d) Pubkey:      " % index + candidate.remote_pubkey)
         print("Local ratio:      " + str(get_local_ratio(candidate)))
         print("Capacity:         " + str(candidate.capacity))
         print("Remote balance:   " + str(candidate.remote_balance))
@@ -49,7 +64,7 @@ def list_candidates():
 
 def get_rebalance_candidates():
     low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
-    return sorted(low_local, key=get_remote_surplus, reverse=True)
+    return sorted(low_local, key=get_remote_surplus, reverse=False)
 
 
 def get_local_ratio(channel):

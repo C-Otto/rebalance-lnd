@@ -24,7 +24,7 @@ This list only contains channels where less than 50% of the total funds are on t
 As an example the following indicates a channel with around 17.7% of the funds on the local side:
 
 ```
-Pubkey:           012345[...]abcdef
+(23) Pubkey:      012345[...]abcdef
 Local ratio:      0.17689625535
 Capacity:         5000000
 Remote balance:   4110320
@@ -41,10 +41,18 @@ The total width is determined by the channel's capacity, where a channel with ma
 occupies the full width of your terminal.
 The bar (`=`) indicates the funds on the local side of the channel.
 
+The number next to the pubkey (23 in the example) can be used to directly reference this channel.
+
 ### Rebalancing a channel
 To actually rebalance a channel, run the script with two arguments.
 The fist argument is the public key (pubkey) of the node at the other side of the channel, as shown in the output of `./rebalance.py`.
 The second argument is the amount you want to send to yourself through that node.
+
+`./rebalance.py 012345[...]abcdef 1613478`
+
+It is also possible to indicate the channel by the number shown next to the Pubkey (23 in the example).
+
+`./rebalance.py 23`
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4294967 satoshis.
 
