@@ -7,6 +7,9 @@ from lnd import Lnd
 
 from logic import Logic
 
+MAX_CHANNEL_CAPACITY = 16777215
+MAX_SATOSHIS_PER_TRANSACTION = 4294967
+
 
 def debug(message):
     sys.stderr.write(message + "\n")
@@ -29,8 +32,8 @@ def list_candidates():
     candidates = get_rebalance_candidates()
     for candidate in reversed(candidates):
         rebalance_amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
-        if rebalance_amount > 4294967:
-            rebalance_amount = str(rebalance_amount) + " (max per transaction: 4294967)"
+        if rebalance_amount > MAX_SATOSHIS_PER_TRANSACTION:
+            rebalance_amount = str(rebalance_amount) + " (max per transaction: %d)" % MAX_SATOSHIS_PER_TRANSACTION
 
         print("Pubkey:           " + candidate.remote_pubkey)
         print("Local ratio:      " + str(get_local_ratio(candidate)))
@@ -61,8 +64,7 @@ def get_remote_surplus(channel):
 
 def get_capacity_and_ratio_bar(candidate):
     columns = get_columns()
-    max_channel_capacity = 16777215
-    columns_scaled_to_capacity = int(round(columns * float(candidate.capacity) / max_channel_capacity))
+    columns_scaled_to_capacity = int(round(columns * float(candidate.capacity) / MAX_CHANNEL_CAPACITY))
 
     bar_width = columns_scaled_to_capacity - 2
     result = "|"
