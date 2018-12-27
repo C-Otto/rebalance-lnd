@@ -14,7 +14,11 @@ class Lnd:
     def __init__(self):
         os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
         combined_credentials = self.get_credentials(Lnd.LND_DIR)
-        grpc_channel = grpc.secure_channel(Lnd.SERVER, combined_credentials)
+        channel_options = [
+            ('grpc.max_message_length', 50 * 1024 * 1024),
+            ('grpc.max_receive_message_length', 50 * 1024 * 1024)
+        ]
+        grpc_channel = grpc.secure_channel(Lnd.SERVER, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.graph = None
 
