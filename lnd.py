@@ -6,19 +6,20 @@ import grpc
 import rpc_pb2 as ln
 import rpc_pb2_grpc as lnrpc
 
+SERVER = 'localhost:10009'
+LND_DIR = expanduser("~/.lnd")
+MESSAGE_SIZE_MB = 50 * 1024 * 1024
+
 
 class Lnd:
-    SERVER = 'localhost:10009'
-    LND_DIR = expanduser("~/.lnd")
-
     def __init__(self):
         os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
-        combined_credentials = self.get_credentials(Lnd.LND_DIR)
+        combined_credentials = self.get_credentials(LND_DIR)
         channel_options = [
-            ('grpc.max_message_length', 50 * 1024 * 1024),
-            ('grpc.max_receive_message_length', 50 * 1024 * 1024)
+            ('grpc.max_message_length', MESSAGE_SIZE_MB),
+            ('grpc.max_receive_message_length', MESSAGE_SIZE_MB)
         ]
-        grpc_channel = grpc.secure_channel(Lnd.SERVER, combined_credentials, channel_options)
+        grpc_channel = grpc.secure_channel(SERVER, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.graph = None
 
