@@ -3,8 +3,8 @@ import math
 import os
 import sys
 
-from lnd import rpc_pb2 as ln
-from lnd.lnd import Lnd
+import rpc_pb2 as ln
+from lnd import Lnd
 
 
 def debug(message):
