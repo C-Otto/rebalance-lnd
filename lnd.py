@@ -54,14 +54,14 @@ class Lnd:
             memo=memo,
             value=amount,
         )
-        invoice = self.stub.AddInvoice(invoice_request)
-        return self.get_payment_hash(invoice)
+        add_invoice_response = self.stub.AddInvoice(invoice_request)
+        return self.decode_payment_request(add_invoice_response.payment_request)
 
-    def get_payment_hash(self, invoice):
+    def decode_payment_request(self, payment_request):
         request = ln.PayReqString(
-            pay_req=invoice.payment_request,
+            pay_req=payment_request,
         )
-        return self.stub.DecodePayReq(request).payment_hash
+        return self.stub.DecodePayReq(request)
 
     def get_channels(self):
         request = ln.ListChannelsRequest(
@@ -87,16 +87,11 @@ class Lnd:
                     result = edge.node2_policy
                 return result
 
-    def get_expiry(self, payment_request_hash):
-        request = ln.PaymentHash(
-            r_hash_str=payment_request_hash,
-        )
-        return self.stub.LookupInvoice(request).cltv_expiry
-
-    def send_payment(self, payment_request_hash, routes):
+    def send_payment(self, payment_request, routes):
+        payment_hash = payment_request.payment_hash
         request = ln.SendToRouteRequest()
 
-        request.payment_hash_string = payment_request_hash
+        request.payment_hash_string = payment_hash
         request.routes.extend(routes)
 
         return self.stub.SendToRouteSync(request)
