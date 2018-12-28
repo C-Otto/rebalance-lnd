@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+
+import argparse
 import math
 import os
 import sys
@@ -15,22 +17,38 @@ def main():
     remote_pubkey = None
     amount = None
 
-    if len(sys.argv) == 1:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-l", "--listcandidates", action="store_true", default=False)
+    parser.add_argument("channel", help=("channel identifier, can be either the channel index as given by -l"
+                                         " or the channel's pubkey"), nargs="?")
+    # args.amount is essentially a list, and what matters to us is the first value it *may* have
+    parser.add_argument("amount", help=("amount or the rebalance, in satoshis. If not specified, the amount computed"
+                                        " for a perfect rebalance will be used"), nargs='?')
+    args = parser.parse_args()
+
+    if args.listcandidates or args.channel is None:
         list_candidates()
         sys.exit()
 
-    if len(sys.argv) == 2:
-        index = int(sys.argv[1]) - 1
+    # first we deal with the first argument, channel, to figure out what it means
+    if args.channel and len(args.channel) < 4:
+        # here we are in the "channel index" case
+        index = int(args.channel) - 1
         candidates = get_rebalance_candidates()
         candidate = candidates[index]
         remote_pubkey = candidate.remote_pubkey
+    else:
+        # else the channel argument should be the node's pubkey
+        remote_pubkey = args.channel
+
+    # then we figure out whether an amount was specified or if we compute it ourselves
+    if args.amount:
+        amount = int(args.amount)
+    else:
         amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
         if amount > MAX_SATOSHIS_PER_TRANSACTION:
             amount = MAX_SATOSHIS_PER_TRANSACTION
-
-    if len(sys.argv) == 3:
-        remote_pubkey = sys.argv[1]
-        amount = int(sys.argv[2])
 
     response = Logic(lnd, remote_pubkey, amount).rebalance()
     if response:
