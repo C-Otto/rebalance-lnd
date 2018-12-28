@@ -11,10 +11,6 @@ MAX_CHANNEL_CAPACITY = 16777215
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 
-def debug(message):
-    sys.stderr.write(message + "\n")
-
-
 def main():
     remote_pubkey = None
     amount = None
