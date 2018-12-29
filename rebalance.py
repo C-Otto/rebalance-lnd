@@ -23,7 +23,7 @@ def main():
     parser.add_argument("channel", help=("channel identifier, can be either the channel index as given by -l"
                                          " or the channel's pubkey"), nargs="?")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    parser.add_argument("amount", help=("amount of the rebalance, in satoshis. If not specified, the amount computed"
+    parser.add_argument("amount", help=("amount or the rebalance, in satoshis. If not specified, the amount computed"
                                         " for a perfect rebalance will be used"), nargs='?')
     args = parser.parse_args()
 
@@ -41,6 +41,9 @@ def main():
     else:
         # else the channel argument should be the node's pubkey
         remote_pubkey = args.channel
+        # candidate is a channel -- we find it by filtering through all candidates
+        # TODO: add protection for when that pubkey is not found etc
+        candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
 
     # then we figure out whether an amount was specified or if we compute it ourselves
     if args.amount:
