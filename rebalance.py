@@ -23,7 +23,7 @@ def main():
     parser.add_argument("channel", help=("channel identifier, can be either the channel index as given by -l"
                                          " or the channel's pubkey"), nargs="?")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    parser.add_argument("amount", help=("amount or the rebalance, in satoshis. If not specified, the amount computed"
+    parser.add_argument("amount", help=("amount of the rebalance, in satoshis. If not specified, the amount computed"
                                         " for a perfect rebalance will be used"), nargs='?')
     args = parser.parse_args()
 
