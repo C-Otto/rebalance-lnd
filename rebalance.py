@@ -41,6 +41,9 @@ def main():
     else:
         # else the channel argument should be the node's pubkey
         remote_pubkey = args.channel
+        # candidate is a channel -- we find it by filtering through all candidates
+        # TODO: add protection for when that pubkey is not found etc
+        candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
 
     # then we figure out whether an amount was specified or if we compute it ourselves
     if args.amount:
