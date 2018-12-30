@@ -7,17 +7,20 @@ def debug(message):
 
 
 class Logic:
-    def __init__(self, lnd, remote_pubkey, amount):
+    def __init__(self, lnd, first_hop_pubkey, remote_pubkey, amount):
         self.lnd = lnd
+        self.first_hop_pubkey = first_hop_pubkey
         self.remote_pubkey = remote_pubkey
         self.amount = amount
 
     def rebalance(self):
         debug("Sending %d satoshis to rebalance, remote pubkey: %s" %
               (self.amount, self.remote_pubkey))
+        if self.first_hop_pubkey:
+            debug("Forced first pubkey is: %s" % self.first_hop_pubkey)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.remote_pubkey)
+        routes = Routes(self.lnd, payment_request, self.first_hop_pubkey, self.remote_pubkey)
 
         if not routes.has_next():
             debug("Could not find any suitable route")
