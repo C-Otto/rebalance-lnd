@@ -11,9 +11,10 @@ def debug(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, remote_pubkey):
+    def __init__(self, lnd, payment_request, first_hop_pubkey, remote_pubkey):
         self.lnd = lnd
         self.payment = payment_request
+        self.first_hop_pubkey = first_hop_pubkey
         self.remote_pubkey = remote_pubkey
         self.rebalance_channel = self.get_channel(self.remote_pubkey)
         self.all_routes = []
@@ -50,6 +51,9 @@ class Routes:
         self.num_requested_routes = num_routes_to_request
         result = []
         for route in routes:
+            if self.first_hop_pubkey and (route.hops[0].pub_key != self.first_hop_pubkey):
+                debug("Dropping route with %s as first hop (does not match -f)" % route.hops[0].pub_key)
+                continue
             modified_route = self.add_rebalance_channel(route)
             if modified_route:
                 result.append(modified_route)
