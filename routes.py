@@ -20,6 +20,9 @@ class Routes:
         self.returned_routes = []
         self.num_requested_routes = 0
 
+    def get_returned_routes(self):
+        return self.returned_routes
+
     def has_next(self):
         self.update_routes()
         return self.returned_routes < self.all_routes
@@ -158,6 +161,11 @@ class Routes:
         if hasattr(policy, "fee_base_msat"):
             return int(policy.fee_base_msat)
         return int(0)
+
+    @staticmethod
+    def print_route(route):
+        route_str = " -> ".join(str(h.chan_id) for h in route.hops)
+        return route_str
 
     def low_local_ratio_after_sending(self, hops):
         pub_key = hops[0].pub_key
