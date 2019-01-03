@@ -17,10 +17,13 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
-    parser.add_argument("-l", "--listcandidates", action="store_true", default=False, help=("List candidate channels for rebalance."
-                                                                                            "Use in conjunction with -o and -i"))
-    parser.add_argument("-o", "--outgoing", action="store_true", help="When used with -l, lists candidate outgoing channels")
-    parser.add_argument("-i", "--incoming", action="store_true", help="When used with -l, lists candidate incoming channels")
+    parser.add_argument("-l", "--listcandidates", action="store_true", default=False,
+                        help=("List candidate channels for rebalance."
+                              "Use in conjunction with -o and -i"))
+    parser.add_argument("-o", "--outgoing", action="store_true",
+                        help="When used with -l, lists candidate outgoing channels")
+    parser.add_argument("-i", "--incoming", action="store_true",
+                        help="When used with -l, lists candidate incoming channels")
     parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
     parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
@@ -31,16 +34,16 @@ def main():
     debug = args.debug
 
     if debug:
-        print "from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount)
-        print "outgoing: %s\nincoming: %s" % (args.outgoing, args.incoming)
+        print("from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount))
+        print("outgoing: %s\nincoming: %s" % (args.outgoing, args.incoming))
 
     if (args.outgoing or args.incoming) and not args.listcandidates:
-        print "--outgoing and --incoming only work in conjunction with --listcandidates"
+        print("--outgoing and --incoming only work in conjunction with --listcandidates")
         sys.exit()
 
     if args.listcandidates or (args.fromchan is None and args.tochan is None):
-        if (args.outgoing and args.incoming):
-            print "Only one of outgoing and incoming supported at once, defaulting to incoming."
+        if args.outgoing and args.incoming:
+            debug("Only one of outgoing and incoming supported at once, defaulting to incoming.")
             incoming = True
         else:
             incoming = not args.outgoing
@@ -52,7 +55,7 @@ def main():
     # also think of splitting the amount to distribute it over several incoming channels to keep them at reasonable 
     # levels. Anyway, not supported yet.
     if args.fromchan and (args.tochan is None):
-        print "Outgoing-only mode is not supported yet."
+        debug("Outgoing-only mode is not supported yet.")
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
@@ -107,13 +110,13 @@ def list_candidates(incoming=True):
 
 
 def get_rebalance_candidates(incoming=True):
-    print "get_rebalance_candidates: incoming=%s" % incoming
+    print("get_rebalance_candidates: incoming=%s" % incoming)
     if incoming:
         low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
         return sorted(low_local, key=get_remote_surplus, reverse=False)
     else:
         high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
-        return sorted(high_local, key=get_remote_surplus, reverse=True)  
+        return sorted(high_local, key=get_remote_surplus, reverse=True)
 
 
 def get_local_ratio(channel):
