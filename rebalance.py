@@ -91,7 +91,7 @@ def list_candidates(incoming=True):
     candidates = get_rebalance_candidates(incoming=incoming)
     for candidate in candidates:
         index += 1
-        rebalance_amount_int = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
+        rebalance_amount_int = abs(int(math.ceil(float(get_remote_surplus(candidate)) / 2)))
         rebalance_amount = "{:,}".format(rebalance_amount_int)
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount += " (max per transaction: {:,})".format(MAX_SATOSHIS_PER_TRANSACTION)
