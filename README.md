@@ -30,7 +30,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -d, --debug           Verbose debug mode
-  -l, --listcandidates  List candidate channels for rebalance.Use in
+  -l, --list-candidates List candidate channels for rebalance.Use in
                         conjunction with -o and -i
   -o, --outgoing        When used with -l, lists candidate outgoing channels
   -i, --incoming        When used with -l, lists candidate incoming channels

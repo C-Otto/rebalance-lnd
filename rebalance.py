@@ -23,11 +23,11 @@ def main():
         print("from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount))
         print("outgoing: %s\nincoming: %s" % (args.outgoing, args.incoming))
 
-    if (args.outgoing or args.incoming) and not args.listcandidates:
-        print("--outgoing and --incoming only work in conjunction with --listcandidates")
+    if (args.outgoing or args.incoming) and not args.list_candidates:
+        print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
 
-    if args.listcandidates or (args.fromchan is None and args.tochan is None):
+    if args.list_candidates or (args.fromchan is None and args.tochan is None):
         if args.outgoing and args.incoming:
             print("Only one of outgoing and incoming supported at once, defaulting to incoming.")
             incoming = True
@@ -74,7 +74,7 @@ def main():
 def get_argument_parser():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
-    argument_parser.add_argument("-l", "--listcandidates", action="store_true", default=False,
+    argument_parser.add_argument("-l", "--list-candidates", action="store_true", default=False,
                                  help=("List candidate channels for rebalance."
                                        "Use in conjunction with -o and -i"))
     argument_parser.add_argument("-o", "--outgoing", action="store_true",
