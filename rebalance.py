@@ -44,7 +44,7 @@ def main():
 
     if args.listcandidates or (args.fromchan is None and args.tochan is None):
         if args.outgoing and args.incoming:
-            debug("Only one of outgoing and incoming supported at once, defaulting to incoming.")
+            print("Only one of outgoing and incoming supported at once, defaulting to incoming.")
             incoming = True
         else:
             incoming = not args.outgoing
@@ -56,7 +56,7 @@ def main():
     # also think of splitting the amount to distribute it over several incoming channels to keep them at reasonable 
     # levels. Anyway, not supported yet.
     if args.fromchan and (args.tochan is None):
-        debug("Outgoing-only mode is not supported yet.")
+        print("Outgoing-only mode is not supported yet.")
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
