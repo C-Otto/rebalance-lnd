@@ -29,8 +29,8 @@ def main():
 
     if args.list_candidates:
         if args.outgoing and args.incoming:
-            print("Only one of outgoing and incoming supported at once, defaulting to incoming.")
-            incoming = True
+            argument_parser.print_help()
+            sys.exit()
         else:
             incoming = not args.outgoing
         list_candidates(incoming=incoming)
