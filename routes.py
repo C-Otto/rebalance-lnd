@@ -11,7 +11,7 @@ def debug(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_pubkey, remote_pubkey):
+    def __init__(self, lnd, payment_request, first_hop_pubkey, remote_pubkey, threshold):
         self.lnd = lnd
         self.payment = payment_request
         self.first_hop_pubkey = first_hop_pubkey
@@ -20,6 +20,7 @@ class Routes:
         self.all_routes = []
         self.returned_routes = []
         self.num_requested_routes = 0
+        self.threshold = threshold
 
     def get_returned_routes(self):
         return self.returned_routes
@@ -123,27 +124,33 @@ class Routes:
 
     def update_amounts(self, hops):
         additional_fees = 0
+        dest_chan_id = self.rebalance_channel.chan_id
         for hop in reversed(hops):
             amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
             hop.amt_to_forward_msat = amount_to_forward_msat
             hop.amt_to_forward = amount_to_forward_msat / 1000
 
             fee_msat_before = hop.fee_msat
-            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
+            #new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
+            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, dest_chan_id, hop.pub_key)
             hop.fee_msat = new_fee_msat
             hop.fee = new_fee_msat / 1000
             additional_fees += new_fee_msat - fee_msat_before
+            dest_chan_id = hop.chan_id
 
     def get_expiry_delta_last_hop(self):
         return self.payment.cltv_expiry
 
     def update_expiry(self, hops, total_time_lock):
+        dest_chan_id = self.rebalance_channel.chan_id
         for hop in reversed(hops):
             hop.expiry = total_time_lock
 
             channel_id = hop.chan_id
             target_pubkey = hop.pub_key
-            policy = self.lnd.get_policy(channel_id, target_pubkey)
+            #policy = self.lnd.get_policy(channel_id, target_pubkey)
+            policy = self.lnd.get_policy(dest_chan_id, target_pubkey)
+            dest_chan_id = hop.chan_id
 
             time_lock_delta = policy.time_lock_delta
             total_time_lock += time_lock_delta
@@ -155,6 +162,7 @@ class Routes:
 
     def get_fee_msat(self, amount_msat, channel_id, target_pubkey):
         policy = self.lnd.get_policy(channel_id, target_pubkey)
+        #print "get_fee_msat() policy for %s, %s:\n%s" % (channel_id, target_pubkey, policy)
         fee_base_msat = self.get_fee_base_msat(policy)
         fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
         return fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
@@ -178,7 +186,7 @@ class Routes:
         remote = channel.remote_balance + self.get_amount()
         local = channel.local_balance - self.get_amount()
         ratio = float(local) / (remote + local)
-        return ratio < 0.5
+        return ratio < self.threshold
 
     def get_amount(self):
         return self.payment.num_satoshis
