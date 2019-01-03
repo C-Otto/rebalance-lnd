@@ -27,7 +27,7 @@ def main():
     parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
     parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    parser.add_argument("amount", help=("Amount or the rebalance, in satoshis. If not specified, the amount computed"
+    parser.add_argument("amount", help=("Amount of the rebalance, in satoshis. If not specified, the amount computed"
                                         " for a perfect rebalance will be used"), nargs="?")
     args = parser.parse_args()
 
