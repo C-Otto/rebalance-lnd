@@ -23,7 +23,7 @@ usage: rebalance.py [-h] [-d] [-l] [-o] [-i] [-f FROMCHAN] [-t TOCHAN]
                     [amount]
 
 positional arguments:
-  amount                Amount or the rebalance, in satoshis. If not
+  amount                Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
                         will be used
 
