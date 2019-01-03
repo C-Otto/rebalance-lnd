@@ -20,6 +20,7 @@ $ pip install grpcio googleapis-common-protos
 ### Command line arguments
 ```
 usage: rebalance.py [-h] [-d] [-l] [-o] [-i] [-f FROMCHAN] [-t TOCHAN]
+                    [--threshold THRESHOLD]
                     [amount]
 
 positional arguments:
@@ -40,6 +41,9 @@ optional arguments:
   -t TOCHAN, --tochan TOCHAN
                         Channel id for the incoming channel (which will be
                         filled)
+  --threshold THRESHOLD
+                        Threshold (in pc) to determine candidates, default is
+                        50
 ```
 
 ### List of channels
