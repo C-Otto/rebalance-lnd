@@ -25,7 +25,7 @@ usage: rebalance.py [-h] [-d] [-l] [-o] [-i] [-f FROMCHAN] [-t TOCHAN]
 positional arguments:
   amount                Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
-                        will be used
+                        will be used (up to the maximum of 16,777,215 satoshis)
 
 optional arguments:
   -h, --help            show this help message and exit
