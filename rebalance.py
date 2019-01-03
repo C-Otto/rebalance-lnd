@@ -14,8 +14,8 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 
 def main():
-    parser = get_argument_parser()
-    args = parser.parse_args()
+    argument_parser = get_argument_parser()
+    args = argument_parser.parse_args()
 
     debug = args.debug
 
@@ -27,13 +27,17 @@ def main():
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
 
-    if args.list_candidates or (args.fromchan is None and args.tochan is None):
+    if args.list_candidates:
         if args.outgoing and args.incoming:
             print("Only one of outgoing and incoming supported at once, defaulting to incoming.")
             incoming = True
         else:
             incoming = not args.outgoing
         list_candidates(incoming=incoming)
+        sys.exit()
+
+    if args.fromchan is None and args.tochan is None:
+        argument_parser.print_help()
         sys.exit()
 
     # If only the outgoing channel is specified, we need to find routes to any inbound channel, so there
