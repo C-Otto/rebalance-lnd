@@ -21,9 +21,6 @@ class Routes:
         self.returned_routes = []
         self.num_requested_routes = 0
 
-    def get_returned_routes(self):
-        return self.returned_routes
-
     def has_next(self):
         self.update_routes()
         return self.returned_routes < self.all_routes

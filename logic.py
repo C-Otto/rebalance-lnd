@@ -26,13 +26,12 @@ class Logic:
             debug("Could not find any suitable route")
             return None
 
-        counter = 0
+        tried_routes = []
         while routes.has_next():
-            counter += 1
-            debug("Trying route #%d" % counter)
-
             route = routes.get_next()
+            tried_routes.append(route)
 
+            debug("Trying route #%d" % len(tried_routes))
             debug(Routes.print_route(route))
 
             response = self.lnd.send_payment(payment_request, [route])
@@ -42,9 +41,9 @@ class Logic:
                 fees_msat = response.payment_route.total_fees_msat
                 fees_satoshi = round(float(fees_msat) / 1000.0, 3)
                 debug("Success! Paid %d Satoshi in fees" % fees_satoshi)
-                debug("Returned routes")
-                debug("\n".join(Routes.print_route(r) for r in routes.get_returned_routes()))
-                debug("Good route")
+                debug("Tried routes:")
+                debug("\n".join(Routes.print_route(route) for route in tried_routes))
+                debug("Successful route:")
                 debug(Routes.print_route(route))
 
                 return response
