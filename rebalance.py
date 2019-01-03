@@ -14,9 +14,6 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 
 def main():
-    remote_pubkey = None
-    amount = None
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
