@@ -117,6 +117,7 @@ class Routes:
     
     def update_amounts(self, hops):
         additional_fees = 0
+        dest_chan_id = self.rebalance_channel.chan_id
         for hop in reversed(hops):
             amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
             hop.amt_to_forward_msat = int(amount_to_forward_msat)
