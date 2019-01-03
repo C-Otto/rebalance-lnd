@@ -101,6 +101,7 @@ def list_candidates(incoming=True):
             rebalance_amount += " (max per transaction: {:,})".format(MAX_SATOSHIS_PER_TRANSACTION)
 
         print("(%2d) Pubkey:      " % index + candidate.remote_pubkey)
+        print("Channel ID:        " + str(candidate.chan_id))
         print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))
         print("Capacity:         {:,}".format(candidate.capacity))
         print("Remote balance:   {:,}".format(candidate.remote_balance))

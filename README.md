@@ -50,6 +50,7 @@ As an example the following indicates a channel with around 17.7% of the funds o
 
 ```
 (23) Pubkey:      012345[...]abcdef
+Channel ID:       123[...]456
 Local ratio:      0.176
 Capacity:         5,000,000
 Remote balance:   4,110,320
