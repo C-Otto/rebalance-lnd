@@ -118,7 +118,6 @@ def list_candidates(incoming=True):
 
 
 def get_rebalance_candidates(incoming=True):
-    print("get_rebalance_candidates: incoming=%s" % incoming)
     if incoming:
         low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
         return sorted(low_local, key=get_remote_surplus, reverse=False)
