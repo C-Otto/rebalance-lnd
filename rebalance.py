@@ -81,7 +81,6 @@ def main():
         if amount > MAX_SATOSHIS_PER_TRANSACTION:
             amount = MAX_SATOSHIS_PER_TRANSACTION
 
-    # still dealing with pubkeys here, we need to switch to chan IDs eventually
     first_hop_pubkey = args.fromchan
     response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
     if response:
