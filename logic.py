@@ -7,11 +7,12 @@ def debug(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_pubkey, remote_pubkey, amount):
+    def __init__(self, lnd, first_hop_pubkey, remote_pubkey, amount, threshold):
         self.lnd = lnd
         self.first_hop_pubkey = first_hop_pubkey
         self.remote_pubkey = remote_pubkey
         self.amount = amount
+        self.threshold = threshold
 
     def rebalance(self):
         debug("Sending %d satoshis to rebalance, remote pubkey: %s" %
@@ -20,7 +21,7 @@ class Logic:
             debug("Forced first pubkey is: %s" % self.first_hop_pubkey)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.first_hop_pubkey, self.remote_pubkey)
+        routes = Routes(self.lnd, payment_request, self.first_hop_pubkey, self.remote_pubkey, self.threshold)
 
         if not routes.has_next():
             debug("Could not find any suitable route")
@@ -52,6 +53,8 @@ class Logic:
                 debug("TemporaryChannelFailure (not enough funds along the route?)")
             else:
                 debug("Error: %s" % response.payment_error)
+                debug("Full reponse:\n%s" % response)
+                debug("Route is:\n%s" % route)
         return None
 
     def generate_invoice(self):
