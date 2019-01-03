@@ -117,7 +117,6 @@ class Routes:
 
     def update_amounts(self, hops):
         additional_fees = 0
-        dest_chan_id = self.rebalance_channel.chan_id
 
         for hop in reversed(hops):
             amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
@@ -125,11 +124,10 @@ class Routes:
             hop.amt_to_forward = int(amount_to_forward_msat / 1000)
 
             fee_msat_before = hop.fee_msat
-            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, dest_chan_id, hop.pub_key)
+            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
             hop.fee_msat = int(new_fee_msat)
             hop.fee = math.ceil(new_fee_msat / 1000)
             additional_fees += new_fee_msat - fee_msat_before
-            dest_chan_id = hop.chan_id
 
     def get_expiry_delta_last_hop(self):
         return self.payment.cltv_expiry
