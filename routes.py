@@ -11,14 +11,18 @@ def debug(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, remote_pubkey):
+    def __init__(self, lnd, payment_request, first_hop_pubkey, remote_pubkey):
         self.lnd = lnd
         self.payment = payment_request
+        self.first_hop_pubkey = first_hop_pubkey
         self.remote_pubkey = remote_pubkey
         self.rebalance_channel = self.get_channel(self.remote_pubkey)
         self.all_routes = []
         self.returned_routes = []
         self.num_requested_routes = 0
+
+    def get_returned_routes(self):
+        return self.returned_routes
 
     def has_next(self):
         self.update_routes()
@@ -47,6 +51,9 @@ class Routes:
         self.num_requested_routes = num_routes_to_request
         result = []
         for route in routes:
+            if self.first_hop_pubkey and (route.hops[0].pub_key != self.first_hop_pubkey):
+                debug("Dropping route with %s as first hop (does not match -f)" % route.hops[0].pub_key)
+                continue
             modified_route = self.add_rebalance_channel(route)
             if modified_route:
                 result.append(modified_route)
@@ -158,6 +165,11 @@ class Routes:
         if hasattr(policy, "fee_base_msat"):
             return int(policy.fee_base_msat)
         return int(0)
+
+    @staticmethod
+    def print_route(route):
+        route_str = " -> ".join(str(h.chan_id) for h in route.hops)
+        return route_str
 
     def low_local_ratio_after_sending(self, hops):
         pub_key = hops[0].pub_key
