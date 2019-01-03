@@ -14,22 +14,7 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 
 def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
-    parser.add_argument("-l", "--listcandidates", action="store_true", default=False,
-                        help=("List candidate channels for rebalance."
-                              "Use in conjunction with -o and -i"))
-    parser.add_argument("-o", "--outgoing", action="store_true",
-                        help="When used with -l, lists candidate outgoing channels")
-    parser.add_argument("-i", "--incoming", action="store_true",
-                        help="When used with -l, lists candidate incoming channels")
-    parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
-    parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
-    # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    parser.add_argument("amount", help=("Amount of the rebalance, in satoshis. If not specified, the amount computed"
-                                        " for a perfect rebalance will be used (up to the maximum of"
-                                        " 16,777,215 satoshis)"), nargs="?")
+    parser = get_argument_parser()
     args = parser.parse_args()
 
     debug = args.debug
@@ -84,6 +69,25 @@ def main():
     response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
     if response:
         print(response)
+
+
+def get_argument_parser():
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
+    argument_parser.add_argument("-l", "--listcandidates", action="store_true", default=False,
+                                 help=("List candidate channels for rebalance."
+                                       "Use in conjunction with -o and -i"))
+    argument_parser.add_argument("-o", "--outgoing", action="store_true",
+                                 help="When used with -l, lists candidate outgoing channels")
+    argument_parser.add_argument("-i", "--incoming", action="store_true",
+                                 help="When used with -l, lists candidate incoming channels")
+    argument_parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
+    argument_parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
+    # args.amount is essentially a list, and what matters to us is the first value it *may* have
+    argument_parser.add_argument("amount", help=("Amount of the rebalance, in satoshis. If not specified, the amount "
+                                                 "computed for a perfect rebalance will be used (up to the maximum of"
+                                                 " 16,777,215 satoshis)"), nargs="?")
+    return argument_parser
 
 
 def list_candidates(incoming=True):
