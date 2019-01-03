@@ -26,16 +26,23 @@ def main():
     parser.add_argument("-i", "--incoming", action="store_true", help="When used with -l, lists candidate incoming channels")
     parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
     parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
+    parser.add_argument("--threshold", help="Threshold (in %) to determine candidates, default is 50", default=50)
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
     parser.add_argument("amount", help=("Amount or the rebalance, in satoshis. If not specified, the amount computed"
                                         " for a perfect rebalance will be used"), nargs="?")
     args = parser.parse_args()
 
     debug = args.debug
+    threshold = int(args.threshold)
+    # threshold should be between 0 and 50%
+    if threshold > 50:
+        threshold = 100 - threshold
+    threshold = float(threshold)/100
 
     if debug:
         print "from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount)
         print "outgoing: %s\nincoming: %s" % (args.outgoing, args.incoming)
+        print "threshold: %s" % threshold
 
     if (args.outgoing or args.incoming) and not args.listcandidates:
         print "--outgoing and --incoming only work in conjunction with --listcandidates"
@@ -47,7 +54,7 @@ def main():
             incoming = True
         else:
             incoming = not args.outgoing
-        list_candidates(incoming=incoming)
+        list_candidates(threshold, incoming=incoming)
         sys.exit()
 
     # If only the outgoing channel is specified, we need to find routes to any inbound channel, so there
@@ -62,7 +69,7 @@ def main():
     if args.tochan and len(args.tochan) < 4:
         # here we are in the "channel index" case
         index = int(args.tochan) - 1
-        candidates = get_rebalance_candidates()
+        candidates = get_rebalance_candidates(threshold)
         candidate = candidates[index]
         remote_pubkey = candidate.remote_pubkey
     else:
@@ -70,7 +77,7 @@ def main():
         remote_pubkey = args.tochan
         # candidate is a channel -- we find it by filtering through all candidates
         # TODO: add protection for when that pubkey is not found etc
-        candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
+        candidate = [c for c in get_rebalance_candidates(threshold) if c.remote_pubkey == remote_pubkey][0]
 
     # then we figure out whether an amount was specified or if we compute it ourselves
     if args.amount:
@@ -82,14 +89,14 @@ def main():
 
     # still dealing with pubkeys here, we need to switch to chan IDs eventually
     first_hop_pubkey = args.fromchan
-    response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
+    response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount, threshold).rebalance()
     if response:
         print(response)
 
 
-def list_candidates(incoming=True):
+def list_candidates(threshold, incoming=True):
     index = 0
-    candidates = get_rebalance_candidates(incoming=incoming)
+    candidates = get_rebalance_candidates(threshold, incoming=incoming)
     for candidate in candidates:
         index += 1
         rebalance_amount_int = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
@@ -109,13 +116,13 @@ def list_candidates(incoming=True):
     print("Run with two arguments: 1) pubkey of channel to fill 2) amount")
 
 
-def get_rebalance_candidates(incoming=True):
+def get_rebalance_candidates(threshold, incoming=True):
     print "get_rebalance_candidates: incoming=%s" % incoming
     if incoming:
-        low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
+        low_local = list(filter(lambda c: get_local_ratio(c) < threshold, lnd.get_channels()))
         return sorted(low_local, key=get_remote_surplus, reverse=False)
     else:
-        high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
+        high_local = list(filter(lambda c: get_local_ratio(c) > 1 - threshold, lnd.get_channels()))
         return sorted(high_local, key=get_remote_surplus, reverse=True)  
 
 
