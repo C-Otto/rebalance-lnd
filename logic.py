@@ -33,7 +33,7 @@ class Logic:
 
             route = routes.get_next()
 
-            print Routes.print_route(route)
+            debug(Routes.print_route(route))
 
             response = self.lnd.send_payment(payment_request, [route])
             is_successful = response.payment_error == ""
@@ -42,10 +42,10 @@ class Logic:
                 fees_msat = response.payment_route.total_fees_msat
                 fees_satoshi = round(float(fees_msat) / 1000.0, 3)
                 debug("Success! Paid %d Satoshi in fees" % fees_satoshi)
-                print "Returned routes"
-                print "\n".join(Routes.print_route(r) for r in routes.get_returned_routes())
-                print "Good route"
-                print Routes.print_route(route)
+                debug("Returned routes")
+                debug("\n".join(Routes.print_route(r) for r in routes.get_returned_routes()))
+                debug("Good route")
+                debug(Routes.print_route(route))
 
                 return response
             elif "TemporaryChannelFailure" in response.payment_error:
