@@ -14,8 +14,7 @@ class Logic:
         self.amount = amount
 
     def rebalance(self):
-        debug("Sending %d satoshis to rebalance, remote pubkey: %s" %
-              (self.amount, self.remote_pubkey))
+        debug(("Sending {:,} satoshis to rebalance, remote pubkey: %s" % self.remote_pubkey).format(self.amount))
         if self.first_hop_pubkey:
             debug("Forced first pubkey is: %s" % self.first_hop_pubkey)
 
