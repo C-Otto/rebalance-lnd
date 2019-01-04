@@ -17,12 +17,6 @@ def main():
     argument_parser = get_argument_parser()
     arguments = argument_parser.parse_args()
 
-    debug = arguments.debug
-
-    if debug:
-        print("from: %s\nto: %s\namount: %s" % (arguments.fromchan, arguments.tochan, arguments.amount))
-        print("incoming: %s" % arguments.incoming)
-
     if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
@@ -73,10 +67,6 @@ def main():
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug",
-                        action="store_true",
-                        default=False,
-                        help="Verbose debug mode")
     parser.add_argument("-l", "--list-candidates", action="store_true",
                         help="List candidate channels for rebalance. "
                              "Use in conjunction with -o and -i")
