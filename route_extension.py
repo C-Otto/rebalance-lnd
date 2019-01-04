@@ -68,27 +68,30 @@ class RouteExtension:
 
     def update_amounts(self, hops):
         additional_fees = 0
+        hop_out_chan_id = self.rebalance_channel.chan_id
         for hop in reversed(hops):
             amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
             hop.amt_to_forward_msat = amount_to_forward_msat
             hop.amt_to_forward = amount_to_forward_msat // 1000
 
             fee_msat_before = hop.fee_msat
-            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
+            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop_out_chan_id, hop.pub_key)
             hop.fee_msat = new_fee_msat
             hop.fee = new_fee_msat // 1000
             additional_fees += new_fee_msat - fee_msat_before
+            hop_out_chan_id = hop.chan_id
 
     def get_expiry_delta_last_hop(self):
         return self.payment.cltv_expiry
 
     def update_expiry(self, hops, total_time_lock):
+        hop_out_chan_id = self.rebalance_channel.chan_id
         for hop in reversed(hops):
             hop.expiry = total_time_lock
 
-            channel_id = hop.chan_id
             target_pubkey = hop.pub_key
-            policy = self.lnd.get_policy(channel_id, target_pubkey)
+            policy = self.lnd.get_policy(hop_out_chan_id, target_pubkey)
+            hop_out_chan_id = hop.chan_id
 
             time_lock_delta = policy.time_lock_delta
             total_time_lock += time_lock_delta
