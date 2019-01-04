@@ -15,24 +15,24 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 def main():
     argument_parser = get_argument_parser()
-    args = argument_parser.parse_args()
+    arguments = argument_parser.parse_args()
 
-    debug = args.debug
+    debug = arguments.debug
 
     if debug:
-        print("from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount))
-        print("incoming: %s" % args.incoming)
+        print("from: %s\nto: %s\namount: %s" % (arguments.fromchan, arguments.tochan, arguments.amount))
+        print("incoming: %s" % arguments.incoming)
 
-    if args.incoming is not None and not args.list_candidates:
+    if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
 
-    if args.list_candidates:
-        incoming = args.incoming is None or args.incoming
+    if arguments.list_candidates:
+        incoming = arguments.incoming is None or arguments.incoming
         list_candidates(incoming=incoming)
         sys.exit()
 
-    if args.fromchan is None and args.tochan is None:
+    if arguments.fromchan is None and arguments.tochan is None:
         argument_parser.print_help()
         sys.exit()
 
@@ -40,32 +40,32 @@ def main():
     # is some work to do to find all channels with incoming capacity, find routes to them, rank them etc. We could
     # also think of splitting the amount to distribute it over several incoming channels to keep them at reasonable 
     # levels. Anyway, not supported yet.
-    if args.fromchan and (args.tochan is None):
+    if arguments.fromchan and (arguments.tochan is None):
         print("Outgoing-only mode is not supported yet.")
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
-    if args.tochan and len(args.tochan) < 4:
+    if arguments.tochan and len(arguments.tochan) < 4:
         # here we are in the "channel index" case
-        index = int(args.tochan) - 1
+        index = int(arguments.tochan) - 1
         candidates = get_rebalance_candidates()
         candidate = candidates[index]
         remote_pubkey = candidate.remote_pubkey
     else:
         # else the channel argument should be the node's pubkey
-        remote_pubkey = args.tochan
+        remote_pubkey = arguments.tochan
         # candidate is a channel -- we find it by filtering through all candidates
         candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
 
     # then we figure out whether an amount was specified or if we compute it ourselves
-    if args.amount:
-        amount = int(args.amount)
+    if arguments.amount:
+        amount = int(arguments.amount)
     else:
         amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
         if amount > MAX_SATOSHIS_PER_TRANSACTION:
             amount = MAX_SATOSHIS_PER_TRANSACTION
 
-    first_hop_pubkey = args.fromchan
+    first_hop_pubkey = arguments.fromchan
     response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
     if response:
         print(response)
