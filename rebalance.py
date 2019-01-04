@@ -57,7 +57,7 @@ def main():
     if arguments.amount:
         amount = int(arguments.amount)
     else:
-        amount = int(math.ceil(float(get_remote_surplus(candidate)) / 2))
+        amount = get_rebalance_amount(candidate)
         if amount > MAX_SATOSHIS_PER_TRANSACTION:
             amount = MAX_SATOSHIS_PER_TRANSACTION
 
@@ -110,7 +110,7 @@ def list_candidates(incoming=True):
     candidates = get_rebalance_candidates(incoming=incoming)
     for candidate in candidates:
         index += 1
-        rebalance_amount_int = abs(int(math.ceil(float(get_remote_surplus(candidate)) / 2)))
+        rebalance_amount_int = get_rebalance_amount(candidate)
         rebalance_amount = "{:,}".format(rebalance_amount_int)
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount += " (max per transaction: {:,})".format(MAX_SATOSHIS_PER_TRANSACTION)
@@ -128,12 +128,18 @@ def list_candidates(incoming=True):
     print("Run with two arguments: 1) pubkey of channel to fill 2) amount")
 
 
+def get_rebalance_amount(candidate):
+    return abs(int(math.ceil(float(get_remote_surplus(candidate)) / 2)))
+
+
 def get_rebalance_candidates(incoming=True):
     if incoming:
         low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
+        low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
         return sorted(low_local, key=get_remote_surplus, reverse=False)
     else:
         high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
+        high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
         return sorted(high_local, key=get_remote_surplus, reverse=True)
 
 
