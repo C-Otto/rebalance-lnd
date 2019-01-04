@@ -64,10 +64,8 @@ class Routes:
     def add_rebalance_channel(self, route):
         hops = route.hops
         if self.low_local_ratio_after_sending(hops):
-            # debug("Ignoring route, channel is low on funds")
             return None
         if self.is_first_hop(hops, self.rebalance_channel):
-            # debug("Ignoring route, channel to add already is part of route")
             return None
         amount_msat = int(hops[-1].amt_to_forward_msat)
 
