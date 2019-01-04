@@ -91,7 +91,7 @@ def get_argument_parser():
     parser.add_argument("amount",
                         help="Amount of the rebalance, in satoshis. If not specified, the amount "
                              "computed for a perfect rebalance will be used (up to the maximum of"
-                             " 16,777,215 satoshis)",
+                             " 4,294,967 satoshis)",
                         nargs="?")
     return parser
 
