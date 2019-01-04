@@ -36,7 +36,7 @@ def main():
         argument_parser.print_help()
         sys.exit()
 
-    # first we deal with the first argument, channel, to figure out what it means
+    # the 'to' argument might be an index, or a pubkey
     if to_channel and len(to_channel) < PUBLIC_KEY_LENGTH:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
