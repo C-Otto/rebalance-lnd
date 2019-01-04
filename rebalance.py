@@ -26,7 +26,10 @@ def main():
 
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
-        list_candidates(incoming=incoming)
+        if incoming:
+            list_incoming_candidates()
+        else:
+            list_outgoing_candidates()
         sys.exit()
 
     if from_channel is None and to_channel is None:
@@ -37,7 +40,7 @@ def main():
     # is some work to do to find all channels with incoming capacity, find routes to them, rank them etc. We could
     # also think of splitting the amount to distribute it over several 'to' channels to keep them at reasonable
     # levels. Anyway, not supported yet.
-    if from_channel and (to_channel is None):
+    if from_channel and to_channel is None:
         print("From-only mode is not supported yet.")
         sys.exit()
 
@@ -45,7 +48,7 @@ def main():
     if to_channel and len(to_channel) < PUBLIC_KEY_LENGTH:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        candidates = get_rebalance_candidates()
+        candidates = get_incoming_rebalance_candidates()
         candidate = candidates[index]
         remote_pubkey = candidate.remote_pubkey
     else:
@@ -119,9 +122,18 @@ def get_argument_parser():
     return parser
 
 
-def list_candidates(incoming=True):
+def list_incoming_candidates():
+    candidates = get_incoming_rebalance_candidates()
+    list_candidates(candidates)
+
+
+def list_outgoing_candidates():
+    candidates = get_outgoing_rebalance_candidates()
+    list_candidates(candidates)
+
+
+def list_candidates(candidates):
     index = 0
-    candidates = get_rebalance_candidates(incoming=incoming)
     for candidate in candidates:
         index += 1
         rebalance_amount_int = get_rebalance_amount(candidate)
@@ -144,15 +156,16 @@ def get_rebalance_amount(channel):
     return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
-def get_rebalance_candidates(incoming=True):
-    if incoming:
-        low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
-        low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
-        return sorted(low_local, key=get_remote_surplus, reverse=False)
-    else:
-        high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
-        high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
-        return sorted(high_local, key=get_remote_surplus, reverse=True)
+def get_incoming_rebalance_candidates():
+    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
+    low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
+    return sorted(low_local, key=get_remote_surplus, reverse=False)
+
+
+def get_outgoing_rebalance_candidates():
+    high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
+    high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
+    return sorted(high_local, key=get_remote_surplus, reverse=True)
 
 
 def get_local_ratio(channel):
