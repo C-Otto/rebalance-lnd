@@ -21,18 +21,14 @@ def main():
 
     if debug:
         print("from: %s\nto: %s\namount: %s" % (args.fromchan, args.tochan, args.amount))
-        print("outgoing: %s\nincoming: %s" % (args.outgoing, args.incoming))
+        print("incoming: %s" % args.incoming)
 
-    if (args.outgoing or args.incoming) and not args.list_candidates:
+    if args.incoming is not None and not args.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
 
     if args.list_candidates:
-        if args.outgoing and args.incoming:
-            argument_parser.print_help()
-            sys.exit()
-        else:
-            incoming = not args.outgoing
+        incoming = args.incoming is None or args.incoming
         list_candidates(incoming=incoming)
         sys.exit()
 
@@ -77,14 +73,15 @@ def main():
 
 def get_argument_parser():
     argument_parser = argparse.ArgumentParser()
+    incoming_outgoing_group = argument_parser.add_mutually_exclusive_group()
     argument_parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
-    argument_parser.add_argument("-l", "--list-candidates", action="store_true", default=False,
+    argument_parser.add_argument("-l", "--list-candidates", action="store_true",
                                  help=("List candidate channels for rebalance."
                                        "Use in conjunction with -o and -i"))
-    argument_parser.add_argument("-o", "--outgoing", action="store_true",
-                                 help="When used with -l, lists candidate outgoing channels")
-    argument_parser.add_argument("-i", "--incoming", action="store_true",
-                                 help="When used with -l, lists candidate incoming channels")
+    incoming_outgoing_group.add_argument("-o", "--outgoing", action="store_const", const=False, dest="incoming",
+                                         help="When used with -l, lists candidate outgoing channels")
+    incoming_outgoing_group.add_argument("-i", "--incoming", action="store_const", const=True, dest="incoming",
+                                         help="When used with -l, lists candidate incoming channels")
     argument_parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
     argument_parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
