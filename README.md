@@ -81,7 +81,7 @@ The number next to the pubkey (23 in the example) can be used to directly refere
 
 ### Rebalancing a channel
 To actually rebalance a channel, run the script and specify the channel to send funds to using `-t`.
-Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send.
+Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send (using `-a`).
 You specify the channel(s) using the public key (pubkey) of the node at the other side of the channel,
 as shown in the output of `rebalance.py`.
 
