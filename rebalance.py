@@ -16,6 +16,8 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 def main():
     argument_parser = get_argument_parser()
     arguments = argument_parser.parse_args()
+    from_channel = vars(arguments)['from']
+    to_channel = arguments.to
 
     if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
@@ -26,28 +28,28 @@ def main():
         list_candidates(incoming=incoming)
         sys.exit()
 
-    if arguments.fromchan is None and arguments.tochan is None:
+    if from_channel is None and to_channel is None:
         argument_parser.print_help()
         sys.exit()
 
-    # If only the outgoing channel is specified, we need to find routes to any inbound channel, so there
+    # If only the 'from' channel is specified, we need to find routes to any 'to' channel, so there
     # is some work to do to find all channels with incoming capacity, find routes to them, rank them etc. We could
-    # also think of splitting the amount to distribute it over several incoming channels to keep them at reasonable 
+    # also think of splitting the amount to distribute it over several 'to' channels to keep them at reasonable
     # levels. Anyway, not supported yet.
-    if arguments.fromchan and (arguments.tochan is None):
-        print("Outgoing-only mode is not supported yet.")
+    if from_channel and (to_channel is None):
+        print("From-only mode is not supported yet.")
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
-    if arguments.tochan and len(arguments.tochan) < 4:
+    if to_channel and len(to_channel) < 4:
         # here we are in the "channel index" case
-        index = int(arguments.tochan) - 1
+        index = int(to_channel) - 1
         candidates = get_rebalance_candidates()
         candidate = candidates[index]
         remote_pubkey = candidate.remote_pubkey
     else:
         # else the channel argument should be the node's pubkey
-        remote_pubkey = arguments.tochan
+        remote_pubkey = to_channel
         # candidate is a channel -- we find it by filtering through all candidates
         candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
 
@@ -59,7 +61,7 @@ def main():
         if amount > MAX_SATOSHIS_PER_TRANSACTION:
             amount = MAX_SATOSHIS_PER_TRANSACTION
 
-    first_hop_pubkey = arguments.fromchan
+    first_hop_pubkey = from_channel
     response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
     if response:
         print(response)
@@ -86,13 +88,15 @@ def get_argument_parser():
     rebalance_group = parser.add_argument_group("rebalance",
                                                 "Rebalance a channel. You need to specify at least"
                                                 " the 'to' channel (-t).")
-    rebalance_group.add_argument("-f", "--fromchan",
-                                 help="channel id for the outgoing channel (which will be emptied)")
-    rebalance_group.add_argument("-t", "--tochan",
-                                 help="channel id for the incoming channel (which will be filled)")
+    rebalance_group.add_argument("-f", "--from",
+                                 metavar="CHANNEL",
+                                 help="public key identifying the outgoing channel (which will be emptied)")
+    rebalance_group.add_argument("-t", "--to",
+                                 metavar="CHANNEL",
+                                 help="public key identifying the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
     rebalance_group.add_argument("amount",
-                                 help="amount of the rebalance, in satoshis. If not specified,"
+                                 help="Amount of the rebalance, in satoshis. If not specified,"
                                       "the amount computed for a perfect rebalance will be used"
                                       " (up to the maximum of 4,294,967 satoshis)",
                                  nargs="?")

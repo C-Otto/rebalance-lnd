@@ -19,7 +19,7 @@ $ pip install grpcio googleapis-common-protos
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [-l] [-o | -i] [-f FROMCHAN] [-t TOCHAN] [amount]
+usage: rebalance.py [-h] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [amount]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -37,13 +37,13 @@ list candidates:
 rebalance:
   Rebalance a channel. You need to specify at least the 'to' channel (-t).
 
-  -f FROMCHAN, --fromchan FROMCHAN
-                        channel id for the outgoing channel (which will be
-                        emptied)
-  -t TOCHAN, --tochan TOCHAN
-                        channel id for the incoming channel (which will be
-                        filled)
-  amount                amount of the rebalance, in satoshis. If not
+  -f CHANNEL, --from CHANNEL
+                        public key identifying the outgoing channel (which
+                        will be emptied)
+  -t CHANNEL, --to CHANNEL
+                        public key identifying the incoming channel (which
+                        will be filled)
+  amount                Amount of the rebalance, in satoshis. If not
                         specified,the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
 ```
