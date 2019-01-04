@@ -85,11 +85,11 @@ Optionally you can also specify the channel to take the funds from (using `-f`),
 You specify the channel(s) using the public key (pubkey) of the node at the other side of the channel,
 as shown in the output of `rebalance.py`.
 
-`rebalance.py -t 012345[...]abcdef 1613478`
+`rebalance.py -t 012345[...]abcdef -a 1613478`
 
 It is also possible to indicate the channel by the number shown next to the Pubkey (23 in the example).
 
-`rebalance.py -t 23 1613478`
+`rebalance.py -t 23 -a 1613478`
 
 If you do not specify the amount, the rebalance amount for the destination channel (`-t`) is determined automatically.
 
