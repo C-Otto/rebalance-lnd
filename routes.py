@@ -123,12 +123,12 @@ class Routes:
         for hop in reversed(hops):
             amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
             hop.amt_to_forward_msat = amount_to_forward_msat
-            hop.amt_to_forward = amount_to_forward_msat / 1000
+            hop.amt_to_forward = amount_to_forward_msat // 1000
 
             fee_msat_before = hop.fee_msat
             new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop.chan_id, hop.pub_key)
             hop.fee_msat = new_fee_msat
-            hop.fee = new_fee_msat / 1000
+            hop.fee = new_fee_msat // 1000
             additional_fees += new_fee_msat - fee_msat_before
 
     def get_expiry_delta_last_hop(self):
@@ -154,7 +154,7 @@ class Routes:
         policy = self.lnd.get_policy(channel_id, target_pubkey)
         fee_base_msat = self.get_fee_base_msat(policy)
         fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
-        return fee_base_msat + fee_rate_milli_msat * amount_msat / 1000000
+        return fee_base_msat + fee_rate_milli_msat * amount_msat // 1000000
 
     @staticmethod
     def get_fee_base_msat(policy):
