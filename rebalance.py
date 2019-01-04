@@ -47,7 +47,18 @@ def main():
         # else the channel argument should be the node's pubkey
         remote_pubkey = to_channel
 
-    # then we figure out whether an amount was specified or if we compute it ourselves
+    amount = get_amount(arguments, from_channel, remote_pubkey)
+
+    if amount == 0:
+        print("Amount is 0, nothing to do")
+        sys.exit()
+
+    response = Logic(lnd, from_channel, remote_pubkey, amount).rebalance()
+    if response:
+        print(response)
+
+
+def get_amount(arguments, from_channel, remote_pubkey):
     if arguments.amount:
         amount = int(arguments.amount)
     else:
@@ -60,13 +71,7 @@ def main():
     if amount > MAX_SATOSHIS_PER_TRANSACTION:
         amount = MAX_SATOSHIS_PER_TRANSACTION
 
-    if amount == 0:
-        print("Amount is 0, nothing to do")
-        sys.exit()
-
-    response = Logic(lnd, from_channel, remote_pubkey, amount).rebalance()
-    if response:
-        print(response)
+    return amount
 
 
 def get_channel_for_pubkey(remote_pubkey):
