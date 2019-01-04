@@ -19,7 +19,7 @@ $ pip install grpcio googleapis-common-protos
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [amount]
+usage: rebalance.py [-h] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -44,8 +44,9 @@ rebalance:
                         public key identifying the incoming channel (funds
                         will be sent to this channel). You may also use the
                         index as shown in the incoming candidate list (-l -i).
-  amount                Amount of the rebalance, in satoshis. If not
-                        specified,the amount computed for a perfect rebalance
+  -a AMOUNT, --amount AMOUNT
+                        Amount of the rebalance, in satoshis. If not
+                        specified, the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
 ```
 

@@ -106,12 +106,11 @@ def get_argument_parser():
                                  help="public key identifying the incoming channel "
                                       "(funds will be sent to this channel). "
                                       "You may also use the index as shown in the incoming candidate list (-l -i).")
-    # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    rebalance_group.add_argument("amount",
-                                 help="Amount of the rebalance, in satoshis. If not specified,"
+    rebalance_group.add_argument("-a", "--amount",
+                                 type=int,
+                                 help="Amount of the rebalance, in satoshis. If not specified, "
                                       "the amount computed for a perfect rebalance will be used"
-                                      " (up to the maximum of 4,294,967 satoshis)",
-                                 nargs="?")
+                                      " (up to the maximum of 4,294,967 satoshis)")
     return parser
 
 
