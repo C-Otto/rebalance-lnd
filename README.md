@@ -95,7 +95,7 @@ If you do not specify the amount, the rebalance amount for the destination chann
 
 If you specify a channel using `-f`, the funds are taken from that channel. 
 
-The maximum amount you can send in one transaction currently is limited (by the protocol) to 4294967 satoshis.
+The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 
 ## Contributing
 
