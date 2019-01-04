@@ -138,8 +138,6 @@ def list_candidates(incoming=True):
         print("Amount for 50-50: " + rebalance_amount)
         print(get_capacity_and_ratio_bar(candidate))
         print("")
-    print("")
-    print("Run with two arguments: 1) pubkey of channel to fill 2) amount")
 
 
 def get_rebalance_amount(channel):
