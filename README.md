@@ -87,7 +87,7 @@ as shown in the output of `rebalance.py`.
 
 `rebalance.py -t 012345[...]abcdef -a 1613478`
 
-It is also possible to indicate the channel by the number shown next to the Pubkey (23 in the example).
+It is also possible to indicate the `--to/-t` channel by the number shown next to the Pubkey (23 in the example).
 
 `rebalance.py -t 23 -a 1613478`
 
