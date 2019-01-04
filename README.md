@@ -29,15 +29,15 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -l, --list-candidates
-                        List candidate channels for rebalance. Use in
+                        list candidate channels for rebalance. Use in
                         conjunction with -o and -i
-  -o, --outgoing        When used with -l, lists candidate outgoing channels
-  -i, --incoming        When used with -l, lists candidate incoming channels
+  -o, --outgoing        when used with -l, lists candidate outgoing channels
+  -i, --incoming        when used with -l, lists candidate incoming channels
   -f FROMCHAN, --fromchan FROMCHAN
-                        Channel id for the outgoing channel (which will be
+                        channel id for the outgoing channel (which will be
                         emptied)
   -t TOCHAN, --tochan TOCHAN
-                        Channel id for the incoming channel (which will be
+                        channel id for the incoming channel (which will be
                         filled)
 ```
 

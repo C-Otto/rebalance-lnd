@@ -68,7 +68,7 @@ def main():
 def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--list-candidates", action="store_true",
-                        help="List candidate channels for rebalance. "
+                        help="list candidate channels for rebalance. "
                              "Use in conjunction with -o and -i")
 
     group = parser.add_mutually_exclusive_group()
@@ -76,20 +76,20 @@ def get_argument_parser():
                        action="store_const",
                        const=False,
                        dest="incoming",
-                       help="When used with -l, lists candidate outgoing channels")
+                       help="when used with -l, lists candidate outgoing channels")
     group.add_argument("-i", "--incoming",
                        action="store_const",
                        const=True,
                        dest="incoming",
-                       help="When used with -l, lists candidate incoming channels")
+                       help="when used with -l, lists candidate incoming channels")
 
     parser.add_argument("-f", "--fromchan",
-                        help="Channel id for the outgoing channel (which will be emptied)")
+                        help="channel id for the outgoing channel (which will be emptied)")
     parser.add_argument("-t", "--tochan",
-                        help="Channel id for the incoming channel (which will be filled)")
+                        help="channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
     parser.add_argument("amount",
-                        help="Amount of the rebalance, in satoshis. If not specified, the amount "
+                        help="amount of the rebalance, in satoshis. If not specified, the amount "
                              "computed for a perfect rebalance will be used (up to the maximum of"
                              " 4,294,967 satoshis)",
                         nargs="?")
