@@ -19,17 +19,18 @@ $ pip install grpcio googleapis-common-protos
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [-d] [-l] [-o] [-i] [-f FROMCHAN] [-t TOCHAN]
-                    [amount]
+usage: rebalance.py [-h] [-l] [-o | -i] [-f FROMCHAN] [-t TOCHAN] [amount]
 
 positional arguments:
   amount                Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
-                        will be used (up to the maximum of 16,777,215 satoshis)
+                        will be used (up to the maximum of 16,777,215
+                        satoshis)
 
 optional arguments:
   -h, --help            show this help message and exit
-  -l, --list-candidates List candidate channels for rebalance.Use in
+  -l, --list-candidates
+                        List candidate channels for rebalance. Use in
                         conjunction with -o and -i
   -o, --outgoing        When used with -l, lists candidate outgoing channels
   -i, --incoming        When used with -l, lists candidate incoming channels
