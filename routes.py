@@ -49,7 +49,6 @@ class Routes:
         result = []
         for route in routes:
             if self.first_hop_pubkey and (route.hops[0].pub_key != self.first_hop_pubkey):
-                debug("Dropping route with %s as first hop (does not match -f)" % route.hops[0].pub_key)
                 continue
             modified_route = self.add_rebalance_channel(route)
             if modified_route:
