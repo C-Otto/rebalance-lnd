@@ -11,6 +11,7 @@ from logic import Logic
 
 MAX_CHANNEL_CAPACITY = 16777215
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
+PUBLIC_KEY_LENGTH = 66
 
 
 def main():
@@ -41,7 +42,7 @@ def main():
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
-    if to_channel and len(to_channel) < 4:
+    if to_channel and len(to_channel) < PUBLIC_KEY_LENGTH:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
         candidates = get_rebalance_candidates()
