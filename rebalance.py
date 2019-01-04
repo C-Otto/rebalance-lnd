@@ -32,16 +32,8 @@ def main():
             list_outgoing_candidates()
         sys.exit()
 
-    if from_channel is None and to_channel is None:
+    if to_channel is None:
         argument_parser.print_help()
-        sys.exit()
-
-    # If only the 'from' channel is specified, we need to find routes to any 'to' channel, so there
-    # is some work to do to find all channels with incoming capacity, find routes to them, rank them etc. We could
-    # also think of splitting the amount to distribute it over several 'to' channels to keep them at reasonable
-    # levels. Anyway, not supported yet.
-    if from_channel and to_channel is None:
-        print("From-only mode is not supported yet.")
         sys.exit()
 
     # first we deal with the first argument, channel, to figure out what it means
