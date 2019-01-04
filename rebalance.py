@@ -51,21 +51,34 @@ def main():
     else:
         # else the channel argument should be the node's pubkey
         remote_pubkey = to_channel
-        # candidate is a channel -- we find it by filtering through all candidates
-        candidate = [c for c in get_rebalance_candidates() if c.remote_pubkey == remote_pubkey][0]
 
     # then we figure out whether an amount was specified or if we compute it ourselves
     if arguments.amount:
         amount = int(arguments.amount)
     else:
-        amount = get_rebalance_amount(candidate)
-        if amount > MAX_SATOSHIS_PER_TRANSACTION:
-            amount = MAX_SATOSHIS_PER_TRANSACTION
+        amount = get_rebalance_amount(get_channel_for_pubkey(remote_pubkey))
+        if from_channel:
+            rebalance_amount_from_channel = get_rebalance_amount(get_channel_for_pubkey(from_channel))
+            if amount > rebalance_amount_from_channel:
+                amount = rebalance_amount_from_channel
 
-    first_hop_pubkey = from_channel
-    response = Logic(lnd, first_hop_pubkey, remote_pubkey, amount).rebalance()
+    if amount > MAX_SATOSHIS_PER_TRANSACTION:
+        amount = MAX_SATOSHIS_PER_TRANSACTION
+
+    if amount == 0:
+        print("Amount is 0, nothing to do")
+        sys.exit()
+
+    response = Logic(lnd, from_channel, remote_pubkey, amount).rebalance()
     if response:
         print(response)
+
+
+def get_channel_for_pubkey(remote_pubkey):
+    for channel in lnd.get_channels():
+        if channel.remote_pubkey == remote_pubkey:
+            return channel
+    return None
 
 
 def get_argument_parser():
@@ -129,8 +142,8 @@ def list_candidates(incoming=True):
     print("Run with two arguments: 1) pubkey of channel to fill 2) amount")
 
 
-def get_rebalance_amount(candidate):
-    return abs(int(math.ceil(float(get_remote_surplus(candidate)) / 2)))
+def get_rebalance_amount(channel):
+    return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
 def get_rebalance_candidates(incoming=True):
