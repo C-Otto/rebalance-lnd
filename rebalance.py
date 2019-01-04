@@ -67,32 +67,35 @@ def main():
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--list-candidates", action="store_true",
-                        help="list candidate channels for rebalance. "
-                             "Use in conjunction with -o and -i")
+    list_group = parser.add_argument_group("list candidates", "Show the unbalanced channels.")
+    list_group.add_argument("-l", "--list-candidates", action="store_true",
+                            help="list candidate channels for rebalance")
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("-o", "--outgoing",
-                       action="store_const",
-                       const=False,
-                       dest="incoming",
-                       help="when used with -l, lists candidate outgoing channels")
-    group.add_argument("-i", "--incoming",
-                       action="store_const",
-                       const=True,
-                       dest="incoming",
-                       help="when used with -l, lists candidate incoming channels")
+    direction_group = list_group.add_mutually_exclusive_group()
+    direction_group.add_argument("-o", "--outgoing",
+                                 action="store_const",
+                                 const=False,
+                                 dest="incoming",
+                                 help="lists channels with more than 50%% of the funds on the local side")
+    direction_group.add_argument("-i", "--incoming",
+                                 action="store_const",
+                                 const=True,
+                                 dest="incoming",
+                                 help="(default) lists channels with more than 50%% of the funds on the remote side")
 
-    parser.add_argument("-f", "--fromchan",
-                        help="channel id for the outgoing channel (which will be emptied)")
-    parser.add_argument("-t", "--tochan",
-                        help="channel id for the incoming channel (which will be filled)")
+    rebalance_group = parser.add_argument_group("rebalance",
+                                                "Rebalance a channel. You need to specify at least"
+                                                " the 'to' channel (-t).")
+    rebalance_group.add_argument("-f", "--fromchan",
+                                 help="channel id for the outgoing channel (which will be emptied)")
+    rebalance_group.add_argument("-t", "--tochan",
+                                 help="channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    parser.add_argument("amount",
-                        help="amount of the rebalance, in satoshis. If not specified, the amount "
-                             "computed for a perfect rebalance will be used (up to the maximum of"
-                             " 4,294,967 satoshis)",
-                        nargs="?")
+    rebalance_group.add_argument("amount",
+                                 help="amount of the rebalance, in satoshis. If not specified,"
+                                      "the amount computed for a perfect rebalance will be used"
+                                      " (up to the maximum of 4,294,967 satoshis)",
+                                 nargs="?")
     return parser
 
 

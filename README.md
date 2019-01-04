@@ -21,29 +21,38 @@ $ pip install grpcio googleapis-common-protos
 ```
 usage: rebalance.py [-h] [-l] [-o | -i] [-f FROMCHAN] [-t TOCHAN] [amount]
 
-positional arguments:
-  amount                Amount of the rebalance, in satoshis. If not
-                        specified, the amount computed for a perfect rebalance
-                        will be used (up to the maximum of 4,294,967 satoshis)
-
 optional arguments:
   -h, --help            show this help message and exit
+
+list candidates:
+  Show the unbalanced channels.
+
   -l, --list-candidates
-                        list candidate channels for rebalance. Use in
-                        conjunction with -o and -i
-  -o, --outgoing        when used with -l, lists candidate outgoing channels
-  -i, --incoming        when used with -l, lists candidate incoming channels
+                        list candidate channels for rebalance
+  -o, --outgoing        lists channels with more than 50% of the funds on the
+                        local side
+  -i, --incoming        (default) lists channels with more than 50% of the
+                        funds on the remote side
+
+rebalance:
+  Rebalance a channel. You need to specify at least the 'to' channel (-t).
+
   -f FROMCHAN, --fromchan FROMCHAN
                         channel id for the outgoing channel (which will be
                         emptied)
   -t TOCHAN, --tochan TOCHAN
                         channel id for the incoming channel (which will be
                         filled)
+  amount                amount of the rebalance, in satoshis. If not
+                        specified,the amount computed for a perfect rebalance
+                        will be used (up to the maximum of 4,294,967 satoshis)
 ```
 
 ### List of channels
-Run `./rebalance.py` without any arguments to see a list of channels which can be rebalanced.
-This list only contains channels where less than 50% of the total funds are on the local side of the channel.
+Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which can be rebalanced.
+This list only contains channels where more than 50% of the total funds are on the remote side of the channel.
+
+You can also see the list of channels where more than 50% of the total funds are on the local side of the channel by running `rebalancy.py -l -o`.
 
 As an example the following indicates a channel with around 17.7% of the funds on the local side:
 
@@ -69,15 +78,20 @@ The bar (`=`) indicates the funds on the local side of the channel.
 The number next to the pubkey (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
-To actually rebalance a channel, run the script with two arguments.
-The fist argument is the public key (pubkey) of the node at the other side of the channel, as shown in the output of `./rebalance.py`.
-The second argument is the amount you want to send to yourself through that node.
+To actually rebalance a channel, run the script and specify the channel to send funds to using `-t`.
+Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send.
+You specify the channel(s) using the public key (pubkey) of the node at the other side of the channel,
+as shown in the output of `rebalance.py`.
 
-`./rebalance.py 012345[...]abcdef 1613478`
+`rebalance.py -t 012345[...]abcdef 1613478`
 
 It is also possible to indicate the channel by the number shown next to the Pubkey (23 in the example).
 
-`./rebalance.py 23`
+`rebalance.py -t 23 1613478`
+
+If you do not specify the amount, the rebalance amount for the destination channel (`-t`) is determined automatically.
+
+If you specify a channel using `-f`, the funds are taken from that channel. 
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4294967 satoshis.
 
