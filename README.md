@@ -42,7 +42,8 @@ rebalance:
                         will be taken from this channel)
   -t CHANNEL, --to CHANNEL
                         public key identifying the incoming channel (funds
-                        will be sent to this channel)
+                        will be sent to this channel). You may also use the
+                        index as shown in the incoming candidate list (-l -i).
   amount                Amount of the rebalance, in satoshis. If not
                         specified,the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
