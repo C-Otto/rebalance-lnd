@@ -90,10 +90,12 @@ def get_argument_parser():
                                                 " the 'to' channel (-t).")
     rebalance_group.add_argument("-f", "--from",
                                  metavar="CHANNEL",
-                                 help="public key identifying the outgoing channel (which will be emptied)")
+                                 help="public key identifying the outgoing channel "
+                                      "(funds will be taken from this channel)")
     rebalance_group.add_argument("-t", "--to",
                                  metavar="CHANNEL",
-                                 help="public key identifying the incoming channel (which will be filled)")
+                                 help="public key identifying the incoming channel "
+                                      "(funds will be sent to this channel)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
     rebalance_group.add_argument("amount",
                                  help="Amount of the rebalance, in satoshis. If not specified,"

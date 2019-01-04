@@ -38,11 +38,11 @@ rebalance:
   Rebalance a channel. You need to specify at least the 'to' channel (-t).
 
   -f CHANNEL, --from CHANNEL
-                        public key identifying the outgoing channel (which
-                        will be emptied)
+                        public key identifying the outgoing channel (funds
+                        will be taken from this channel)
   -t CHANNEL, --to CHANNEL
-                        public key identifying the incoming channel (which
-                        will be filled)
+                        public key identifying the incoming channel (funds
+                        will be sent to this channel)
   amount                Amount of the rebalance, in satoshis. If not
                         specified,the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
