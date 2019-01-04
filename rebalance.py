@@ -181,7 +181,10 @@ def get_capacity_and_ratio_bar(candidate):
 
 
 def get_columns():
-    return int(os.popen('stty size', 'r').read().split()[1])
+    if sys.__stdin__.isatty():
+        return int(os.popen('stty size', 'r').read().split()[1])
+    else:
+        return 80
 
 
 lnd = Lnd()
