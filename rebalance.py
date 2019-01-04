@@ -72,23 +72,38 @@ def main():
 
 
 def get_argument_parser():
-    argument_parser = argparse.ArgumentParser()
-    incoming_outgoing_group = argument_parser.add_mutually_exclusive_group()
-    argument_parser.add_argument("-d", "--debug", action="store_true", default=False, help="Verbose debug mode")
-    argument_parser.add_argument("-l", "--list-candidates", action="store_true",
-                                 help=("List candidate channels for rebalance."
-                                       "Use in conjunction with -o and -i"))
-    incoming_outgoing_group.add_argument("-o", "--outgoing", action="store_const", const=False, dest="incoming",
-                                         help="When used with -l, lists candidate outgoing channels")
-    incoming_outgoing_group.add_argument("-i", "--incoming", action="store_const", const=True, dest="incoming",
-                                         help="When used with -l, lists candidate incoming channels")
-    argument_parser.add_argument("-f", "--fromchan", help="Channel id for the outgoing channel (which will be emptied)")
-    argument_parser.add_argument("-t", "--tochan", help="Channel id for the incoming channel (which will be filled)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug",
+                        action="store_true",
+                        default=False,
+                        help="Verbose debug mode")
+    parser.add_argument("-l", "--list-candidates", action="store_true",
+                        help="List candidate channels for rebalance. "
+                             "Use in conjunction with -o and -i")
+
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-o", "--outgoing",
+                       action="store_const",
+                       const=False,
+                       dest="incoming",
+                       help="When used with -l, lists candidate outgoing channels")
+    group.add_argument("-i", "--incoming",
+                       action="store_const",
+                       const=True,
+                       dest="incoming",
+                       help="When used with -l, lists candidate incoming channels")
+
+    parser.add_argument("-f", "--fromchan",
+                        help="Channel id for the outgoing channel (which will be emptied)")
+    parser.add_argument("-t", "--tochan",
+                        help="Channel id for the incoming channel (which will be filled)")
     # args.amount is essentially a list, and what matters to us is the first value it *may* have
-    argument_parser.add_argument("amount", help=("Amount of the rebalance, in satoshis. If not specified, the amount "
-                                                 "computed for a perfect rebalance will be used (up to the maximum of"
-                                                 " 16,777,215 satoshis)"), nargs="?")
-    return argument_parser
+    parser.add_argument("amount",
+                        help="Amount of the rebalance, in satoshis. If not specified, the amount "
+                             "computed for a perfect rebalance will be used (up to the maximum of"
+                             " 16,777,215 satoshis)",
+                        nargs="?")
+    return parser
 
 
 def list_candidates(incoming=True):
