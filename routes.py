@@ -46,28 +46,14 @@ class Routes:
     def request_routes(self, num_routes_to_request):
         routes = self.lnd.get_routes(self.remote_pubkey, self.get_amount(), num_routes_to_request)
         self.num_requested_routes = num_routes_to_request
-        result = []
         for route in routes:
-            if self.first_hop_pubkey and (route.hops[0].pub_key != self.first_hop_pubkey):
-                continue
             modified_route = self.add_rebalance_channel(route)
-            if modified_route:
-                result.append(modified_route)
-        self.add_routes(result)
+            self.add_route(modified_route)
 
-    def add_routes(self, routes):
-        for route in routes:
-            if route not in self.all_routes:
-                self.all_routes.append(route)
-
-    # Returns a route if things went OK, None otherwise
     def add_rebalance_channel(self, route):
         hops = route.hops
-        if self.low_local_ratio_after_sending(hops):
-            return None
-        if self.is_first_hop(hops, self.rebalance_channel):
-            return None
-        amount_msat = int(hops[-1].amt_to_forward_msat)
+        last_hop = hops[-1]
+        amount_msat = int(last_hop.amt_to_forward_msat)
 
         expiry_last_hop = self.lnd.get_current_height() + self.get_expiry_delta_last_hop()
         total_time_lock = expiry_last_hop
@@ -82,8 +68,8 @@ class Routes:
         else:
             return None
 
-    # Returns True only if everything went well, False otherwise
     @staticmethod
+    # Returns True only if everything went well, False otherwise
     def update_route_totals(route, total_time_lock):
         total_fee_msat = 0
         for hop in route.hops:
@@ -143,10 +129,6 @@ class Routes:
             total_time_lock += time_lock_delta
         return total_time_lock
 
-    @staticmethod
-    def is_first_hop(hops, channel):
-        return hops[0].pub_key == channel.remote_pubkey
-
     def get_fee_msat(self, amount_msat, channel_id, target_pubkey):
         policy = self.lnd.get_policy(channel_id, target_pubkey)
         fee_base_msat = self.get_fee_base_msat(policy)
@@ -160,19 +142,46 @@ class Routes:
             return int(policy.fee_base_msat)
         return int(0)
 
-    @staticmethod
-    def print_route(route):
-        route_str = " -> ".join(str(h.chan_id) for h in route.hops)
-        return route_str
+    def add_route(self, route):
+        if self.route_is_invalid(route):
+            return
 
-    def low_local_ratio_after_sending(self, hops):
-        pub_key = hops[0].pub_key
+        if route not in self.all_routes:
+            self.all_routes.append(route)
+
+    def route_is_invalid(self, route):
+        if route is None:
+            return True
+        first_hop = route.hops[0]
+        if self.does_not_have_requested_first_hop(first_hop):
+            return True
+        if self.low_local_ratio_after_sending(first_hop):
+            return True
+        if self.target_is_first_hop(first_hop):
+            return True
+        return False
+
+    def does_not_have_requested_first_hop(self, first_hop):
+        if not self.first_hop_pubkey:
+            return False
+        return first_hop.pub_key != self.first_hop_pubkey
+
+    def low_local_ratio_after_sending(self, first_hop):
+        pub_key = first_hop.pub_key
         channel = self.get_channel(pub_key)
 
         remote = channel.remote_balance + self.get_amount()
         local = channel.local_balance - self.get_amount()
         ratio = float(local) / (remote + local)
         return ratio < 0.5
+
+    def target_is_first_hop(self, first_hop):
+        return first_hop.pub_key == self.rebalance_channel.remote_pubkey
+
+    @staticmethod
+    def print_route(route):
+        route_str = " -> ".join(str(h.chan_id) for h in route.hops)
+        return route_str
 
     def get_amount(self):
         return self.payment.num_satoshis
