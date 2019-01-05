@@ -3,6 +3,7 @@ from route_extension import RouteExtension
 
 MAX_ROUTES_TO_REQUEST = 60
 ROUTE_REQUEST_INCREMENT = 15
+HIGH_FEES_THRESHOLD_MSAT = 3000000
 
 
 def debug(message):
@@ -69,6 +70,8 @@ class Routes:
         if self.low_local_ratio_after_sending(first_hop):
             return True
         if self.target_is_first_hop(first_hop):
+            return True
+        if route.total_fees_msat > HIGH_FEES_THRESHOLD_MSAT:
             return True
         return False
 

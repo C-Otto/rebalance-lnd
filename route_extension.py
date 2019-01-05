@@ -1,8 +1,6 @@
 import sys
 import rpc_pb2 as ln
 
-HIGH_FEES_THRESHOLD_MSAT = 3000000
-
 
 def debug(message):
     sys.stderr.write(message + "\n")
@@ -28,20 +26,14 @@ class RouteExtension:
 
         hops.extend([self.create_new_hop(amount_msat, self.rebalance_channel, expiry_last_hop)])
 
-        if self.update_route_totals(route, total_time_lock):
-            return route
-        else:
-            return None
+        self.update_route_totals(route, total_time_lock)
+        return route
 
     @staticmethod
-    # Returns True only if everything went well, False otherwise
     def update_route_totals(route, total_time_lock):
         total_fee_msat = 0
         for hop in route.hops:
             total_fee_msat += hop.fee_msat
-        if total_fee_msat > HIGH_FEES_THRESHOLD_MSAT:
-            debug("High fees! " + str(total_fee_msat) + " msat")
-            return False
 
         total_amount_msat = route.hops[-1].amt_to_forward_msat + total_fee_msat
 
@@ -51,7 +43,6 @@ class RouteExtension:
         route.total_fees = total_fee_msat // 1000
 
         route.total_time_lock = total_time_lock
-        return True
 
     def create_new_hop(self, amount_msat, channel, expiry):
         new_hop = ln.Hop(
