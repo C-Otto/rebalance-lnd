@@ -78,10 +78,11 @@ class Lnd:
         response = self.stub.QueryRoutes(request)
         return response.routes
 
-    def get_policy(self, channel_id, target_pubkey):
+    def get_policy(self, channel_id, source_pubkey):
+        # node1_policy contains the fee base and rate for payments from node1 to node2
         for edge in self.get_edges():
             if edge.channel_id == channel_id:
-                if edge.node1_pub == target_pubkey:
+                if edge.node1_pub == source_pubkey:
                     result = edge.node1_policy
                 else:
                     result = edge.node2_policy
