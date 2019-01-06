@@ -61,7 +61,7 @@ class Logic:
         first_hop = route.hops[0]
         if self.does_not_have_requested_first_hop(first_hop):
             return True
-        if self.low_local_ratio_after_sending(first_hop, route.total_amt_msat):
+        if self.low_local_ratio_after_sending(first_hop, route.total_amt):
             return True
         if self.target_is_first_hop(first_hop):
             return True
@@ -69,18 +69,13 @@ class Logic:
             return True
         return False
 
-    def low_local_ratio_after_sending(self, first_hop, total_amount_msat):
+    def low_local_ratio_after_sending(self, first_hop, total_amount):
         channel_id = first_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
 
-        amount = total_amount_msat // 1000
-        debug("amount: %d" % amount)
-        debug("before local: %d" % channel.local_balance)
-        debug("before remote: %d" % channel.remote_balance)
-        remote = channel.remote_balance + amount
-        local = channel.local_balance - amount
+        remote = channel.remote_balance + total_amount
+        local = channel.local_balance - total_amount
         ratio = float(local) / (remote + local)
-        debug("after ratio: %f" % ratio)
         return ratio < 0.5
 
     def target_is_first_hop(self, first_hop):
