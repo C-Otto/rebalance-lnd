@@ -7,19 +7,19 @@ def debug(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_pubkey, remote_pubkey, amount):
+    def __init__(self, lnd, first_hop_channel_id, last_hop_channel_id, amount):
         self.lnd = lnd
-        self.first_hop_pubkey = first_hop_pubkey
-        self.remote_pubkey = remote_pubkey
+        self.first_hop_channel_id = first_hop_channel_id
+        self.last_hop_channel_id = last_hop_channel_id
         self.amount = amount
 
     def rebalance(self):
-        debug(("Sending {:,} satoshis to rebalance, remote pubkey: %s" % self.remote_pubkey).format(self.amount))
-        if self.first_hop_pubkey:
-            debug("Forced first pubkey is: %s" % self.first_hop_pubkey)
+        debug(("Sending {:,} satoshis to rebalance to channel with ID %d" % self.last_hop_channel_id).format(self.amount))
+        if self.first_hop_channel_id:
+            debug("Forced first channel has ID %d" % self.first_hop_channel_id)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.first_hop_pubkey, self.remote_pubkey)
+        routes = Routes(self.lnd, payment_request, self.first_hop_channel_id, self.last_hop_channel_id)
 
         if not routes.has_next():
             debug("Could not find any suitable route")
@@ -53,5 +53,5 @@ class Logic:
         return None
 
     def generate_invoice(self):
-        memo = "Rebalance of channel to " + self.remote_pubkey
+        memo = "Rebalance of channel to %d" % self.last_hop_channel_id
         return self.lnd.generate_invoice(memo, self.amount)

@@ -11,13 +11,12 @@ from logic import Logic
 
 MAX_CHANNEL_CAPACITY = 16777215
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
-PUBLIC_KEY_LENGTH = 66
 
 
 def main():
     argument_parser = get_argument_parser()
     arguments = argument_parser.parse_args()
-    from_channel = vars(arguments)['from']
+    first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
 
     if arguments.incoming is not None and not arguments.list_candidates:
@@ -36,35 +35,37 @@ def main():
         argument_parser.print_help()
         sys.exit()
 
-    # the 'to' argument might be an index, or a pubkey
-    if to_channel and len(to_channel) < PUBLIC_KEY_LENGTH:
+    # the 'to' argument might be an index, or a channel ID
+    if to_channel and to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
         candidates = get_incoming_rebalance_candidates()
         candidate = candidates[index]
-        remote_pubkey = candidate.remote_pubkey
+        last_hop_channel_id = candidate.chan_id
     else:
-        # else the channel argument should be the node's pubkey
-        remote_pubkey = to_channel
+        # else the channel argument should be the channel ID
+        last_hop_channel_id = to_channel
 
-    amount = get_amount(arguments, from_channel, remote_pubkey)
+    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel_id)
 
     if amount == 0:
         print("Amount is 0, nothing to do")
         sys.exit()
 
-    response = Logic(lnd, from_channel, remote_pubkey, amount).rebalance()
+    response = Logic(lnd, first_hop_channel_id, last_hop_channel_id, amount).rebalance()
     if response:
         print(response)
 
 
-def get_amount(arguments, from_channel, remote_pubkey):
+def get_amount(arguments, first_hop_channel_id, last_hop_channel_id):
     if arguments.amount:
         amount = int(arguments.amount)
     else:
-        amount = get_rebalance_amount(get_channel_for_pubkey(remote_pubkey))
-        if from_channel:
-            rebalance_amount_from_channel = get_rebalance_amount(get_channel_for_pubkey(from_channel))
+        last_hop_channel = get_channel_for_channel_id(last_hop_channel_id)
+        amount = get_rebalance_amount(last_hop_channel)
+        if first_hop_channel_id:
+            first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+            rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
             if amount > rebalance_amount_from_channel:
                 amount = rebalance_amount_from_channel
 
@@ -74,9 +75,9 @@ def get_amount(arguments, from_channel, remote_pubkey):
     return amount
 
 
-def get_channel_for_pubkey(remote_pubkey):
+def get_channel_for_channel_id(channel_id):
     for channel in lnd.get_channels():
-        if channel.remote_pubkey == remote_pubkey:
+        if channel.chan_id == channel_id:
             return channel
     return None
 
@@ -104,11 +105,13 @@ def get_argument_parser():
                                                 " the 'to' channel (-t).")
     rebalance_group.add_argument("-f", "--from",
                                  metavar="CHANNEL",
-                                 help="public key identifying the outgoing channel "
+                                 type=int,
+                                 help="channel ID of the outgoing channel "
                                       "(funds will be taken from this channel)")
     rebalance_group.add_argument("-t", "--to",
                                  metavar="CHANNEL",
-                                 help="public key identifying the incoming channel "
+                                 type=int,
+                                 help="channel ID of the incoming channel "
                                       "(funds will be sent to this channel). "
                                       "You may also use the index as shown in the incoming candidate list (-l -i).")
     rebalance_group.add_argument("-a", "--amount",
@@ -138,8 +141,8 @@ def list_candidates(candidates):
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount += " (max per transaction: {:,})".format(MAX_SATOSHIS_PER_TRANSACTION)
 
-        print("(%2d) Pubkey:      " % index + candidate.remote_pubkey)
-        print("Channel ID:       " + str(candidate.chan_id))
+        print("(%2d) Channel ID:  " % index + str(candidate.chan_id))
+        print("Pubkey:           " + candidate.remote_pubkey)
         print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))
         print("Capacity:         {:,}".format(candidate.capacity))
         print("Remote balance:   {:,}".format(candidate.remote_balance))

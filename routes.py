@@ -11,12 +11,12 @@ def debug(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_pubkey, remote_pubkey):
+    def __init__(self, lnd, payment_request, first_hop_channel_id, last_hop_channel_id):
         self.lnd = lnd
         self.payment = payment_request
-        self.first_hop_pubkey = first_hop_pubkey
-        self.remote_pubkey = remote_pubkey
-        self.rebalance_channel = self.get_channel(self.remote_pubkey)
+        self.first_hop_channel_id = first_hop_channel_id
+        self.last_hop_channel_id = last_hop_channel_id
+        self.rebalance_channel = self.get_channel_for_channel_id(self.last_hop_channel_id)
         self.all_routes = []
         self.returned_routes = []
         self.num_requested_routes = 0
@@ -45,7 +45,7 @@ class Routes:
             self.request_routes(num_routes_to_request)
 
     def request_routes(self, num_routes_to_request):
-        routes = self.lnd.get_routes(self.remote_pubkey, self.get_amount(), num_routes_to_request)
+        routes = self.lnd.get_routes(self.rebalance_channel.remote_pubkey, self.get_amount(), num_routes_to_request)
         self.num_requested_routes = num_routes_to_request
         for route in routes:
             modified_route = self.add_rebalance_channel(route)
@@ -76,13 +76,13 @@ class Routes:
         return False
 
     def does_not_have_requested_first_hop(self, first_hop):
-        if not self.first_hop_pubkey:
+        if not self.first_hop_channel_id:
             return False
-        return first_hop.pub_key != self.first_hop_pubkey
+        return first_hop.chan_id != self.first_hop_channel_id
 
     def low_local_ratio_after_sending(self, first_hop):
-        pub_key = first_hop.pub_key
-        channel = self.get_channel(pub_key)
+        channel_id = first_hop.chan_id
+        channel = self.get_channel_for_channel_id(channel_id)
 
         remote = channel.remote_balance + self.get_amount()
         local = channel.local_balance - self.get_amount()
@@ -90,7 +90,7 @@ class Routes:
         return ratio < 0.5
 
     def target_is_first_hop(self, first_hop):
-        return first_hop.pub_key == self.rebalance_channel.remote_pubkey
+        return first_hop.chan_id == self.rebalance_channel.chan_id
 
     @staticmethod
     def print_route(route):
@@ -100,7 +100,7 @@ class Routes:
     def get_amount(self):
         return self.payment.num_satoshis
 
-    def get_channel(self, pubkey):
+    def get_channel_for_channel_id(self, channel_id):
         for channel in self.lnd.get_channels():
-            if channel.remote_pubkey == pubkey:
+            if channel.chan_id == channel_id:
                 return channel

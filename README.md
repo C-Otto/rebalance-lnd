@@ -38,12 +38,12 @@ rebalance:
   Rebalance a channel. You need to specify at least the 'to' channel (-t).
 
   -f CHANNEL, --from CHANNEL
-                        public key identifying the outgoing channel (funds
-                        will be taken from this channel)
+                        channel ID of the outgoing channel (funds will be
+                        taken from this channel)
   -t CHANNEL, --to CHANNEL
-                        public key identifying the incoming channel (funds
-                        will be sent to this channel). You may also use the
-                        index as shown in the incoming candidate list (-l -i).
+                        channel ID of the incoming channel (funds will be sent
+                        to this channel). You may also use the index as shown
+                        in the incoming candidate list (-l -i).
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
@@ -59,8 +59,8 @@ You can also see the list of channels where more than 50% of the total funds are
 As an example the following indicates a channel with around 17.7% of the funds on the local side:
 
 ```
-(23) Pubkey:      012345[...]abcdef
-Channel ID:       123[...]456
+(23) Channel ID:  123[...]456
+Pubkey:           012345[...]abcdef
 Local ratio:      0.176
 Capacity:         5,000,000
 Remote balance:   4,110,320
@@ -77,17 +77,16 @@ The total width is determined by the channel's capacity, where a channel with ma
 occupies the full width of your terminal.
 The bar (`=`) indicates the funds on the local side of the channel.
 
-The number next to the pubkey (23 in the example) can be used to directly reference this channel.
+The number next to the channel ID (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
 To actually rebalance a channel, run the script and specify the channel to send funds to using `-t`.
 Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send (using `-a`).
-You specify the channel(s) using the public key (pubkey) of the node at the other side of the channel,
-as shown in the output of `rebalance.py`.
+You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
 
-`rebalance.py -t 012345[...]abcdef -a 1613478`
+`rebalance.py -t 123[...]456 -a 1613478`
 
-It is also possible to indicate the `--to/-t` channel by the number shown next to the Pubkey (23 in the example).
+It is also possible to indicate the `--to/-t` channel by the number shown next to the channel ID (23 in the example).
 
 `rebalance.py -t 23 -a 1613478`
 
