@@ -82,7 +82,7 @@ class RouteExtension:
 
             policy = self.lnd.get_policy(hop_out_channel_id, hop.pub_key)
 
-            time_lock_delta = policy.time_lock_delta
+            time_lock_delta = self.get_time_lock_delta(policy)
             total_time_lock += time_lock_delta
             hop_out_channel_id = hop.chan_id
         return total_time_lock
@@ -90,12 +90,26 @@ class RouteExtension:
     def get_fee_msat(self, amount_msat, channel_id, source_pubkey):
         policy = self.lnd.get_policy(channel_id, source_pubkey)
         fee_base_msat = self.get_fee_base_msat(policy)
-        fee_rate_milli_msat = int(policy.fee_rate_milli_msat)
+        fee_rate_milli_msat = self.get_fee_rate_msat(policy)
         return fee_base_msat + fee_rate_milli_msat * amount_msat // 1000000
+
+    @staticmethod
+    def get_time_lock_delta(policy):
+        # sometimes that field seems not to be set -- interpret it as 0
+        if hasattr(policy, "time_lock_delta"):
+            return policy.time_lock_delta
+        return int(0)
 
     @staticmethod
     def get_fee_base_msat(policy):
         # sometimes that field seems not to be set -- interpret it as 0
         if hasattr(policy, "fee_base_msat"):
             return int(policy.fee_base_msat)
+        return int(0)
+
+    @staticmethod
+    def get_fee_rate_msat(policy):
+        # sometimes that field seems not to be set -- interpret it as 0
+        if hasattr(policy, "fee_rate_milli_msat"):
+            return int(policy.fee_rate_milli_msat)
         return int(0)
