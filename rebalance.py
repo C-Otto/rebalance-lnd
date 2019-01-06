@@ -41,27 +41,26 @@ def main():
         index = int(to_channel) - 1
         candidates = get_incoming_rebalance_candidates()
         candidate = candidates[index]
-        last_hop_channel_id = candidate.chan_id
+        last_hop_channel = candidate.chan_id
     else:
         # else the channel argument should be the channel ID
-        last_hop_channel_id = to_channel
+        last_hop_channel = get_channel_for_channel_id(to_channel)
 
-    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel_id)
+    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel)
 
     if amount == 0:
         print("Amount is 0, nothing to do")
         sys.exit()
 
-    response = Logic(lnd, first_hop_channel_id, last_hop_channel_id, amount).rebalance()
+    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount).rebalance()
     if response:
         print(response)
 
 
-def get_amount(arguments, first_hop_channel_id, last_hop_channel_id):
+def get_amount(arguments, first_hop_channel_id, last_hop_channel):
     if arguments.amount:
         amount = int(arguments.amount)
     else:
-        last_hop_channel = get_channel_for_channel_id(last_hop_channel_id)
         amount = get_rebalance_amount(last_hop_channel)
         if first_hop_channel_id:
             first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
