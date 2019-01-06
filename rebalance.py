@@ -41,7 +41,7 @@ def main():
         index = int(to_channel) - 1
         candidates = get_incoming_rebalance_candidates()
         candidate = candidates[index]
-        last_hop_channel = candidate.chan_id
+        last_hop_channel = candidate
     else:
         # else the channel argument should be the channel ID
         last_hop_channel = get_channel_for_channel_id(to_channel)
