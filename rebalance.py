@@ -19,6 +19,11 @@ def main():
     first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
 
+    channel_ratio = get_channel_ratio(arguments.ratio)
+    if channel_ratio is None:
+        argument_parser.print_help()
+        sys.exit()
+
     if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
         sys.exit()
@@ -26,9 +31,9 @@ def main():
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
         if incoming:
-            list_incoming_candidates()
+            list_incoming_candidates(channel_ratio)
         else:
-            list_outgoing_candidates()
+            list_outgoing_candidates(channel_ratio)
         sys.exit()
 
     if to_channel is None:
@@ -52,7 +57,7 @@ def main():
         print("Amount is 0, nothing to do")
         sys.exit()
 
-    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount).rebalance()
+    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio).rebalance()
     if response:
         print(response)
 
@@ -73,6 +78,16 @@ def get_amount(arguments, first_hop_channel_id, last_hop_channel):
 
     return amount
 
+def get_channel_ratio(_arguments_ratio):
+    if not _arguments_ratio:
+        _arguments_ratio = 50
+
+    if _arguments_ratio < 0 or _arguments_ratio > 50:
+        return None
+    else:
+        channel_ratio = float(_arguments_ratio) / 100
+    return channel_ratio
+
 
 def get_channel_for_channel_id(channel_id):
     for channel in lnd.get_channels():
@@ -83,6 +98,8 @@ def get_channel_for_channel_id(channel_id):
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-r", "--ratio", action="store", type=int, dest="ratio",
+                        help="ratio for channel imbalance between 1 and 50%%, eg. 45 for 45%%")
     list_group = parser.add_argument_group("list candidates", "Show the unbalanced channels.")
     list_group.add_argument("-l", "--list-candidates", action="store_true",
                             help="list candidate channels for rebalance")
@@ -121,13 +138,13 @@ def get_argument_parser():
     return parser
 
 
-def list_incoming_candidates():
-    candidates = get_incoming_rebalance_candidates()
+def list_incoming_candidates(channel_ratio):
+    candidates = get_incoming_rebalance_candidates(channel_ratio)
     list_candidates(candidates)
 
 
-def list_outgoing_candidates():
-    candidates = get_outgoing_rebalance_candidates()
+def list_outgoing_candidates(channel_ratio):
+    candidates = get_outgoing_rebalance_candidates(channel_ratio)
     list_candidates(candidates)
 
 
@@ -155,14 +172,14 @@ def get_rebalance_amount(channel):
     return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
-def get_incoming_rebalance_candidates():
-    low_local = list(filter(lambda c: get_local_ratio(c) < 0.5, lnd.get_channels()))
+def get_incoming_rebalance_candidates(channel_ratio):
+    low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, lnd.get_channels()))
     low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
     return sorted(low_local, key=get_remote_surplus, reverse=False)
 
 
-def get_outgoing_rebalance_candidates():
-    high_local = list(filter(lambda c: get_local_ratio(c) > 0.5, lnd.get_channels()))
+def get_outgoing_rebalance_candidates(channel_ratio):
+    high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, lnd.get_channels()))
     high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
     return sorted(high_local, key=get_remote_surplus, reverse=True)
 

@@ -9,15 +9,18 @@ def debug(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount):
+    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio):
         self.lnd = lnd
         self.first_hop_channel_id = first_hop_channel_id
         self.last_hop_channel = last_hop_channel
         self.amount = amount
+        self.channel_ratio = channel_ratio
 
     def rebalance(self):
         debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
                % self.last_hop_channel.chan_id).format(self.amount))
+        if self.channel_ratio != 0.5:
+            debug("Channel ratio used is %d%%" % int(self.channel_ratio*100))
         if self.first_hop_channel_id:
             debug("Forced first channel has ID %d" % self.first_hop_channel_id)
 
@@ -76,7 +79,7 @@ class Logic:
         remote = channel.remote_balance + total_amount
         local = channel.local_balance - total_amount
         ratio = float(local) / (remote + local)
-        return ratio < 0.5
+        return ratio < self.channel_ratio
 
     def target_is_first_hop(self, first_hop):
         return first_hop.chan_id == self.last_hop_channel.chan_id
