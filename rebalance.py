@@ -20,9 +20,6 @@ def main():
     to_channel = arguments.to
 
     channel_ratio = float(arguments.ratio) / 100
-    if channel_ratio is None:
-        argument_parser.print_help()
-        sys.exit()
 
     if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
