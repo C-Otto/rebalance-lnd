@@ -19,7 +19,7 @@ def main():
     first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
 
-    channel_ratio = get_channel_ratio(arguments.ratio)
+    channel_ratio = float(arguments.ratio) / 100
     if channel_ratio is None:
         argument_parser.print_help()
         sys.exit()
@@ -78,16 +78,6 @@ def get_amount(arguments, first_hop_channel_id, last_hop_channel):
 
     return amount
 
-def get_channel_ratio(_arguments_ratio):
-    if not _arguments_ratio:
-        _arguments_ratio = 50
-
-    if _arguments_ratio < 0 or _arguments_ratio > 50:
-        return None
-    else:
-        channel_ratio = float(_arguments_ratio) / 100
-    return channel_ratio
-
 
 def get_channel_for_channel_id(channel_id):
     for channel in lnd.get_channels():
@@ -98,7 +88,7 @@ def get_channel_for_channel_id(channel_id):
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--ratio", action="store", type=int, dest="ratio",
+    parser.add_argument("-r", "--ratio", action="store", type=int, dest="ratio", default=50,
                         help="ratio for channel imbalance between 1 and 50%%, eg. 45 for 45%%")
     list_group = parser.add_argument_group("list candidates", "Show the unbalanced channels.")
     list_group.add_argument("-l", "--list-candidates", action="store_true",
