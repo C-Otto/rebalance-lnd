@@ -19,10 +19,14 @@ $ pip install grpcio googleapis-common-protos
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT]
+usage: rebalance.py [-h] [-r RATIO] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL]
+                    [-a AMOUNT]
 
 optional arguments:
   -h, --help            show this help message and exit
+  -r RATIO, --ratio RATIO
+                        ratio for channel imbalance between 1 and 50%, eg. 45
+                        for 45%
 
 list candidates:
   Show the unbalanced channels.
@@ -52,9 +56,11 @@ rebalance:
 
 ### List of channels
 Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which can be rebalanced.
-This list only contains channels where more than 50% of the total funds are on the remote side of the channel.
+This list only contains channels where more than 50% of the total funds are on the remote side of the channel.  
 
-You can also see the list of channels where more than 50% of the total funds are on the local side of the channel by running `rebalancy.py -l -o`.
+You can also see the list of channels where more than 50% of the total funds are on the local side of the channel by running `rebalance.py -l -o`.
+
+Use `-r/--ratio` to configure the sensitivity ratio (default is 50%).
 
 As an example the following indicates a channel with around 17.7% of the funds on the local side:
 
