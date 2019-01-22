@@ -41,7 +41,7 @@ def main():
     if to_channel and to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        candidates = get_incoming_rebalance_candidates()
+        candidates = get_incoming_rebalance_candidates(channel_ratio)
         candidate = candidates[index]
         last_hop_channel = candidate
     else:
