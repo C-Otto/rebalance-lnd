@@ -1,4 +1,6 @@
 import sys
+
+from lnd_grpc.lnd_grpc import Client
 from route_extension import RouteExtension
 
 MAX_ROUTES_TO_REQUEST = 60
@@ -10,15 +12,15 @@ def debug(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_channel_id, last_hop_channel):
-        self.lnd = lnd
+    def __init__(self, rpc, payment_request, first_hop_channel_id, last_hop_channel):
+        self.rpc: Client = rpc
         self.payment_request = payment_request
         self.first_hop_channel_id = first_hop_channel_id
         self.last_hop_channel = last_hop_channel
         self.all_routes = []
         self.returned_routes = []
         self.num_requested_routes = 0
-        self.route_extension = RouteExtension(self.lnd, last_hop_channel, self.payment_request)
+        self.route_extension = RouteExtension(self.rpc, last_hop_channel, self.payment_request)
 
     def has_next(self):
         self.update_routes()
@@ -43,7 +45,10 @@ class Routes:
             self.request_routes(num_routes_to_request)
 
     def request_routes(self, num_routes_to_request):
-        routes = self.lnd.get_routes(self.last_hop_channel.remote_pubkey, self.get_amount(), num_routes_to_request)
+        query_routes_response = self.rpc.query_routes(pub_key=self.last_hop_channel.remote_pubkey,
+                                       amt=self.get_amount(),
+                                       num_routes=num_routes_to_request)
+        routes = query_routes_response.routes
         self.num_requested_routes = num_routes_to_request
         for route in routes:
             modified_route = self.add_rebalance_channel(route)
