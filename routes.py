@@ -43,7 +43,9 @@ class Routes:
             self.request_routes(num_routes_to_request)
 
     def request_routes(self, num_routes_to_request):
+        debug("requesting {:d} routes from lnd, please wait.".format(num_routes_to_request))
         routes = self.lnd.get_routes(self.last_hop_channel.remote_pubkey, self.get_amount(), num_routes_to_request)
+        debug("lnd routes recevided, testing routes")
         self.num_requested_routes = num_routes_to_request
         for route in routes:
             modified_route = self.add_rebalance_channel(route)
