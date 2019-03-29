@@ -4,6 +4,7 @@ import argparse
 import math
 import os
 import sys
+import platform
 
 from lnd import Lnd
 
@@ -197,7 +198,7 @@ def get_capacity_and_ratio_bar(candidate):
 
 
 def get_columns():
-    if sys.__stdin__.isatty():
+    if platform.system() == 'Linux' and sys.__stdin__.isatty():
         return int(os.popen('stty size', 'r').read().split()[1])
     else:
         return 80
