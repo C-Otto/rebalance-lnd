@@ -89,7 +89,10 @@ def get_channel_for_channel_id(channel_id):
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--ratio", action="store", type=int, dest="ratio", default=50,
+    parser.add_argument("-r", "--ratio",
+                        type=int,
+                        dest="ratio",
+                        default=50,
                         help="(default: 50) ratio for channel imbalance between 1 and 50, "
                              "eg. 45 to only show channels (-l) with less than 45%% of the "
                              "funds on the local (-i) or remote (-o) side")
@@ -107,7 +110,8 @@ def get_argument_parser():
                                  action="store_const",
                                  const=True,
                                  dest="incoming",
-                                 help="(default) lists channels with less than x%% of the funds on the local side (see --ratio)")
+                                 help="(default) lists channels with less than x%% of the funds on the local side "
+                                      "(see --ratio)")
 
     rebalance_group = parser.add_argument_group("rebalance",
                                                 "Rebalance a channel. You need to specify at least"

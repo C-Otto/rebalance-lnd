@@ -20,7 +20,7 @@ class Logic:
         debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
                % self.last_hop_channel.chan_id).format(self.amount))
         if self.channel_ratio != 0.5:
-            debug("Channel ratio used is %d%%" % int(self.channel_ratio*100))
+            debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
         if self.first_hop_channel_id:
             debug("Forced first channel has ID %d" % self.first_hop_channel_id)
 
