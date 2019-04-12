@@ -20,6 +20,9 @@ def main():
     first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
 
+    if arguments.ratio < 1 or arguments.ratio > 50:
+        print("--ratio must be between 1 and 50")
+        sys.exit()
     channel_ratio = float(arguments.ratio) / 100
 
     if arguments.incoming is not None and not arguments.list_candidates:
