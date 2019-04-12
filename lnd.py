@@ -37,7 +37,7 @@ class Lnd:
 
     def get_graph(self):
         if self.graph is None:
-            self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest())
+            self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
         return self.graph
 
     def get_own_pubkey(self):
