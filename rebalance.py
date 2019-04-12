@@ -58,7 +58,8 @@ def main():
         print("Amount is 0, nothing to do")
         sys.exit()
 
-    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio).rebalance()
+    max_fee_factor = arguments.max_fee_factor
+    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor).rebalance()
     if response:
         print(response)
 
@@ -132,6 +133,11 @@ def get_argument_parser():
                                  help="Amount of the rebalance, in satoshis. If not specified, "
                                       "the amount computed for a perfect rebalance will be used"
                                       " (up to the maximum of 4,294,967 satoshis)")
+    rebalance_group.add_argument("--max-fee-factor",
+                                 type=float,
+                                 default=10,
+                                 help="(default: 10) Reject routes that cost more than x times the lnd default "
+                                      "(base: 1000 msat, rate: 1 millionth msat) per hop on average")
     return parser
 
 

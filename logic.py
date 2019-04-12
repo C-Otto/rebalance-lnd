@@ -1,7 +1,10 @@
 import sys
+
 from routes import Routes
 
-HIGH_FEES_THRESHOLD_MSAT = 3000000
+DEFAULT_BASE_FEE = 1000
+DEFAULT_FEE_RATE = 1
+A_MILLION = 1000000
 
 
 def debug(message):
@@ -9,12 +12,13 @@ def debug(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio):
+    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor):
         self.lnd = lnd
         self.first_hop_channel_id = first_hop_channel_id
         self.last_hop_channel = last_hop_channel
         self.amount = amount
         self.channel_ratio = channel_ratio
+        self.max_fee_factor = max_fee_factor
 
     def rebalance(self):
         debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
@@ -68,9 +72,14 @@ class Logic:
             return True
         if self.target_is_first_hop(first_hop):
             return True
-        if route.total_fees_msat > HIGH_FEES_THRESHOLD_MSAT:
+        if self.fees_too_high(route):
             return True
         return False
+
+    def does_not_have_requested_first_hop(self, first_hop):
+        if not self.first_hop_channel_id:
+            return False
+        return first_hop.chan_id != self.first_hop_channel_id
 
     def low_local_ratio_after_sending(self, first_hop, total_amount):
         channel_id = first_hop.chan_id
@@ -84,10 +93,18 @@ class Logic:
     def target_is_first_hop(self, first_hop):
         return first_hop.chan_id == self.last_hop_channel.chan_id
 
-    def does_not_have_requested_first_hop(self, first_hop):
-        if not self.first_hop_channel_id:
-            return False
-        return first_hop.chan_id != self.first_hop_channel_id
+    def fees_too_high(self, route):
+        hops_with_fees = len(route.hops) - 1
+        lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE + (self.amount * DEFAULT_FEE_RATE / A_MILLION))
+        limit = self.max_fee_factor * lnd_fees
+        debug("hops_with_fees: %d" % hops_with_fees)
+        debug("lnd fees: %d" % lnd_fees)
+        debug("limit: %d" % limit)
+        debug("route.total_fees_msat: %d" % route.total_fees_msat)
+        too_high = route.total_fees_msat > limit
+        if too_high:
+            debug("Skipping route due to high fees (%d msat): %s" % (route.total_fees_msat, Routes.print_route(route)))
+        return too_high
 
     def generate_invoice(self):
         memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
