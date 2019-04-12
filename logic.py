@@ -97,10 +97,6 @@ class Logic:
         hops_with_fees = len(route.hops) - 1
         lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE + (self.amount * DEFAULT_FEE_RATE / A_MILLION))
         limit = self.max_fee_factor * lnd_fees
-        debug("hops_with_fees: %d" % hops_with_fees)
-        debug("lnd fees: %d" % lnd_fees)
-        debug("limit: %d" % limit)
-        debug("route.total_fees_msat: %d" % route.total_fees_msat)
         too_high = route.total_fees_msat > limit
         if too_high:
             debug("Skipping route due to high fees (%d msat): %s" % (route.total_fees_msat, Routes.print_route(route)))
