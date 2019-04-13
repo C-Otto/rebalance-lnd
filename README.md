@@ -56,8 +56,8 @@ rebalance:
                         will be used (up to the maximum of 4,294,967 satoshis)
   --max-fee-factor MAX_FEE_FACTOR
                         (default: 10) Reject routes that cost more than x
-                        times the lnd default (base: 1000 msat, rate: 1
-                        millionth msat) per hop on average
+                        times the lnd default (base: 1 sat, rate: 1 millionth
+                        sat) per hop on average
 ```
 
 ### List of channels

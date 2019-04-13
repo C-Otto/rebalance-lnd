@@ -137,7 +137,7 @@ def get_argument_parser():
                                  type=float,
                                  default=10,
                                  help="(default: 10) Reject routes that cost more than x times the lnd default "
-                                      "(base: 1000 msat, rate: 1 millionth msat) per hop on average")
+                                      "(base: 1 sat, rate: 1 millionth sat) per hop on average")
     return parser
 
 
