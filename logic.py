@@ -2,9 +2,8 @@ import sys
 
 from routes import Routes
 
-DEFAULT_BASE_FEE = 1000
-DEFAULT_FEE_RATE = 1
-A_MILLION = 1000000
+DEFAULT_BASE_FEE_SAT_MSAT = 1000
+DEFAULT_FEE_RATE_MSAT = 0.001
 
 
 def debug(message):
@@ -95,7 +94,7 @@ class Logic:
 
     def fees_too_high(self, route):
         hops_with_fees = len(route.hops) - 1
-        lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE + (self.amount * DEFAULT_FEE_RATE / A_MILLION))
+        lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE_SAT_MSAT + (self.amount * DEFAULT_FEE_RATE_MSAT))
         limit = self.max_fee_factor * lnd_fees
         too_high = route.total_fees_msat > limit
         if too_high:
