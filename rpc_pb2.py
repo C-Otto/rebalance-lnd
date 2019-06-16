@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='lnrpc',
   syntax='proto3',
   serialized_options=_b('Z%github.com/lightningnetwork/lnd/lnrpc'),
-  serialized_pb=_b('\n\trpc.proto\x12\x05lnrpc\x1a\x1cgoogle/api/annotations.proto\"A\n\x0eGenSeedRequest\x12\x19\n\x11\x61\x65zeed_passphrase\x18\x01 \x01(\x0c\x12\x14\n\x0cseed_entropy\x18\x02 \x01(\x0c\"H\n\x0fGenSeedResponse\x12\x1c\n\x14\x63ipher_seed_mnemonic\x18\x01 \x03(\t\x12\x17\n\x0f\x65nciphered_seed\x18\x02 \x01(\x0c\"~\n\x11InitWalletRequest\x12\x17\n\x0fwallet_password\x18\x01 \x01(\x0c\x12\x1c\n\x14\x63ipher_seed_mnemonic\x18\x02 \x03(\t\x12\x19\n\x11\x61\x65zeed_passphrase\x18\x03 \x01(\x0c\x12\x17\n\x0frecovery_window\x18\x04 \x01(\x05\"\x14\n\x12InitWalletResponse\"G\n\x13UnlockWalletRequest\x12\x17\n\x0fwallet_password\x18\x01 \x01(\x0c\x12\x17\n\x0frecovery_window\x18\x02 \x01(\x05\"\x16\n\x14UnlockWalletResponse\"G\n\x15\x43hangePasswordRequest\x12\x18\n\x10\x63urrent_password\x18\x01 \x01(\x0c\x12\x14\n\x0cnew_password\x18\x02 \x01(\x0c\"\x18\n\x16\x43hangePasswordResponse\"\xed\x01\n\x04Utxo\x12.\n\x04type\x18\x01 \x01(\x0e\x32\x12.lnrpc.AddressTypeR\x0c\x61\x64\x64ress_type\x12\x18\n\x07\x61\x64\x64ress\x18\x02 \x01(\tR\x07\x61\x64\x64ress\x12\x1e\n\namount_sat\x18\x03 \x01(\x03R\namount_sat\x12$\n\rscript_pubkey\x18\x04 \x01(\tR\rscript_pubkey\x12/\n\x08outpoint\x18\x05 \x01(\x0b\x32\x13.lnrpc.ChannelPointR\x08outpoint\x12$\n\rconfirmations\x18\x06 \x01(\x03R\rconfirmations\"\x99\x02\n\x0bTransaction\x12\x18\n\x07tx_hash\x18\x01 \x01(\tR\x07tx_hash\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12,\n\x11num_confirmations\x18\x03 \x01(\x05R\x11num_confirmations\x12\x1e\n\nblock_hash\x18\x04 \x01(\tR\nblock_hash\x12\"\n\x0c\x62lock_height\x18\x05 \x01(\x05R\x0c\x62lock_height\x12\x1e\n\ntime_stamp\x18\x06 \x01(\x03R\ntime_stamp\x12\x1e\n\ntotal_fees\x18\x07 \x01(\x03R\ntotal_fees\x12&\n\x0e\x64\x65st_addresses\x18\x08 \x03(\tR\x0e\x64\x65st_addresses\"\x18\n\x16GetTransactionsRequest\"L\n\x12TransactionDetails\x12\x36\n\x0ctransactions\x18\x01 \x03(\x0b\x32\x12.lnrpc.TransactionR\x0ctransactions\"7\n\x08\x46\x65\x65Limit\x12\x0f\n\x05\x66ixed\x18\x01 \x01(\x03H\x00\x12\x11\n\x07percent\x18\x02 \x01(\x03H\x00\x42\x07\n\x05limit\"\xc7\x01\n\x0bSendRequest\x12\x0c\n\x04\x64\x65st\x18\x01 \x01(\x0c\x12\x13\n\x0b\x64\x65st_string\x18\x02 \x01(\t\x12\x0b\n\x03\x61mt\x18\x03 \x01(\x03\x12\x14\n\x0cpayment_hash\x18\x04 \x01(\x0c\x12\x1b\n\x13payment_hash_string\x18\x05 \x01(\t\x12\x17\n\x0fpayment_request\x18\x06 \x01(\t\x12\x18\n\x10\x66inal_cltv_delta\x18\x07 \x01(\x05\x12\"\n\tfee_limit\x18\x08 \x01(\x0b\x32\x0f.lnrpc.FeeLimit\"\xb8\x01\n\x0cSendResponse\x12$\n\rpayment_error\x18\x01 \x01(\tR\rpayment_error\x12*\n\x10payment_preimage\x18\x02 \x01(\x0cR\x10payment_preimage\x12\x32\n\rpayment_route\x18\x03 \x01(\x0b\x32\x0c.lnrpc.RouteR\rpayment_route\x12\"\n\x0cpayment_hash\x18\x04 \x01(\x0cR\x0cpayment_hash\"e\n\x12SendToRouteRequest\x12\x14\n\x0cpayment_hash\x18\x01 \x01(\x0c\x12\x1b\n\x13payment_hash_string\x18\x02 \x01(\t\x12\x1c\n\x06routes\x18\x03 \x03(\x0b\x32\x0c.lnrpc.Route\"\xa2\x01\n\x0c\x43hannelPoint\x12\x30\n\x12\x66unding_txid_bytes\x18\x01 \x01(\x0cH\x00R\x12\x66unding_txid_bytes\x12,\n\x10\x66unding_txid_str\x18\x02 \x01(\tH\x00R\x10\x66unding_txid_str\x12\"\n\x0coutput_index\x18\x03 \x01(\rR\x0coutput_indexB\x0e\n\x0c\x66unding_txid\">\n\x10LightningAddress\x12\x16\n\x06pubkey\x18\x01 \x01(\tR\x06pubkey\x12\x12\n\x04host\x18\x02 \x01(\tR\x04host\"\xb1\x01\n\x0fSendManyRequest\x12>\n\x0c\x41\x64\x64rToAmount\x18\x01 \x03(\x0b\x32(.lnrpc.SendManyRequest.AddrToAmountEntry\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x05 \x01(\x03\x1a\x33\n\x11\x41\x64\x64rToAmountEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x03:\x02\x38\x01\"&\n\x10SendManyResponse\x12\x12\n\x04txid\x18\x01 \x01(\tR\x04txid\"[\n\x10SendCoinsRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x0e\n\x06\x61mount\x18\x02 \x01(\x03\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x05 \x01(\x03\"\'\n\x11SendCoinsResponse\x12\x12\n\x04txid\x18\x01 \x01(\tR\x04txid\":\n\x12ListUnspentRequest\x12\x11\n\tmin_confs\x18\x01 \x01(\x05\x12\x11\n\tmax_confs\x18\x02 \x01(\x05\"8\n\x13ListUnspentResponse\x12!\n\x05utxos\x18\x01 \x03(\x0b\x32\x0b.lnrpc.UtxoR\x05utxos\"5\n\x11NewAddressRequest\x12 \n\x04type\x18\x01 \x01(\x0e\x32\x12.lnrpc.AddressType\".\n\x12NewAddressResponse\x12\x18\n\x07\x61\x64\x64ress\x18\x01 \x01(\tR\x07\x61\x64\x64ress\"&\n\x12SignMessageRequest\x12\x10\n\x03msg\x18\x01 \x01(\x0cR\x03msg\"3\n\x13SignMessageResponse\x12\x1c\n\tsignature\x18\x01 \x01(\tR\tsignature\"F\n\x14VerifyMessageRequest\x12\x10\n\x03msg\x18\x01 \x01(\x0cR\x03msg\x12\x1c\n\tsignature\x18\x02 \x01(\tR\tsignature\"E\n\x15VerifyMessageResponse\x12\x14\n\x05valid\x18\x01 \x01(\x08R\x05valid\x12\x16\n\x06pubkey\x18\x02 \x01(\tR\x06pubkey\"I\n\x12\x43onnectPeerRequest\x12%\n\x04\x61\x64\x64r\x18\x01 \x01(\x0b\x32\x17.lnrpc.LightningAddress\x12\x0c\n\x04perm\x18\x02 \x01(\x08\"\x15\n\x13\x43onnectPeerResponse\"1\n\x15\x44isconnectPeerRequest\x12\x18\n\x07pub_key\x18\x01 \x01(\tR\x07pub_key\"\x18\n\x16\x44isconnectPeerResponse\"\x86\x01\n\x04HTLC\x12\x1a\n\x08incoming\x18\x01 \x01(\x08R\x08incoming\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12\x1c\n\thash_lock\x18\x03 \x01(\x0cR\thash_lock\x12,\n\x11\x65xpiration_height\x18\x04 \x01(\rR\x11\x65xpiration_height\"\xfe\x04\n\x07\x43hannel\x12\x16\n\x06\x61\x63tive\x18\x01 \x01(\x08R\x06\x61\x63tive\x12$\n\rremote_pubkey\x18\x02 \x01(\tR\rremote_pubkey\x12$\n\rchannel_point\x18\x03 \x01(\tR\rchannel_point\x12\x18\n\x07\x63han_id\x18\x04 \x01(\x04R\x07\x63han_id\x12\x1a\n\x08\x63\x61pacity\x18\x05 \x01(\x03R\x08\x63\x61pacity\x12$\n\rlocal_balance\x18\x06 \x01(\x03R\rlocal_balance\x12&\n\x0eremote_balance\x18\x07 \x01(\x03R\x0eremote_balance\x12\x1e\n\ncommit_fee\x18\x08 \x01(\x03R\ncommit_fee\x12$\n\rcommit_weight\x18\t \x01(\x03R\rcommit_weight\x12\x1e\n\nfee_per_kw\x18\n \x01(\x03R\nfee_per_kw\x12,\n\x11unsettled_balance\x18\x0b \x01(\x03R\x11unsettled_balance\x12\x30\n\x13total_satoshis_sent\x18\x0c \x01(\x03R\x13total_satoshis_sent\x12\x38\n\x17total_satoshis_received\x18\r \x01(\x03R\x17total_satoshis_received\x12 \n\x0bnum_updates\x18\x0e \x01(\x04R\x0bnum_updates\x12\x31\n\rpending_htlcs\x18\x0f \x03(\x0b\x32\x0b.lnrpc.HTLCR\rpending_htlcs\x12\x1c\n\tcsv_delay\x18\x10 \x01(\rR\tcsv_delay\x12\x18\n\x07private\x18\x11 \x01(\x08R\x07private\"l\n\x13ListChannelsRequest\x12\x13\n\x0b\x61\x63tive_only\x18\x01 \x01(\x08\x12\x15\n\rinactive_only\x18\x02 \x01(\x08\x12\x13\n\x0bpublic_only\x18\x03 \x01(\x08\x12\x14\n\x0cprivate_only\x18\x04 \x01(\x08\"B\n\x14ListChannelsResponse\x12*\n\x08\x63hannels\x18\x0b \x03(\x0b\x32\x0e.lnrpc.ChannelR\x08\x63hannels\"\xb6\x04\n\x13\x43hannelCloseSummary\x12$\n\rchannel_point\x18\x01 \x01(\tR\rchannel_point\x12\x18\n\x07\x63han_id\x18\x02 \x01(\x04R\x07\x63han_id\x12\x1e\n\nchain_hash\x18\x03 \x01(\tR\nchain_hash\x12(\n\x0f\x63losing_tx_hash\x18\x04 \x01(\tR\x0f\x63losing_tx_hash\x12$\n\rremote_pubkey\x18\x05 \x01(\tR\rremote_pubkey\x12\x1a\n\x08\x63\x61pacity\x18\x06 \x01(\x03R\x08\x63\x61pacity\x12\"\n\x0c\x63lose_height\x18\x07 \x01(\rR\x0c\x63lose_height\x12(\n\x0fsettled_balance\x18\x08 \x01(\x03R\x0fsettled_balance\x12\x30\n\x13time_locked_balance\x18\t \x01(\x03R\x13time_locked_balance\x12\x46\n\nclose_type\x18\n \x01(\x0e\x32&.lnrpc.ChannelCloseSummary.ClosureTypeR\nclose_type\"\x8a\x01\n\x0b\x43losureType\x12\x15\n\x11\x43OOPERATIVE_CLOSE\x10\x00\x12\x15\n\x11LOCAL_FORCE_CLOSE\x10\x01\x12\x16\n\x12REMOTE_FORCE_CLOSE\x10\x02\x12\x10\n\x0c\x42REACH_CLOSE\x10\x03\x12\x14\n\x10\x46UNDING_CANCELED\x10\x04\x12\r\n\tABANDONED\x10\x05\"\x94\x01\n\x15\x43losedChannelsRequest\x12\x13\n\x0b\x63ooperative\x18\x01 \x01(\x08\x12\x13\n\x0blocal_force\x18\x02 \x01(\x08\x12\x14\n\x0cremote_force\x18\x03 \x01(\x08\x12\x0e\n\x06\x62reach\x18\x04 \x01(\x08\x12\x18\n\x10\x66unding_canceled\x18\x05 \x01(\x08\x12\x11\n\tabandoned\x18\x06 \x01(\x08\"P\n\x16\x43losedChannelsResponse\x12\x36\n\x08\x63hannels\x18\x01 \x03(\x0b\x32\x1a.lnrpc.ChannelCloseSummaryR\x08\x63hannels\"\xea\x01\n\x04Peer\x12\x18\n\x07pub_key\x18\x01 \x01(\tR\x07pub_key\x12\x18\n\x07\x61\x64\x64ress\x18\x03 \x01(\tR\x07\x61\x64\x64ress\x12\x1e\n\nbytes_sent\x18\x04 \x01(\x04R\nbytes_sent\x12\x1e\n\nbytes_recv\x18\x05 \x01(\x04R\nbytes_recv\x12\x1a\n\x08sat_sent\x18\x06 \x01(\x03R\x08sat_sent\x12\x1a\n\x08sat_recv\x18\x07 \x01(\x03R\x08sat_recv\x12\x18\n\x07inbound\x18\x08 \x01(\x08R\x07inbound\x12\x1c\n\tping_time\x18\t \x01(\x03R\tping_time\"\x12\n\x10ListPeersRequest\"6\n\x11ListPeersResponse\x12!\n\x05peers\x18\x01 \x03(\x0b\x32\x0b.lnrpc.PeerR\x05peers\"\x10\n\x0eGetInfoRequest\"\x8f\x04\n\x0fGetInfoResponse\x12(\n\x0fidentity_pubkey\x18\x01 \x01(\tR\x0fidentity_pubkey\x12\x14\n\x05\x61lias\x18\x02 \x01(\tR\x05\x61lias\x12\x32\n\x14num_pending_channels\x18\x03 \x01(\rR\x14num_pending_channels\x12\x30\n\x13num_active_channels\x18\x04 \x01(\rR\x13num_active_channels\x12\x1c\n\tnum_peers\x18\x05 \x01(\rR\tnum_peers\x12\"\n\x0c\x62lock_height\x18\x06 \x01(\rR\x0c\x62lock_height\x12\x1e\n\nblock_hash\x18\x08 \x01(\tR\nblock_hash\x12(\n\x0fsynced_to_chain\x18\t \x01(\x08R\x0fsynced_to_chain\x12\x18\n\x07testnet\x18\n \x01(\x08R\x07testnet\x12\x16\n\x06\x63hains\x18\x0b \x03(\tR\x06\x63hains\x12\x12\n\x04uris\x18\x0c \x03(\tR\x04uris\x12\x34\n\x15\x62\x65st_header_timestamp\x18\r \x01(\x03R\x15\x62\x65st_header_timestamp\x12\x18\n\x07version\x18\x0e \x01(\tR\x07version\x12\x34\n\x15num_inactive_channels\x18\x0f \x01(\rR\x15num_inactive_channels\"U\n\x12\x43onfirmationUpdate\x12\x11\n\tblock_sha\x18\x01 \x01(\x0c\x12\x14\n\x0c\x62lock_height\x18\x02 \x01(\x05\x12\x16\n\x0enum_confs_left\x18\x03 \x01(\r\"N\n\x11\x43hannelOpenUpdate\x12\x39\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPointR\rchannel_point\"R\n\x12\x43hannelCloseUpdate\x12\"\n\x0c\x63losing_txid\x18\x01 \x01(\x0cR\x0c\x63losing_txid\x12\x18\n\x07success\x18\x02 \x01(\x08R\x07success\"{\n\x13\x43loseChannelRequest\x12*\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\x12\r\n\x05\x66orce\x18\x02 \x01(\x08\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x04 \x01(\x03\"\xd9\x01\n\x11\x43loseStatusUpdate\x12<\n\rclose_pending\x18\x01 \x01(\x0b\x32\x14.lnrpc.PendingUpdateH\x00R\rclose_pending\x12?\n\x0c\x63onfirmation\x18\x02 \x01(\x0b\x32\x19.lnrpc.ConfirmationUpdateH\x00R\x0c\x63onfirmation\x12;\n\nchan_close\x18\x03 \x01(\x0b\x32\x19.lnrpc.ChannelCloseUpdateH\x00R\nchan_closeB\x08\n\x06update\"G\n\rPendingUpdate\x12\x12\n\x04txid\x18\x01 \x01(\x0cR\x04txid\x12\"\n\x0coutput_index\x18\x02 \x01(\rR\x0coutput_index\"\x99\x03\n\x12OpenChannelRequest\x12 \n\x0bnode_pubkey\x18\x02 \x01(\x0cR\x0bnode_pubkey\x12.\n\x12node_pubkey_string\x18\x03 \x01(\tR\x12node_pubkey_string\x12\x32\n\x14local_funding_amount\x18\x04 \x01(\x03R\x14local_funding_amount\x12\x1a\n\x08push_sat\x18\x05 \x01(\x03R\x08push_sat\x12\x13\n\x0btarget_conf\x18\x06 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x07 \x01(\x03\x12\x18\n\x07private\x18\x08 \x01(\x08R\x07private\x12$\n\rmin_htlc_msat\x18\t \x01(\x03R\rmin_htlc_msat\x12*\n\x10remote_csv_delay\x18\n \x01(\rR\x10remote_csv_delay\x12\x1c\n\tmin_confs\x18\x0b \x01(\x05R\tmin_confs\x12,\n\x11spend_unconfirmed\x18\x0c \x01(\x08R\x11spend_unconfirmed\"\xd3\x01\n\x10OpenStatusUpdate\x12:\n\x0c\x63han_pending\x18\x01 \x01(\x0b\x32\x14.lnrpc.PendingUpdateH\x00R\x0c\x63han_pending\x12?\n\x0c\x63onfirmation\x18\x02 \x01(\x0b\x32\x19.lnrpc.ConfirmationUpdateH\x00R\x0c\x63onfirmation\x12\x38\n\tchan_open\x18\x03 \x01(\x0b\x32\x18.lnrpc.ChannelOpenUpdateH\x00R\tchan_openB\x08\n\x06update\"\xcf\x01\n\x0bPendingHTLC\x12\x1a\n\x08incoming\x18\x01 \x01(\x08R\x08incoming\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12\x1a\n\x08outpoint\x18\x03 \x01(\tR\x08outpoint\x12(\n\x0fmaturity_height\x18\x04 \x01(\rR\x0fmaturity_height\x12\x30\n\x13\x62locks_til_maturity\x18\x05 \x01(\x05R\x13\x62locks_til_maturity\x12\x14\n\x05stage\x18\x06 \x01(\rR\x05stage\"\x18\n\x16PendingChannelsRequest\"\xaa\x0c\n\x17PendingChannelsResponse\x12\x30\n\x13total_limbo_balance\x18\x01 \x01(\x03R\x13total_limbo_balance\x12g\n\x15pending_open_channels\x18\x02 \x03(\x0b\x32\x31.lnrpc.PendingChannelsResponse.PendingOpenChannelR\x15pending_open_channels\x12h\n\x18pending_closing_channels\x18\x03 \x03(\x0b\x32,.lnrpc.PendingChannelsResponse.ClosedChannelR\x18pending_closing_channels\x12y\n\x1epending_force_closing_channels\x18\x04 \x03(\x0b\x32\x31.lnrpc.PendingChannelsResponse.ForceClosedChannelR\x1epending_force_closing_channels\x12j\n\x16waiting_close_channels\x18\x05 \x03(\x0b\x32\x32.lnrpc.PendingChannelsResponse.WaitingCloseChannelR\x16waiting_close_channels\x1a\xca\x01\n\x0ePendingChannel\x12(\n\x0fremote_node_pub\x18\x01 \x01(\tR\x0fremote_node_pub\x12$\n\rchannel_point\x18\x02 \x01(\tR\rchannel_point\x12\x1a\n\x08\x63\x61pacity\x18\x03 \x01(\x03R\x08\x63\x61pacity\x12$\n\rlocal_balance\x18\x04 \x01(\x03R\rlocal_balance\x12&\n\x0eremote_balance\x18\x05 \x01(\x03R\x0eremote_balance\x1a\xf5\x01\n\x12PendingOpenChannel\x12G\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannelR\x07\x63hannel\x12\x30\n\x13\x63onfirmation_height\x18\x02 \x01(\rR\x13\x63onfirmation_height\x12\x1e\n\ncommit_fee\x18\x04 \x01(\x03R\ncommit_fee\x12$\n\rcommit_weight\x18\x05 \x01(\x03R\rcommit_weight\x12\x1e\n\nfee_per_kw\x18\x06 \x01(\x03R\nfee_per_kw\x1a{\n\x13WaitingCloseChannel\x12>\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannel\x12$\n\rlimbo_balance\x18\x02 \x01(\x03R\rlimbo_balance\x1as\n\rClosedChannel\x12>\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannel\x12\"\n\x0c\x63losing_txid\x18\x02 \x01(\tR\x0c\x63losing_txid\x1a\xeb\x02\n\x12\x46orceClosedChannel\x12G\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannelR\x07\x63hannel\x12\"\n\x0c\x63losing_txid\x18\x02 \x01(\tR\x0c\x63losing_txid\x12$\n\rlimbo_balance\x18\x03 \x01(\x03R\rlimbo_balance\x12(\n\x0fmaturity_height\x18\x04 \x01(\rR\x0fmaturity_height\x12\x30\n\x13\x62locks_til_maturity\x18\x05 \x01(\x05R\x13\x62locks_til_maturity\x12,\n\x11recovered_balance\x18\x06 \x01(\x03R\x11recovered_balance\x12\x38\n\rpending_htlcs\x18\x08 \x03(\x0b\x32\x12.lnrpc.PendingHTLCR\rpending_htlcs\"\x16\n\x14WalletBalanceRequest\"\x9d\x01\n\x15WalletBalanceResponse\x12$\n\rtotal_balance\x18\x01 \x01(\x03R\rtotal_balance\x12,\n\x11\x63onfirmed_balance\x18\x02 \x01(\x03R\x11\x63onfirmed_balance\x12\x30\n\x13unconfirmed_balance\x18\x03 \x01(\x03R\x13unconfirmed_balance\"\x17\n\x15\x43hannelBalanceRequest\"f\n\x16\x43hannelBalanceResponse\x12\x18\n\x07\x62\x61lance\x18\x01 \x01(\x03R\x07\x62\x61lance\x12\x32\n\x14pending_open_balance\x18\x02 \x01(\x03R\x14pending_open_balance\"\x84\x01\n\x12QueryRoutesRequest\x12\x0f\n\x07pub_key\x18\x01 \x01(\t\x12\x0b\n\x03\x61mt\x18\x02 \x01(\x03\x12\x12\n\nnum_routes\x18\x03 \x01(\x05\x12\x18\n\x10\x66inal_cltv_delta\x18\x04 \x01(\x05\x12\"\n\tfee_limit\x18\x05 \x01(\x0b\x32\x0f.lnrpc.FeeLimit\";\n\x13QueryRoutesResponse\x12$\n\x06routes\x18\x01 \x03(\x0b\x32\x0c.lnrpc.RouteR\x06routes\"\x87\x02\n\x03Hop\x12\x18\n\x07\x63han_id\x18\x01 \x01(\x04R\x07\x63han_id\x12$\n\rchan_capacity\x18\x02 \x01(\x03R\rchan_capacity\x12*\n\x0e\x61mt_to_forward\x18\x03 \x01(\x03\x42\x02\x18\x01R\x0e\x61mt_to_forward\x12\x14\n\x03\x66\x65\x65\x18\x04 \x01(\x03\x42\x02\x18\x01R\x03\x66\x65\x65\x12\x16\n\x06\x65xpiry\x18\x05 \x01(\rR\x06\x65xpiry\x12\x30\n\x13\x61mt_to_forward_msat\x18\x06 \x01(\x03R\x13\x61mt_to_forward_msat\x12\x1a\n\x08\x66\x65\x65_msat\x18\x07 \x01(\x03R\x08\x66\x65\x65_msat\x12\x18\n\x07pub_key\x18\x08 \x01(\tR\x07pub_key\"\xe9\x01\n\x05Route\x12(\n\x0ftotal_time_lock\x18\x01 \x01(\rR\x0ftotal_time_lock\x12\"\n\ntotal_fees\x18\x02 \x01(\x03\x42\x02\x18\x01R\ntotal_fees\x12 \n\ttotal_amt\x18\x03 \x01(\x03\x42\x02\x18\x01R\ttotal_amt\x12\x1e\n\x04hops\x18\x04 \x03(\x0b\x32\n.lnrpc.HopR\x04hops\x12(\n\x0ftotal_fees_msat\x18\x05 \x01(\x03R\x0ftotal_fees_msat\x12&\n\x0etotal_amt_msat\x18\x06 \x01(\x03R\x0etotal_amt_msat\"\"\n\x0fNodeInfoRequest\x12\x0f\n\x07pub_key\x18\x01 \x01(\t\"\x80\x01\n\x08NodeInfo\x12(\n\x04node\x18\x01 \x01(\x0b\x32\x14.lnrpc.LightningNodeR\x04node\x12\"\n\x0cnum_channels\x18\x02 \x01(\rR\x0cnum_channels\x12&\n\x0etotal_capacity\x18\x03 \x01(\x03R\x0etotal_capacity\"\xa9\x01\n\rLightningNode\x12 \n\x0blast_update\x18\x01 \x01(\rR\x0blast_update\x12\x18\n\x07pub_key\x18\x02 \x01(\tR\x07pub_key\x12\x14\n\x05\x61lias\x18\x03 \x01(\tR\x05\x61lias\x12\x30\n\taddresses\x18\x04 \x03(\x0b\x32\x12.lnrpc.NodeAddressR\taddresses\x12\x14\n\x05\x63olor\x18\x05 \x01(\tR\x05\x63olor\";\n\x0bNodeAddress\x12\x18\n\x07network\x18\x01 \x01(\tR\x07network\x12\x12\n\x04\x61\x64\x64r\x18\x02 \x01(\tR\x04\x61\x64\x64r\"\xc9\x01\n\rRoutingPolicy\x12(\n\x0ftime_lock_delta\x18\x01 \x01(\rR\x0ftime_lock_delta\x12\x1a\n\x08min_htlc\x18\x02 \x01(\x03R\x08min_htlc\x12$\n\rfee_base_msat\x18\x03 \x01(\x03R\rfee_base_msat\x12\x30\n\x13\x66\x65\x65_rate_milli_msat\x18\x04 \x01(\x03R\x13\x66\x65\x65_rate_milli_msat\x12\x1a\n\x08\x64isabled\x18\x05 \x01(\x08R\x08\x64isabled\"\xbb\x02\n\x0b\x43hannelEdge\x12\x1e\n\nchannel_id\x18\x01 \x01(\x04R\nchannel_id\x12\x1e\n\nchan_point\x18\x02 \x01(\tR\nchan_point\x12 \n\x0blast_update\x18\x03 \x01(\rR\x0blast_update\x12\x1c\n\tnode1_pub\x18\x04 \x01(\tR\tnode1_pub\x12\x1c\n\tnode2_pub\x18\x05 \x01(\tR\tnode2_pub\x12\x1a\n\x08\x63\x61pacity\x18\x06 \x01(\x03R\x08\x63\x61pacity\x12\x38\n\x0cnode1_policy\x18\x07 \x01(\x0b\x32\x14.lnrpc.RoutingPolicyR\x0cnode1_policy\x12\x38\n\x0cnode2_policy\x18\x08 \x01(\x0b\x32\x14.lnrpc.RoutingPolicyR\x0cnode2_policy\"G\n\x13\x43hannelGraphRequest\x12\x30\n\x13include_unannounced\x18\x01 \x01(\x08R\x13include_unannounced\"d\n\x0c\x43hannelGraph\x12*\n\x05nodes\x18\x01 \x03(\x0b\x32\x14.lnrpc.LightningNodeR\x05nodes\x12(\n\x05\x65\x64ges\x18\x02 \x03(\x0b\x32\x12.lnrpc.ChannelEdgeR\x05\x65\x64ges\"\"\n\x0f\x43hanInfoRequest\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\"\x14\n\x12NetworkInfoRequest\"\x83\x03\n\x0bNetworkInfo\x12&\n\x0egraph_diameter\x18\x01 \x01(\rR\x0egraph_diameter\x12&\n\x0e\x61vg_out_degree\x18\x02 \x01(\x01R\x0e\x61vg_out_degree\x12&\n\x0emax_out_degree\x18\x03 \x01(\rR\x0emax_out_degree\x12\x1c\n\tnum_nodes\x18\x04 \x01(\rR\tnum_nodes\x12\"\n\x0cnum_channels\x18\x05 \x01(\rR\x0cnum_channels\x12\x36\n\x16total_network_capacity\x18\x06 \x01(\x03R\x16total_network_capacity\x12*\n\x10\x61vg_channel_size\x18\x07 \x01(\x01R\x10\x61vg_channel_size\x12*\n\x10min_channel_size\x18\x08 \x01(\x03R\x10min_channel_size\x12*\n\x10max_channel_size\x18\t \x01(\x03R\x10max_channel_size\"\r\n\x0bStopRequest\"\x0e\n\x0cStopResponse\"\x1b\n\x19GraphTopologySubscription\"\xa3\x01\n\x13GraphTopologyUpdate\x12\'\n\x0cnode_updates\x18\x01 \x03(\x0b\x32\x11.lnrpc.NodeUpdate\x12\x31\n\x0f\x63hannel_updates\x18\x02 \x03(\x0b\x32\x18.lnrpc.ChannelEdgeUpdate\x12\x30\n\x0c\x63losed_chans\x18\x03 \x03(\x0b\x32\x1a.lnrpc.ClosedChannelUpdate\"]\n\nNodeUpdate\x12\x11\n\taddresses\x18\x01 \x03(\t\x12\x14\n\x0cidentity_key\x18\x02 \x01(\t\x12\x17\n\x0fglobal_features\x18\x03 \x01(\x0c\x12\r\n\x05\x61lias\x18\x04 \x01(\t\"\xc0\x01\n\x11\x43hannelEdgeUpdate\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\x12\'\n\nchan_point\x18\x02 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\x12\x10\n\x08\x63\x61pacity\x18\x03 \x01(\x03\x12,\n\x0erouting_policy\x18\x04 \x01(\x0b\x32\x14.lnrpc.RoutingPolicy\x12\x18\n\x10\x61\x64vertising_node\x18\x05 \x01(\t\x12\x17\n\x0f\x63onnecting_node\x18\x06 \x01(\t\"x\n\x13\x43losedChannelUpdate\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\x12\x10\n\x08\x63\x61pacity\x18\x02 \x01(\x03\x12\x15\n\rclosed_height\x18\x03 \x01(\r\x12\'\n\nchan_point\x18\x04 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\"\xd3\x01\n\x07HopHint\x12\x18\n\x07node_id\x18\x01 \x01(\tR\x07node_id\x12\x18\n\x07\x63han_id\x18\x02 \x01(\x04R\x07\x63han_id\x12$\n\rfee_base_msat\x18\x03 \x01(\rR\rfee_base_msat\x12@\n\x1b\x66\x65\x65_proportional_millionths\x18\x04 \x01(\rR\x1b\x66\x65\x65_proportional_millionths\x12,\n\x11\x63ltv_expiry_delta\x18\x05 \x01(\rR\x11\x63ltv_expiry_delta\"9\n\tRouteHint\x12,\n\thop_hints\x18\x01 \x03(\x0b\x32\x0e.lnrpc.HopHintR\thop_hints\"\x97\x05\n\x07Invoice\x12\x12\n\x04memo\x18\x01 \x01(\tR\x04memo\x12\x18\n\x07receipt\x18\x02 \x01(\x0cR\x07receipt\x12\x1e\n\nr_preimage\x18\x03 \x01(\x0cR\nr_preimage\x12\x16\n\x06r_hash\x18\x04 \x01(\x0cR\x06r_hash\x12\x14\n\x05value\x18\x05 \x01(\x03R\x05value\x12\x18\n\x07settled\x18\x06 \x01(\x08R\x07settled\x12$\n\rcreation_date\x18\x07 \x01(\x03R\rcreation_date\x12 \n\x0bsettle_date\x18\x08 \x01(\x03R\x0bsettle_date\x12(\n\x0fpayment_request\x18\t \x01(\tR\x0fpayment_request\x12*\n\x10\x64\x65scription_hash\x18\n \x01(\x0cR\x10\x64\x65scription_hash\x12\x16\n\x06\x65xpiry\x18\x0b \x01(\x03R\x06\x65xpiry\x12$\n\rfallback_addr\x18\x0c \x01(\tR\rfallback_addr\x12 \n\x0b\x63ltv_expiry\x18\r \x01(\x04R\x0b\x63ltv_expiry\x12\x32\n\x0broute_hints\x18\x0e \x03(\x0b\x32\x10.lnrpc.RouteHintR\x0broute_hints\x12\x18\n\x07private\x18\x0f \x01(\x08R\x07private\x12\x1c\n\tadd_index\x18\x10 \x01(\x04R\tadd_index\x12\"\n\x0csettle_index\x18\x11 \x01(\x04R\x0csettle_index\x12\x1e\n\x08\x61mt_paid\x18\x12 \x01(\x03\x42\x02\x18\x01R\x08\x61mt_paid\x12\"\n\x0c\x61mt_paid_sat\x18\x13 \x01(\x03R\x0c\x61mt_paid_sat\x12$\n\ramt_paid_msat\x18\x14 \x01(\x03R\ramt_paid_msat\"t\n\x12\x41\x64\x64InvoiceResponse\x12\x16\n\x06r_hash\x18\x01 \x01(\x0cR\x06r_hash\x12(\n\x0fpayment_request\x18\x02 \x01(\tR\x0fpayment_request\x12\x1c\n\tadd_index\x18\x10 \x01(\x04R\tadd_index\"E\n\x0bPaymentHash\x12\x1e\n\nr_hash_str\x18\x01 \x01(\tR\nr_hash_str\x12\x16\n\x06r_hash\x18\x02 \x01(\x0cR\x06r_hash\"\xa4\x01\n\x12ListInvoiceRequest\x12\"\n\x0cpending_only\x18\x01 \x01(\x08R\x0cpending_only\x12\"\n\x0cindex_offset\x18\x04 \x01(\x04R\x0cindex_offset\x12*\n\x10num_max_invoices\x18\x05 \x01(\x04R\x10num_max_invoices\x12\x1a\n\x08reversed\x18\x06 \x01(\x08R\x08reversed\"\x9f\x01\n\x13ListInvoiceResponse\x12*\n\x08invoices\x18\x01 \x03(\x0b\x32\x0e.lnrpc.InvoiceR\x08invoices\x12,\n\x11last_index_offset\x18\x02 \x01(\x04R\x11last_index_offset\x12.\n\x12\x66irst_index_offset\x18\x03 \x01(\x04R\x12\x66irst_index_offset\"W\n\x13InvoiceSubscription\x12\x1c\n\tadd_index\x18\x01 \x01(\x04R\tadd_index\x12\"\n\x0csettle_index\x18\x02 \x01(\x04R\x0csettle_index\"\xfd\x01\n\x07Payment\x12\"\n\x0cpayment_hash\x18\x01 \x01(\tR\x0cpayment_hash\x12\x18\n\x05value\x18\x02 \x01(\x03\x42\x02\x18\x01R\x05value\x12$\n\rcreation_date\x18\x03 \x01(\x03R\rcreation_date\x12\x12\n\x04path\x18\x04 \x03(\tR\x04path\x12\x10\n\x03\x66\x65\x65\x18\x05 \x01(\x03R\x03\x66\x65\x65\x12*\n\x10payment_preimage\x18\x06 \x01(\tR\x10payment_preimage\x12\x1c\n\tvalue_sat\x18\x07 \x01(\x03R\tvalue_sat\x12\x1e\n\nvalue_msat\x18\x08 \x01(\x03R\nvalue_msat\"\x15\n\x13ListPaymentsRequest\"B\n\x14ListPaymentsResponse\x12*\n\x08payments\x18\x01 \x03(\x0b\x32\x0e.lnrpc.PaymentR\x08payments\"\x1a\n\x18\x44\x65leteAllPaymentsRequest\"\x1b\n\x19\x44\x65leteAllPaymentsResponse\"C\n\x15\x41\x62\x61ndonChannelRequest\x12*\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\"\x18\n\x16\x41\x62\x61ndonChannelResponse\"5\n\x11\x44\x65\x62ugLevelRequest\x12\x0c\n\x04show\x18\x01 \x01(\x08\x12\x12\n\nlevel_spec\x18\x02 \x01(\t\"6\n\x12\x44\x65\x62ugLevelResponse\x12 \n\x0bsub_systems\x18\x01 \x01(\tR\x0bsub_systems\"\x1f\n\x0cPayReqString\x12\x0f\n\x07pay_req\x18\x01 \x01(\t\"\xf2\x02\n\x06PayReq\x12 \n\x0b\x64\x65stination\x18\x01 \x01(\tR\x0b\x64\x65stination\x12\"\n\x0cpayment_hash\x18\x02 \x01(\tR\x0cpayment_hash\x12\"\n\x0cnum_satoshis\x18\x03 \x01(\x03R\x0cnum_satoshis\x12\x1c\n\ttimestamp\x18\x04 \x01(\x03R\ttimestamp\x12\x16\n\x06\x65xpiry\x18\x05 \x01(\x03R\x06\x65xpiry\x12 \n\x0b\x64\x65scription\x18\x06 \x01(\tR\x0b\x64\x65scription\x12*\n\x10\x64\x65scription_hash\x18\x07 \x01(\tR\x10\x64\x65scription_hash\x12$\n\rfallback_addr\x18\x08 \x01(\tR\rfallback_addr\x12 \n\x0b\x63ltv_expiry\x18\t \x01(\x03R\x0b\x63ltv_expiry\x12\x32\n\x0broute_hints\x18\n \x03(\x0b\x32\x10.lnrpc.RouteHintR\x0broute_hints\"\x12\n\x10\x46\x65\x65ReportRequest\"\x99\x01\n\x10\x43hannelFeeReport\x12!\n\nchan_point\x18\x01 \x01(\tR\rchannel_point\x12$\n\rbase_fee_msat\x18\x02 \x01(\x03R\rbase_fee_msat\x12 \n\x0b\x66\x65\x65_per_mil\x18\x03 \x01(\x03R\x0b\x66\x65\x65_per_mil\x12\x1a\n\x08\x66\x65\x65_rate\x18\x04 \x01(\x01R\x08\x66\x65\x65_rate\"\xbc\x01\n\x11\x46\x65\x65ReportResponse\x12;\n\x0c\x63hannel_fees\x18\x01 \x03(\x0b\x32\x17.lnrpc.ChannelFeeReportR\x0c\x63hannel_fees\x12 \n\x0b\x64\x61y_fee_sum\x18\x02 \x01(\x04R\x0b\x64\x61y_fee_sum\x12\"\n\x0cweek_fee_sum\x18\x03 \x01(\x04R\x0cweek_fee_sum\x12$\n\rmonth_fee_sum\x18\x04 \x01(\x04R\rmonth_fee_sum\"\xdb\x01\n\x13PolicyUpdateRequest\x12\x18\n\x06global\x18\x01 \x01(\x08H\x00R\x06global\x12\x35\n\nchan_point\x18\x02 \x01(\x0b\x32\x13.lnrpc.ChannelPointH\x00R\nchan_point\x12$\n\rbase_fee_msat\x18\x03 \x01(\x03R\rbase_fee_msat\x12\x1a\n\x08\x66\x65\x65_rate\x18\x04 \x01(\x01R\x08\x66\x65\x65_rate\x12(\n\x0ftime_lock_delta\x18\x05 \x01(\rR\x0ftime_lock_deltaB\x07\n\x05scope\"\x16\n\x14PolicyUpdateResponse\"\xa2\x01\n\x18\x46orwardingHistoryRequest\x12\x1e\n\nstart_time\x18\x01 \x01(\x04R\nstart_time\x12\x1a\n\x08\x65nd_time\x18\x02 \x01(\x04R\x08\x65nd_time\x12\"\n\x0cindex_offset\x18\x03 \x01(\rR\x0cindex_offset\x12&\n\x0enum_max_events\x18\x04 \x01(\rR\x0enum_max_events\"\xd1\x01\n\x0f\x46orwardingEvent\x12\x1c\n\ttimestamp\x18\x01 \x01(\x04R\ttimestamp\x12\x1e\n\nchan_id_in\x18\x02 \x01(\x04R\nchan_id_in\x12 \n\x0b\x63han_id_out\x18\x04 \x01(\x04R\x0b\x63han_id_out\x12\x16\n\x06\x61mt_in\x18\x05 \x01(\x04R\x06\x61mt_in\x12\x18\n\x07\x61mt_out\x18\x06 \x01(\x04R\x07\x61mt_out\x12\x10\n\x03\x66\x65\x65\x18\x07 \x01(\x04R\x03\x66\x65\x65\x12\x1a\n\x08\x66\x65\x65_msat\x18\x08 \x01(\x04R\x08\x66\x65\x65_msat\"\x8f\x01\n\x19\x46orwardingHistoryResponse\x12\x44\n\x11\x66orwarding_events\x18\x01 \x03(\x0b\x32\x16.lnrpc.ForwardingEventR\x11\x66orwarding_events\x12,\n\x11last_offset_index\x18\x02 \x01(\rR\x11last_offset_index*>\n\x0b\x41\x64\x64ressType\x12\x17\n\x13WITNESS_PUBKEY_HASH\x10\x00\x12\x16\n\x12NESTED_PUBKEY_HASH\x10\x01\x32\x91\x03\n\x0eWalletUnlocker\x12M\n\x07GenSeed\x12\x15.lnrpc.GenSeedRequest\x1a\x16.lnrpc.GenSeedResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\x0b/v1/genseed\x12\\\n\nInitWallet\x12\x18.lnrpc.InitWalletRequest\x1a\x19.lnrpc.InitWalletResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x0e/v1/initwallet:\x01*\x12\x64\n\x0cUnlockWallet\x12\x1a.lnrpc.UnlockWalletRequest\x1a\x1b.lnrpc.UnlockWalletResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/v1/unlockwallet:\x01*\x12l\n\x0e\x43hangePassword\x12\x1c.lnrpc.ChangePasswordRequest\x1a\x1d.lnrpc.ChangePasswordResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/v1/changepassword:\x01*2\xee\x1f\n\tLightning\x12j\n\rWalletBalance\x12\x1b.lnrpc.WalletBalanceRequest\x1a\x1c.lnrpc.WalletBalanceResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/balance/blockchain\x12k\n\x0e\x43hannelBalance\x12\x1c.lnrpc.ChannelBalanceRequest\x1a\x1d.lnrpc.ChannelBalanceResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/balance/channels\x12\x65\n\x0fGetTransactions\x12\x1d.lnrpc.GetTransactionsRequest\x1a\x19.lnrpc.TransactionDetails\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12[\n\tSendCoins\x12\x17.lnrpc.SendCoinsRequest\x1a\x18.lnrpc.SendCoinsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/v1/transactions:\x01*\x12W\n\x0bListUnspent\x12\x19.lnrpc.ListUnspentRequest\x1a\x1a.lnrpc.ListUnspentResponse\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/utxos\x12L\n\x15SubscribeTransactions\x12\x1d.lnrpc.GetTransactionsRequest\x1a\x12.lnrpc.Transaction0\x01\x12;\n\x08SendMany\x12\x16.lnrpc.SendManyRequest\x1a\x17.lnrpc.SendManyResponse\x12Y\n\nNewAddress\x12\x18.lnrpc.NewAddressRequest\x1a\x19.lnrpc.NewAddressResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/newaddress\x12`\n\x0bSignMessage\x12\x19.lnrpc.SignMessageRequest\x1a\x1a.lnrpc.SignMessageResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\"\x0f/v1/signmessage:\x01*\x12h\n\rVerifyMessage\x12\x1b.lnrpc.VerifyMessageRequest\x1a\x1c.lnrpc.VerifyMessageResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/v1/verifymessage:\x01*\x12Z\n\x0b\x43onnectPeer\x12\x19.lnrpc.ConnectPeerRequest\x1a\x1a.lnrpc.ConnectPeerResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\"\t/v1/peers:\x01*\x12j\n\x0e\x44isconnectPeer\x12\x1c.lnrpc.DisconnectPeerRequest\x1a\x1d.lnrpc.DisconnectPeerResponse\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/peers/{pub_key}\x12Q\n\tListPeers\x12\x17.lnrpc.ListPeersRequest\x1a\x18.lnrpc.ListPeersResponse\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/peers\x12M\n\x07GetInfo\x12\x15.lnrpc.GetInfoRequest\x1a\x16.lnrpc.GetInfoResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\x0b/v1/getinfo\x12n\n\x0fPendingChannels\x12\x1d.lnrpc.PendingChannelsRequest\x1a\x1e.lnrpc.PendingChannelsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/channels/pending\x12]\n\x0cListChannels\x12\x1a.lnrpc.ListChannelsRequest\x1a\x1b.lnrpc.ListChannelsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/channels\x12j\n\x0e\x43losedChannels\x12\x1c.lnrpc.ClosedChannelsRequest\x1a\x1d.lnrpc.ClosedChannelsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/channels/closed\x12Z\n\x0fOpenChannelSync\x12\x19.lnrpc.OpenChannelRequest\x1a\x13.lnrpc.ChannelPoint\"\x17\x82\xd3\xe4\x93\x02\x11\"\x0c/v1/channels:\x01*\x12\x43\n\x0bOpenChannel\x12\x19.lnrpc.OpenChannelRequest\x1a\x17.lnrpc.OpenStatusUpdate0\x01\x12\x9a\x01\n\x0c\x43loseChannel\x12\x1a.lnrpc.CloseChannelRequest\x1a\x18.lnrpc.CloseStatusUpdate\"R\x82\xd3\xe4\x93\x02L*J/v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}0\x01\x12\xa9\x01\n\x0e\x41\x62\x61ndonChannel\x12\x1c.lnrpc.AbandonChannelRequest\x1a\x1d.lnrpc.AbandonChannelResponse\"Z\x82\xd3\xe4\x93\x02T*R/v1/channels/abandon/{channel_point.funding_txid_str}/{channel_point.output_index}\x12:\n\x0bSendPayment\x12\x12.lnrpc.SendRequest\x1a\x13.lnrpc.SendResponse(\x01\x30\x01\x12`\n\x0fSendPaymentSync\x12\x12.lnrpc.SendRequest\x1a\x13.lnrpc.SendResponse\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/v1/channels/transactions:\x01*\x12\x41\n\x0bSendToRoute\x12\x19.lnrpc.SendToRouteRequest\x1a\x13.lnrpc.SendResponse(\x01\x30\x01\x12m\n\x0fSendToRouteSync\x12\x19.lnrpc.SendToRouteRequest\x1a\x13.lnrpc.SendResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/v1/channels/transactions/route:\x01*\x12P\n\nAddInvoice\x12\x0e.lnrpc.Invoice\x1a\x19.lnrpc.AddInvoiceResponse\"\x17\x82\xd3\xe4\x93\x02\x11\"\x0c/v1/invoices:\x01*\x12[\n\x0cListInvoices\x12\x19.lnrpc.ListInvoiceRequest\x1a\x1a.lnrpc.ListInvoiceResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/invoices\x12U\n\rLookupInvoice\x12\x12.lnrpc.PaymentHash\x1a\x0e.lnrpc.Invoice\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/invoice/{r_hash_str}\x12\x61\n\x11SubscribeInvoices\x12\x1a.lnrpc.InvoiceSubscription\x1a\x0e.lnrpc.Invoice\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/invoices/subscribe0\x01\x12P\n\x0c\x44\x65\x63odePayReq\x12\x13.lnrpc.PayReqString\x1a\r.lnrpc.PayReq\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/payreq/{pay_req}\x12]\n\x0cListPayments\x12\x1a.lnrpc.ListPaymentsRequest\x1a\x1b.lnrpc.ListPaymentsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/payments\x12l\n\x11\x44\x65leteAllPayments\x12\x1f.lnrpc.DeleteAllPaymentsRequest\x1a .lnrpc.DeleteAllPaymentsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e*\x0c/v1/payments\x12S\n\rDescribeGraph\x12\x1a.lnrpc.ChannelGraphRequest\x1a\x13.lnrpc.ChannelGraph\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/graph\x12[\n\x0bGetChanInfo\x12\x16.lnrpc.ChanInfoRequest\x1a\x12.lnrpc.ChannelEdge\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/graph/edge/{chan_id}\x12X\n\x0bGetNodeInfo\x12\x16.lnrpc.NodeInfoRequest\x1a\x0f.lnrpc.NodeInfo\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/graph/node/{pub_key}\x12n\n\x0bQueryRoutes\x12\x19.lnrpc.QueryRoutesRequest\x1a\x1a.lnrpc.QueryRoutesResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/graph/routes/{pub_key}/{amt}\x12W\n\x0eGetNetworkInfo\x12\x19.lnrpc.NetworkInfoRequest\x1a\x12.lnrpc.NetworkInfo\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/graph/info\x12\x35\n\nStopDaemon\x12\x12.lnrpc.StopRequest\x1a\x13.lnrpc.StopResponse\x12W\n\x15SubscribeChannelGraph\x12 .lnrpc.GraphTopologySubscription\x1a\x1a.lnrpc.GraphTopologyUpdate0\x01\x12\x41\n\nDebugLevel\x12\x18.lnrpc.DebugLevelRequest\x1a\x19.lnrpc.DebugLevelResponse\x12P\n\tFeeReport\x12\x17.lnrpc.FeeReportRequest\x1a\x18.lnrpc.FeeReportResponse\"\x10\x82\xd3\xe4\x93\x02\n\x12\x08/v1/fees\x12i\n\x13UpdateChannelPolicy\x12\x1a.lnrpc.PolicyUpdateRequest\x1a\x1b.lnrpc.PolicyUpdateResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x0e/v1/chanpolicy:\x01*\x12m\n\x11\x46orwardingHistory\x12\x1f.lnrpc.ForwardingHistoryRequest\x1a .lnrpc.ForwardingHistoryResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\"\n/v1/switch:\x01*B\'Z%github.com/lightningnetwork/lnd/lnrpcb\x06proto3')
+  serialized_pb=_b('\n\trpc.proto\x12\x05lnrpc\x1a\x1cgoogle/api/annotations.proto\"A\n\x0eGenSeedRequest\x12\x19\n\x11\x61\x65zeed_passphrase\x18\x01 \x01(\x0c\x12\x14\n\x0cseed_entropy\x18\x02 \x01(\x0c\"H\n\x0fGenSeedResponse\x12\x1c\n\x14\x63ipher_seed_mnemonic\x18\x01 \x03(\t\x12\x17\n\x0f\x65nciphered_seed\x18\x02 \x01(\x0c\"\xb2\x01\n\x11InitWalletRequest\x12\x17\n\x0fwallet_password\x18\x01 \x01(\x0c\x12\x1c\n\x14\x63ipher_seed_mnemonic\x18\x02 \x03(\t\x12\x19\n\x11\x61\x65zeed_passphrase\x18\x03 \x01(\x0c\x12\x17\n\x0frecovery_window\x18\x04 \x01(\x05\x12\x32\n\x0f\x63hannel_backups\x18\x05 \x01(\x0b\x32\x19.lnrpc.ChanBackupSnapshot\"\x14\n\x12InitWalletResponse\"{\n\x13UnlockWalletRequest\x12\x17\n\x0fwallet_password\x18\x01 \x01(\x0c\x12\x17\n\x0frecovery_window\x18\x02 \x01(\x05\x12\x32\n\x0f\x63hannel_backups\x18\x03 \x01(\x0b\x32\x19.lnrpc.ChanBackupSnapshot\"\x16\n\x14UnlockWalletResponse\"G\n\x15\x43hangePasswordRequest\x12\x18\n\x10\x63urrent_password\x18\x01 \x01(\x0c\x12\x14\n\x0cnew_password\x18\x02 \x01(\x0c\"\x18\n\x16\x43hangePasswordResponse\"\xe1\x01\n\x04Utxo\x12.\n\x04type\x18\x01 \x01(\x0e\x32\x12.lnrpc.AddressTypeR\x0c\x61\x64\x64ress_type\x12\x18\n\x07\x61\x64\x64ress\x18\x02 \x01(\tR\x07\x61\x64\x64ress\x12\x1e\n\namount_sat\x18\x03 \x01(\x03R\namount_sat\x12\x1c\n\tpk_script\x18\x04 \x01(\tR\tpk_script\x12+\n\x08outpoint\x18\x05 \x01(\x0b\x32\x0f.lnrpc.OutPointR\x08outpoint\x12$\n\rconfirmations\x18\x06 \x01(\x03R\rconfirmations\"\xb9\x02\n\x0bTransaction\x12\x18\n\x07tx_hash\x18\x01 \x01(\tR\x07tx_hash\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12,\n\x11num_confirmations\x18\x03 \x01(\x05R\x11num_confirmations\x12\x1e\n\nblock_hash\x18\x04 \x01(\tR\nblock_hash\x12\"\n\x0c\x62lock_height\x18\x05 \x01(\x05R\x0c\x62lock_height\x12\x1e\n\ntime_stamp\x18\x06 \x01(\x03R\ntime_stamp\x12\x1e\n\ntotal_fees\x18\x07 \x01(\x03R\ntotal_fees\x12&\n\x0e\x64\x65st_addresses\x18\x08 \x03(\tR\x0e\x64\x65st_addresses\x12\x1e\n\nraw_tx_hex\x18\t \x01(\tR\nraw_tx_hex\"\x18\n\x16GetTransactionsRequest\"L\n\x12TransactionDetails\x12\x36\n\x0ctransactions\x18\x01 \x03(\x0b\x32\x12.lnrpc.TransactionR\x0ctransactions\"7\n\x08\x46\x65\x65Limit\x12\x0f\n\x05\x66ixed\x18\x01 \x01(\x03H\x00\x12\x11\n\x07percent\x18\x02 \x01(\x03H\x00\x42\x07\n\x05limit\"\xf5\x01\n\x0bSendRequest\x12\x0c\n\x04\x64\x65st\x18\x01 \x01(\x0c\x12\x13\n\x0b\x64\x65st_string\x18\x02 \x01(\t\x12\x0b\n\x03\x61mt\x18\x03 \x01(\x03\x12\x14\n\x0cpayment_hash\x18\x04 \x01(\x0c\x12\x1b\n\x13payment_hash_string\x18\x05 \x01(\t\x12\x17\n\x0fpayment_request\x18\x06 \x01(\t\x12\x18\n\x10\x66inal_cltv_delta\x18\x07 \x01(\x05\x12\"\n\tfee_limit\x18\x08 \x01(\x0b\x32\x0f.lnrpc.FeeLimit\x12\x18\n\x10outgoing_chan_id\x18\t \x01(\x04\x12\x12\n\ncltv_limit\x18\n \x01(\r\"\xb8\x01\n\x0cSendResponse\x12$\n\rpayment_error\x18\x01 \x01(\tR\rpayment_error\x12*\n\x10payment_preimage\x18\x02 \x01(\x0cR\x10payment_preimage\x12\x32\n\rpayment_route\x18\x03 \x01(\x0b\x32\x0c.lnrpc.RouteR\rpayment_route\x12\"\n\x0cpayment_hash\x18\x04 \x01(\x0cR\x0cpayment_hash\"j\n\x12SendToRouteRequest\x12\x14\n\x0cpayment_hash\x18\x01 \x01(\x0c\x12\x1b\n\x13payment_hash_string\x18\x02 \x01(\t\x12\x1b\n\x05route\x18\x04 \x01(\x0b\x32\x0c.lnrpc.RouteJ\x04\x08\x03\x10\x04\"\xa2\x01\n\x0c\x43hannelPoint\x12\x30\n\x12\x66unding_txid_bytes\x18\x01 \x01(\x0cH\x00R\x12\x66unding_txid_bytes\x12,\n\x10\x66unding_txid_str\x18\x02 \x01(\tH\x00R\x10\x66unding_txid_str\x12\"\n\x0coutput_index\x18\x03 \x01(\rR\x0coutput_indexB\x0e\n\x0c\x66unding_txid\"j\n\x08OutPoint\x12\x1e\n\ntxid_bytes\x18\x01 \x01(\x0cR\ntxid_bytes\x12\x1a\n\x08txid_str\x18\x02 \x01(\tR\x08txid_str\x12\"\n\x0coutput_index\x18\x03 \x01(\rR\x0coutput_index\">\n\x10LightningAddress\x12\x16\n\x06pubkey\x18\x01 \x01(\tR\x06pubkey\x12\x12\n\x04host\x18\x02 \x01(\tR\x04host\"\xa1\x01\n\x12\x45stimateFeeRequest\x12\x41\n\x0c\x41\x64\x64rToAmount\x18\x01 \x03(\x0b\x32+.lnrpc.EstimateFeeRequest.AddrToAmountEntry\x12\x13\n\x0btarget_conf\x18\x02 \x01(\x05\x1a\x33\n\x11\x41\x64\x64rToAmountEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x03:\x02\x38\x01\"c\n\x13\x45stimateFeeResponse\x12\x18\n\x07\x66\x65\x65_sat\x18\x01 \x01(\x03R\x07\x66\x65\x65_sat\x12\x32\n\x14\x66\x65\x65rate_sat_per_byte\x18\x02 \x01(\x03R\x14\x66\x65\x65rate_sat_per_byte\"\xb1\x01\n\x0fSendManyRequest\x12>\n\x0c\x41\x64\x64rToAmount\x18\x01 \x03(\x0b\x32(.lnrpc.SendManyRequest.AddrToAmountEntry\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x05 \x01(\x03\x1a\x33\n\x11\x41\x64\x64rToAmountEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x03:\x02\x38\x01\"&\n\x10SendManyResponse\x12\x12\n\x04txid\x18\x01 \x01(\tR\x04txid\"m\n\x10SendCoinsRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x0e\n\x06\x61mount\x18\x02 \x01(\x03\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x05 \x01(\x03\x12\x10\n\x08send_all\x18\x06 \x01(\x08\"\'\n\x11SendCoinsResponse\x12\x12\n\x04txid\x18\x01 \x01(\tR\x04txid\":\n\x12ListUnspentRequest\x12\x11\n\tmin_confs\x18\x01 \x01(\x05\x12\x11\n\tmax_confs\x18\x02 \x01(\x05\"8\n\x13ListUnspentResponse\x12!\n\x05utxos\x18\x01 \x03(\x0b\x32\x0b.lnrpc.UtxoR\x05utxos\"5\n\x11NewAddressRequest\x12 \n\x04type\x18\x01 \x01(\x0e\x32\x12.lnrpc.AddressType\".\n\x12NewAddressResponse\x12\x18\n\x07\x61\x64\x64ress\x18\x01 \x01(\tR\x07\x61\x64\x64ress\"&\n\x12SignMessageRequest\x12\x10\n\x03msg\x18\x01 \x01(\x0cR\x03msg\"3\n\x13SignMessageResponse\x12\x1c\n\tsignature\x18\x01 \x01(\tR\tsignature\"F\n\x14VerifyMessageRequest\x12\x10\n\x03msg\x18\x01 \x01(\x0cR\x03msg\x12\x1c\n\tsignature\x18\x02 \x01(\tR\tsignature\"E\n\x15VerifyMessageResponse\x12\x14\n\x05valid\x18\x01 \x01(\x08R\x05valid\x12\x16\n\x06pubkey\x18\x02 \x01(\tR\x06pubkey\"I\n\x12\x43onnectPeerRequest\x12%\n\x04\x61\x64\x64r\x18\x01 \x01(\x0b\x32\x17.lnrpc.LightningAddress\x12\x0c\n\x04perm\x18\x02 \x01(\x08\"\x15\n\x13\x43onnectPeerResponse\"1\n\x15\x44isconnectPeerRequest\x12\x18\n\x07pub_key\x18\x01 \x01(\tR\x07pub_key\"\x18\n\x16\x44isconnectPeerResponse\"\x86\x01\n\x04HTLC\x12\x1a\n\x08incoming\x18\x01 \x01(\x08R\x08incoming\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12\x1c\n\thash_lock\x18\x03 \x01(\x0cR\thash_lock\x12,\n\x11\x65xpiration_height\x18\x04 \x01(\rR\x11\x65xpiration_height\"\xca\x05\n\x07\x43hannel\x12\x16\n\x06\x61\x63tive\x18\x01 \x01(\x08R\x06\x61\x63tive\x12$\n\rremote_pubkey\x18\x02 \x01(\tR\rremote_pubkey\x12$\n\rchannel_point\x18\x03 \x01(\tR\rchannel_point\x12\x18\n\x07\x63han_id\x18\x04 \x01(\x04R\x07\x63han_id\x12\x1a\n\x08\x63\x61pacity\x18\x05 \x01(\x03R\x08\x63\x61pacity\x12$\n\rlocal_balance\x18\x06 \x01(\x03R\rlocal_balance\x12&\n\x0eremote_balance\x18\x07 \x01(\x03R\x0eremote_balance\x12\x1e\n\ncommit_fee\x18\x08 \x01(\x03R\ncommit_fee\x12$\n\rcommit_weight\x18\t \x01(\x03R\rcommit_weight\x12\x1e\n\nfee_per_kw\x18\n \x01(\x03R\nfee_per_kw\x12,\n\x11unsettled_balance\x18\x0b \x01(\x03R\x11unsettled_balance\x12\x30\n\x13total_satoshis_sent\x18\x0c \x01(\x03R\x13total_satoshis_sent\x12\x38\n\x17total_satoshis_received\x18\r \x01(\x03R\x17total_satoshis_received\x12 \n\x0bnum_updates\x18\x0e \x01(\x04R\x0bnum_updates\x12\x31\n\rpending_htlcs\x18\x0f \x03(\x0b\x32\x0b.lnrpc.HTLCR\rpending_htlcs\x12\x1c\n\tcsv_delay\x18\x10 \x01(\rR\tcsv_delay\x12\x18\n\x07private\x18\x11 \x01(\x08R\x07private\x12\x1c\n\tinitiator\x18\x12 \x01(\x08R\tinitiator\x12,\n\x11\x63han_status_flags\x18\x13 \x01(\tR\x11\x63han_status_flags\"l\n\x13ListChannelsRequest\x12\x13\n\x0b\x61\x63tive_only\x18\x01 \x01(\x08\x12\x15\n\rinactive_only\x18\x02 \x01(\x08\x12\x13\n\x0bpublic_only\x18\x03 \x01(\x08\x12\x14\n\x0cprivate_only\x18\x04 \x01(\x08\"B\n\x14ListChannelsResponse\x12*\n\x08\x63hannels\x18\x0b \x03(\x0b\x32\x0e.lnrpc.ChannelR\x08\x63hannels\"\xb6\x04\n\x13\x43hannelCloseSummary\x12$\n\rchannel_point\x18\x01 \x01(\tR\rchannel_point\x12\x18\n\x07\x63han_id\x18\x02 \x01(\x04R\x07\x63han_id\x12\x1e\n\nchain_hash\x18\x03 \x01(\tR\nchain_hash\x12(\n\x0f\x63losing_tx_hash\x18\x04 \x01(\tR\x0f\x63losing_tx_hash\x12$\n\rremote_pubkey\x18\x05 \x01(\tR\rremote_pubkey\x12\x1a\n\x08\x63\x61pacity\x18\x06 \x01(\x03R\x08\x63\x61pacity\x12\"\n\x0c\x63lose_height\x18\x07 \x01(\rR\x0c\x63lose_height\x12(\n\x0fsettled_balance\x18\x08 \x01(\x03R\x0fsettled_balance\x12\x30\n\x13time_locked_balance\x18\t \x01(\x03R\x13time_locked_balance\x12\x46\n\nclose_type\x18\n \x01(\x0e\x32&.lnrpc.ChannelCloseSummary.ClosureTypeR\nclose_type\"\x8a\x01\n\x0b\x43losureType\x12\x15\n\x11\x43OOPERATIVE_CLOSE\x10\x00\x12\x15\n\x11LOCAL_FORCE_CLOSE\x10\x01\x12\x16\n\x12REMOTE_FORCE_CLOSE\x10\x02\x12\x10\n\x0c\x42REACH_CLOSE\x10\x03\x12\x14\n\x10\x46UNDING_CANCELED\x10\x04\x12\r\n\tABANDONED\x10\x05\"\x94\x01\n\x15\x43losedChannelsRequest\x12\x13\n\x0b\x63ooperative\x18\x01 \x01(\x08\x12\x13\n\x0blocal_force\x18\x02 \x01(\x08\x12\x14\n\x0cremote_force\x18\x03 \x01(\x08\x12\x0e\n\x06\x62reach\x18\x04 \x01(\x08\x12\x18\n\x10\x66unding_canceled\x18\x05 \x01(\x08\x12\x11\n\tabandoned\x18\x06 \x01(\x08\"P\n\x16\x43losedChannelsResponse\x12\x36\n\x08\x63hannels\x18\x01 \x03(\x0b\x32\x1a.lnrpc.ChannelCloseSummaryR\x08\x63hannels\"\xdf\x02\n\x04Peer\x12\x18\n\x07pub_key\x18\x01 \x01(\tR\x07pub_key\x12\x18\n\x07\x61\x64\x64ress\x18\x03 \x01(\tR\x07\x61\x64\x64ress\x12\x1e\n\nbytes_sent\x18\x04 \x01(\x04R\nbytes_sent\x12\x1e\n\nbytes_recv\x18\x05 \x01(\x04R\nbytes_recv\x12\x1a\n\x08sat_sent\x18\x06 \x01(\x03R\x08sat_sent\x12\x1a\n\x08sat_recv\x18\x07 \x01(\x03R\x08sat_recv\x12\x18\n\x07inbound\x18\x08 \x01(\x08R\x07inbound\x12\x1c\n\tping_time\x18\t \x01(\x03R\tping_time\x12\x32\n\tsync_type\x18\n \x01(\x0e\x32\x14.lnrpc.Peer.SyncTypeR\tsync_type\"?\n\x08SyncType\x12\x10\n\x0cUNKNOWN_SYNC\x10\x00\x12\x0f\n\x0b\x41\x43TIVE_SYNC\x10\x01\x12\x10\n\x0cPASSIVE_SYNC\x10\x02\"\x12\n\x10ListPeersRequest\"6\n\x11ListPeersResponse\x12!\n\x05peers\x18\x01 \x03(\x0b\x32\x0b.lnrpc.PeerR\x05peers\"\x10\n\x0eGetInfoRequest\"\xbd\x04\n\x0fGetInfoResponse\x12(\n\x0fidentity_pubkey\x18\x01 \x01(\tR\x0fidentity_pubkey\x12\x14\n\x05\x61lias\x18\x02 \x01(\tR\x05\x61lias\x12\x32\n\x14num_pending_channels\x18\x03 \x01(\rR\x14num_pending_channels\x12\x30\n\x13num_active_channels\x18\x04 \x01(\rR\x13num_active_channels\x12\x1c\n\tnum_peers\x18\x05 \x01(\rR\tnum_peers\x12\"\n\x0c\x62lock_height\x18\x06 \x01(\rR\x0c\x62lock_height\x12\x1e\n\nblock_hash\x18\x08 \x01(\tR\nblock_hash\x12(\n\x0fsynced_to_chain\x18\t \x01(\x08R\x0fsynced_to_chain\x12\x1c\n\x07testnet\x18\n \x01(\x08\x42\x02\x18\x01R\x07testnet\x12\x12\n\x04uris\x18\x0c \x03(\tR\x04uris\x12\x34\n\x15\x62\x65st_header_timestamp\x18\r \x01(\x03R\x15\x62\x65st_header_timestamp\x12\x18\n\x07version\x18\x0e \x01(\tR\x07version\x12\x34\n\x15num_inactive_channels\x18\x0f \x01(\rR\x15num_inactive_channels\x12$\n\x06\x63hains\x18\x10 \x03(\x0b\x32\x0c.lnrpc.ChainR\x06\x63hains\x12\x14\n\x05\x63olor\x18\x11 \x01(\tR\x05\x63olorJ\x04\x08\x0b\x10\x0c\"7\n\x05\x43hain\x12\x14\n\x05\x63hain\x18\x01 \x01(\tR\x05\x63hain\x12\x18\n\x07network\x18\x02 \x01(\tR\x07network\"U\n\x12\x43onfirmationUpdate\x12\x11\n\tblock_sha\x18\x01 \x01(\x0c\x12\x14\n\x0c\x62lock_height\x18\x02 \x01(\x05\x12\x16\n\x0enum_confs_left\x18\x03 \x01(\r\"N\n\x11\x43hannelOpenUpdate\x12\x39\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPointR\rchannel_point\"R\n\x12\x43hannelCloseUpdate\x12\"\n\x0c\x63losing_txid\x18\x01 \x01(\x0cR\x0c\x63losing_txid\x12\x18\n\x07success\x18\x02 \x01(\x08R\x07success\"{\n\x13\x43loseChannelRequest\x12*\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\x12\r\n\x05\x66orce\x18\x02 \x01(\x08\x12\x13\n\x0btarget_conf\x18\x03 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x04 \x01(\x03\"\x98\x01\n\x11\x43loseStatusUpdate\x12<\n\rclose_pending\x18\x01 \x01(\x0b\x32\x14.lnrpc.PendingUpdateH\x00R\rclose_pending\x12;\n\nchan_close\x18\x03 \x01(\x0b\x32\x19.lnrpc.ChannelCloseUpdateH\x00R\nchan_closeB\x08\n\x06update\"G\n\rPendingUpdate\x12\x12\n\x04txid\x18\x01 \x01(\x0cR\x04txid\x12\"\n\x0coutput_index\x18\x02 \x01(\rR\x0coutput_index\"\x99\x03\n\x12OpenChannelRequest\x12 \n\x0bnode_pubkey\x18\x02 \x01(\x0cR\x0bnode_pubkey\x12.\n\x12node_pubkey_string\x18\x03 \x01(\tR\x12node_pubkey_string\x12\x32\n\x14local_funding_amount\x18\x04 \x01(\x03R\x14local_funding_amount\x12\x1a\n\x08push_sat\x18\x05 \x01(\x03R\x08push_sat\x12\x13\n\x0btarget_conf\x18\x06 \x01(\x05\x12\x14\n\x0csat_per_byte\x18\x07 \x01(\x03\x12\x18\n\x07private\x18\x08 \x01(\x08R\x07private\x12$\n\rmin_htlc_msat\x18\t \x01(\x03R\rmin_htlc_msat\x12*\n\x10remote_csv_delay\x18\n \x01(\rR\x10remote_csv_delay\x12\x1c\n\tmin_confs\x18\x0b \x01(\x05R\tmin_confs\x12,\n\x11spend_unconfirmed\x18\x0c \x01(\x08R\x11spend_unconfirmed\"\x92\x01\n\x10OpenStatusUpdate\x12:\n\x0c\x63han_pending\x18\x01 \x01(\x0b\x32\x14.lnrpc.PendingUpdateH\x00R\x0c\x63han_pending\x12\x38\n\tchan_open\x18\x03 \x01(\x0b\x32\x18.lnrpc.ChannelOpenUpdateH\x00R\tchan_openB\x08\n\x06update\"\xcf\x01\n\x0bPendingHTLC\x12\x1a\n\x08incoming\x18\x01 \x01(\x08R\x08incoming\x12\x16\n\x06\x61mount\x18\x02 \x01(\x03R\x06\x61mount\x12\x1a\n\x08outpoint\x18\x03 \x01(\tR\x08outpoint\x12(\n\x0fmaturity_height\x18\x04 \x01(\rR\x0fmaturity_height\x12\x30\n\x13\x62locks_til_maturity\x18\x05 \x01(\x05R\x13\x62locks_til_maturity\x12\x14\n\x05stage\x18\x06 \x01(\rR\x05stage\"\x18\n\x16PendingChannelsRequest\"\xaa\x0c\n\x17PendingChannelsResponse\x12\x30\n\x13total_limbo_balance\x18\x01 \x01(\x03R\x13total_limbo_balance\x12g\n\x15pending_open_channels\x18\x02 \x03(\x0b\x32\x31.lnrpc.PendingChannelsResponse.PendingOpenChannelR\x15pending_open_channels\x12h\n\x18pending_closing_channels\x18\x03 \x03(\x0b\x32,.lnrpc.PendingChannelsResponse.ClosedChannelR\x18pending_closing_channels\x12y\n\x1epending_force_closing_channels\x18\x04 \x03(\x0b\x32\x31.lnrpc.PendingChannelsResponse.ForceClosedChannelR\x1epending_force_closing_channels\x12j\n\x16waiting_close_channels\x18\x05 \x03(\x0b\x32\x32.lnrpc.PendingChannelsResponse.WaitingCloseChannelR\x16waiting_close_channels\x1a\xca\x01\n\x0ePendingChannel\x12(\n\x0fremote_node_pub\x18\x01 \x01(\tR\x0fremote_node_pub\x12$\n\rchannel_point\x18\x02 \x01(\tR\rchannel_point\x12\x1a\n\x08\x63\x61pacity\x18\x03 \x01(\x03R\x08\x63\x61pacity\x12$\n\rlocal_balance\x18\x04 \x01(\x03R\rlocal_balance\x12&\n\x0eremote_balance\x18\x05 \x01(\x03R\x0eremote_balance\x1a\xf5\x01\n\x12PendingOpenChannel\x12G\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannelR\x07\x63hannel\x12\x30\n\x13\x63onfirmation_height\x18\x02 \x01(\rR\x13\x63onfirmation_height\x12\x1e\n\ncommit_fee\x18\x04 \x01(\x03R\ncommit_fee\x12$\n\rcommit_weight\x18\x05 \x01(\x03R\rcommit_weight\x12\x1e\n\nfee_per_kw\x18\x06 \x01(\x03R\nfee_per_kw\x1a{\n\x13WaitingCloseChannel\x12>\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannel\x12$\n\rlimbo_balance\x18\x02 \x01(\x03R\rlimbo_balance\x1as\n\rClosedChannel\x12>\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannel\x12\"\n\x0c\x63losing_txid\x18\x02 \x01(\tR\x0c\x63losing_txid\x1a\xeb\x02\n\x12\x46orceClosedChannel\x12G\n\x07\x63hannel\x18\x01 \x01(\x0b\x32-.lnrpc.PendingChannelsResponse.PendingChannelR\x07\x63hannel\x12\"\n\x0c\x63losing_txid\x18\x02 \x01(\tR\x0c\x63losing_txid\x12$\n\rlimbo_balance\x18\x03 \x01(\x03R\rlimbo_balance\x12(\n\x0fmaturity_height\x18\x04 \x01(\rR\x0fmaturity_height\x12\x30\n\x13\x62locks_til_maturity\x18\x05 \x01(\x05R\x13\x62locks_til_maturity\x12,\n\x11recovered_balance\x18\x06 \x01(\x03R\x11recovered_balance\x12\x38\n\rpending_htlcs\x18\x08 \x03(\x0b\x32\x12.lnrpc.PendingHTLCR\rpending_htlcs\"\x1a\n\x18\x43hannelEventSubscription\"\xb5\x03\n\x12\x43hannelEventUpdate\x12\x34\n\x0copen_channel\x18\x01 \x01(\x0b\x32\x0e.lnrpc.ChannelH\x00R\x0copen_channel\x12\x44\n\x0e\x63losed_channel\x18\x02 \x01(\x0b\x32\x1a.lnrpc.ChannelCloseSummaryH\x00R\x0e\x63losed_channel\x12=\n\x0e\x61\x63tive_channel\x18\x03 \x01(\x0b\x32\x13.lnrpc.ChannelPointH\x00R\x0e\x61\x63tive_channel\x12\x41\n\x10inactive_channel\x18\x04 \x01(\x0b\x32\x13.lnrpc.ChannelPointH\x00R\x10inactive_channel\x12\x38\n\x04type\x18\x05 \x01(\x0e\x32$.lnrpc.ChannelEventUpdate.UpdateTypeR\x04type\"\\\n\nUpdateType\x12\x10\n\x0cOPEN_CHANNEL\x10\x00\x12\x12\n\x0e\x43LOSED_CHANNEL\x10\x01\x12\x12\n\x0e\x41\x43TIVE_CHANNEL\x10\x02\x12\x14\n\x10INACTIVE_CHANNEL\x10\x03\x42\t\n\x07\x63hannel\"\x16\n\x14WalletBalanceRequest\"\x9d\x01\n\x15WalletBalanceResponse\x12$\n\rtotal_balance\x18\x01 \x01(\x03R\rtotal_balance\x12,\n\x11\x63onfirmed_balance\x18\x02 \x01(\x03R\x11\x63onfirmed_balance\x12\x30\n\x13unconfirmed_balance\x18\x03 \x01(\x03R\x13unconfirmed_balance\"\x17\n\x15\x43hannelBalanceRequest\"f\n\x16\x43hannelBalanceResponse\x12\x18\n\x07\x62\x61lance\x18\x01 \x01(\x03R\x07\x62\x61lance\x12\x32\n\x14pending_open_balance\x18\x02 \x01(\x03R\x14pending_open_balance\"\xd0\x01\n\x12QueryRoutesRequest\x12\x0f\n\x07pub_key\x18\x01 \x01(\t\x12\x0b\n\x03\x61mt\x18\x02 \x01(\x03\x12\x18\n\x10\x66inal_cltv_delta\x18\x04 \x01(\x05\x12\"\n\tfee_limit\x18\x05 \x01(\x0b\x32\x0f.lnrpc.FeeLimit\x12\x15\n\rignored_nodes\x18\x06 \x03(\x0c\x12)\n\rignored_edges\x18\x07 \x03(\x0b\x32\x12.lnrpc.EdgeLocator\x12\x16\n\x0esource_pub_key\x18\x08 \x01(\tJ\x04\x08\x03\x10\x04\"<\n\x0b\x45\x64geLocator\x12\x12\n\nchannel_id\x18\x01 \x01(\x04\x12\x19\n\x11\x64irection_reverse\x18\x02 \x01(\x08\";\n\x13QueryRoutesResponse\x12$\n\x06routes\x18\x01 \x03(\x0b\x32\x0c.lnrpc.RouteR\x06routes\"\x87\x02\n\x03Hop\x12\x18\n\x07\x63han_id\x18\x01 \x01(\x04R\x07\x63han_id\x12$\n\rchan_capacity\x18\x02 \x01(\x03R\rchan_capacity\x12*\n\x0e\x61mt_to_forward\x18\x03 \x01(\x03\x42\x02\x18\x01R\x0e\x61mt_to_forward\x12\x14\n\x03\x66\x65\x65\x18\x04 \x01(\x03\x42\x02\x18\x01R\x03\x66\x65\x65\x12\x16\n\x06\x65xpiry\x18\x05 \x01(\rR\x06\x65xpiry\x12\x30\n\x13\x61mt_to_forward_msat\x18\x06 \x01(\x03R\x13\x61mt_to_forward_msat\x12\x1a\n\x08\x66\x65\x65_msat\x18\x07 \x01(\x03R\x08\x66\x65\x65_msat\x12\x18\n\x07pub_key\x18\x08 \x01(\tR\x07pub_key\"\xe9\x01\n\x05Route\x12(\n\x0ftotal_time_lock\x18\x01 \x01(\rR\x0ftotal_time_lock\x12\"\n\ntotal_fees\x18\x02 \x01(\x03\x42\x02\x18\x01R\ntotal_fees\x12 \n\ttotal_amt\x18\x03 \x01(\x03\x42\x02\x18\x01R\ttotal_amt\x12\x1e\n\x04hops\x18\x04 \x03(\x0b\x32\n.lnrpc.HopR\x04hops\x12(\n\x0ftotal_fees_msat\x18\x05 \x01(\x03R\x0ftotal_fees_msat\x12&\n\x0etotal_amt_msat\x18\x06 \x01(\x03R\x0etotal_amt_msat\"\"\n\x0fNodeInfoRequest\x12\x0f\n\x07pub_key\x18\x01 \x01(\t\"\xb0\x01\n\x08NodeInfo\x12(\n\x04node\x18\x01 \x01(\x0b\x32\x14.lnrpc.LightningNodeR\x04node\x12\"\n\x0cnum_channels\x18\x02 \x01(\rR\x0cnum_channels\x12&\n\x0etotal_capacity\x18\x03 \x01(\x03R\x0etotal_capacity\x12.\n\x08\x63hannels\x18\x04 \x03(\x0b\x32\x12.lnrpc.ChannelEdgeR\x08\x63hannels\"\xa9\x01\n\rLightningNode\x12 \n\x0blast_update\x18\x01 \x01(\rR\x0blast_update\x12\x18\n\x07pub_key\x18\x02 \x01(\tR\x07pub_key\x12\x14\n\x05\x61lias\x18\x03 \x01(\tR\x05\x61lias\x12\x30\n\taddresses\x18\x04 \x03(\x0b\x32\x12.lnrpc.NodeAddressR\taddresses\x12\x14\n\x05\x63olor\x18\x05 \x01(\tR\x05\x63olor\";\n\x0bNodeAddress\x12\x18\n\x07network\x18\x01 \x01(\tR\x07network\x12\x12\n\x04\x61\x64\x64r\x18\x02 \x01(\tR\x04\x61\x64\x64r\"\xef\x01\n\rRoutingPolicy\x12(\n\x0ftime_lock_delta\x18\x01 \x01(\rR\x0ftime_lock_delta\x12\x1a\n\x08min_htlc\x18\x02 \x01(\x03R\x08min_htlc\x12$\n\rfee_base_msat\x18\x03 \x01(\x03R\rfee_base_msat\x12\x30\n\x13\x66\x65\x65_rate_milli_msat\x18\x04 \x01(\x03R\x13\x66\x65\x65_rate_milli_msat\x12\x1a\n\x08\x64isabled\x18\x05 \x01(\x08R\x08\x64isabled\x12$\n\rmax_htlc_msat\x18\x06 \x01(\x04R\rmax_htlc_msat\"\xbb\x02\n\x0b\x43hannelEdge\x12\x1e\n\nchannel_id\x18\x01 \x01(\x04R\nchannel_id\x12\x1e\n\nchan_point\x18\x02 \x01(\tR\nchan_point\x12 \n\x0blast_update\x18\x03 \x01(\rR\x0blast_update\x12\x1c\n\tnode1_pub\x18\x04 \x01(\tR\tnode1_pub\x12\x1c\n\tnode2_pub\x18\x05 \x01(\tR\tnode2_pub\x12\x1a\n\x08\x63\x61pacity\x18\x06 \x01(\x03R\x08\x63\x61pacity\x12\x38\n\x0cnode1_policy\x18\x07 \x01(\x0b\x32\x14.lnrpc.RoutingPolicyR\x0cnode1_policy\x12\x38\n\x0cnode2_policy\x18\x08 \x01(\x0b\x32\x14.lnrpc.RoutingPolicyR\x0cnode2_policy\"G\n\x13\x43hannelGraphRequest\x12\x30\n\x13include_unannounced\x18\x01 \x01(\x08R\x13include_unannounced\"d\n\x0c\x43hannelGraph\x12*\n\x05nodes\x18\x01 \x03(\x0b\x32\x14.lnrpc.LightningNodeR\x05nodes\x12(\n\x05\x65\x64ges\x18\x02 \x03(\x0b\x32\x12.lnrpc.ChannelEdgeR\x05\x65\x64ges\"\"\n\x0f\x43hanInfoRequest\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\"\x14\n\x12NetworkInfoRequest\"\xbd\x03\n\x0bNetworkInfo\x12&\n\x0egraph_diameter\x18\x01 \x01(\rR\x0egraph_diameter\x12&\n\x0e\x61vg_out_degree\x18\x02 \x01(\x01R\x0e\x61vg_out_degree\x12&\n\x0emax_out_degree\x18\x03 \x01(\rR\x0emax_out_degree\x12\x1c\n\tnum_nodes\x18\x04 \x01(\rR\tnum_nodes\x12\"\n\x0cnum_channels\x18\x05 \x01(\rR\x0cnum_channels\x12\x36\n\x16total_network_capacity\x18\x06 \x01(\x03R\x16total_network_capacity\x12*\n\x10\x61vg_channel_size\x18\x07 \x01(\x01R\x10\x61vg_channel_size\x12*\n\x10min_channel_size\x18\x08 \x01(\x03R\x10min_channel_size\x12*\n\x10max_channel_size\x18\t \x01(\x03R\x10max_channel_size\x12\x38\n\x17median_channel_size_sat\x18\n \x01(\x03R\x17median_channel_size_sat\"\r\n\x0bStopRequest\"\x0e\n\x0cStopResponse\"\x1b\n\x19GraphTopologySubscription\"\xa3\x01\n\x13GraphTopologyUpdate\x12\'\n\x0cnode_updates\x18\x01 \x03(\x0b\x32\x11.lnrpc.NodeUpdate\x12\x31\n\x0f\x63hannel_updates\x18\x02 \x03(\x0b\x32\x18.lnrpc.ChannelEdgeUpdate\x12\x30\n\x0c\x63losed_chans\x18\x03 \x03(\x0b\x32\x1a.lnrpc.ClosedChannelUpdate\"l\n\nNodeUpdate\x12\x11\n\taddresses\x18\x01 \x03(\t\x12\x14\n\x0cidentity_key\x18\x02 \x01(\t\x12\x17\n\x0fglobal_features\x18\x03 \x01(\x0c\x12\r\n\x05\x61lias\x18\x04 \x01(\t\x12\r\n\x05\x63olor\x18\x05 \x01(\t\"\xc0\x01\n\x11\x43hannelEdgeUpdate\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\x12\'\n\nchan_point\x18\x02 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\x12\x10\n\x08\x63\x61pacity\x18\x03 \x01(\x03\x12,\n\x0erouting_policy\x18\x04 \x01(\x0b\x32\x14.lnrpc.RoutingPolicy\x12\x18\n\x10\x61\x64vertising_node\x18\x05 \x01(\t\x12\x17\n\x0f\x63onnecting_node\x18\x06 \x01(\t\"x\n\x13\x43losedChannelUpdate\x12\x0f\n\x07\x63han_id\x18\x01 \x01(\x04\x12\x10\n\x08\x63\x61pacity\x18\x02 \x01(\x03\x12\x15\n\rclosed_height\x18\x03 \x01(\r\x12\'\n\nchan_point\x18\x04 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\"\xd3\x01\n\x07HopHint\x12\x18\n\x07node_id\x18\x01 \x01(\tR\x07node_id\x12\x18\n\x07\x63han_id\x18\x02 \x01(\x04R\x07\x63han_id\x12$\n\rfee_base_msat\x18\x03 \x01(\rR\rfee_base_msat\x12@\n\x1b\x66\x65\x65_proportional_millionths\x18\x04 \x01(\rR\x1b\x66\x65\x65_proportional_millionths\x12,\n\x11\x63ltv_expiry_delta\x18\x05 \x01(\rR\x11\x63ltv_expiry_delta\"9\n\tRouteHint\x12,\n\thop_hints\x18\x01 \x03(\x0b\x32\x0e.lnrpc.HopHintR\thop_hints\"\x95\x06\n\x07Invoice\x12\x12\n\x04memo\x18\x01 \x01(\tR\x04memo\x12\x1c\n\x07receipt\x18\x02 \x01(\x0c\x42\x02\x18\x01R\x07receipt\x12\x1e\n\nr_preimage\x18\x03 \x01(\x0cR\nr_preimage\x12\x16\n\x06r_hash\x18\x04 \x01(\x0cR\x06r_hash\x12\x14\n\x05value\x18\x05 \x01(\x03R\x05value\x12\x1c\n\x07settled\x18\x06 \x01(\x08\x42\x02\x18\x01R\x07settled\x12$\n\rcreation_date\x18\x07 \x01(\x03R\rcreation_date\x12 \n\x0bsettle_date\x18\x08 \x01(\x03R\x0bsettle_date\x12(\n\x0fpayment_request\x18\t \x01(\tR\x0fpayment_request\x12*\n\x10\x64\x65scription_hash\x18\n \x01(\x0cR\x10\x64\x65scription_hash\x12\x16\n\x06\x65xpiry\x18\x0b \x01(\x03R\x06\x65xpiry\x12$\n\rfallback_addr\x18\x0c \x01(\tR\rfallback_addr\x12 \n\x0b\x63ltv_expiry\x18\r \x01(\x04R\x0b\x63ltv_expiry\x12\x32\n\x0broute_hints\x18\x0e \x03(\x0b\x32\x10.lnrpc.RouteHintR\x0broute_hints\x12\x18\n\x07private\x18\x0f \x01(\x08R\x07private\x12\x1c\n\tadd_index\x18\x10 \x01(\x04R\tadd_index\x12\"\n\x0csettle_index\x18\x11 \x01(\x04R\x0csettle_index\x12\x1e\n\x08\x61mt_paid\x18\x12 \x01(\x03\x42\x02\x18\x01R\x08\x61mt_paid\x12\"\n\x0c\x61mt_paid_sat\x18\x13 \x01(\x03R\x0c\x61mt_paid_sat\x12$\n\ramt_paid_msat\x18\x14 \x01(\x03R\ramt_paid_msat\x12\x31\n\x05state\x18\x15 \x01(\x0e\x32\x1b.lnrpc.Invoice.InvoiceStateR\x05state\"A\n\x0cInvoiceState\x12\x08\n\x04OPEN\x10\x00\x12\x0b\n\x07SETTLED\x10\x01\x12\x0c\n\x08\x43\x41NCELED\x10\x02\x12\x0c\n\x08\x41\x43\x43\x45PTED\x10\x03\"t\n\x12\x41\x64\x64InvoiceResponse\x12\x16\n\x06r_hash\x18\x01 \x01(\x0cR\x06r_hash\x12(\n\x0fpayment_request\x18\x02 \x01(\tR\x0fpayment_request\x12\x1c\n\tadd_index\x18\x10 \x01(\x04R\tadd_index\"E\n\x0bPaymentHash\x12\x1e\n\nr_hash_str\x18\x01 \x01(\tR\nr_hash_str\x12\x16\n\x06r_hash\x18\x02 \x01(\x0cR\x06r_hash\"\xa4\x01\n\x12ListInvoiceRequest\x12\"\n\x0cpending_only\x18\x01 \x01(\x08R\x0cpending_only\x12\"\n\x0cindex_offset\x18\x04 \x01(\x04R\x0cindex_offset\x12*\n\x10num_max_invoices\x18\x05 \x01(\x04R\x10num_max_invoices\x12\x1a\n\x08reversed\x18\x06 \x01(\x08R\x08reversed\"\x9f\x01\n\x13ListInvoiceResponse\x12*\n\x08invoices\x18\x01 \x03(\x0b\x32\x0e.lnrpc.InvoiceR\x08invoices\x12,\n\x11last_index_offset\x18\x02 \x01(\x04R\x11last_index_offset\x12.\n\x12\x66irst_index_offset\x18\x03 \x01(\x04R\x12\x66irst_index_offset\"W\n\x13InvoiceSubscription\x12\x1c\n\tadd_index\x18\x01 \x01(\x04R\tadd_index\x12\"\n\x0csettle_index\x18\x02 \x01(\x04R\x0csettle_index\"\xa5\x03\n\x07Payment\x12\"\n\x0cpayment_hash\x18\x01 \x01(\tR\x0cpayment_hash\x12\x18\n\x05value\x18\x02 \x01(\x03\x42\x02\x18\x01R\x05value\x12$\n\rcreation_date\x18\x03 \x01(\x03R\rcreation_date\x12\x12\n\x04path\x18\x04 \x03(\tR\x04path\x12\x10\n\x03\x66\x65\x65\x18\x05 \x01(\x03R\x03\x66\x65\x65\x12*\n\x10payment_preimage\x18\x06 \x01(\tR\x10payment_preimage\x12\x1c\n\tvalue_sat\x18\x07 \x01(\x03R\tvalue_sat\x12\x1e\n\nvalue_msat\x18\x08 \x01(\x03R\nvalue_msat\x12(\n\x0fpayment_request\x18\t \x01(\tR\x0fpayment_request\x12\x34\n\x06status\x18\n \x01(\x0e\x32\x1c.lnrpc.Payment.PaymentStatusR\x06status\"F\n\rPaymentStatus\x12\x0b\n\x07UNKNOWN\x10\x00\x12\r\n\tIN_FLIGHT\x10\x01\x12\r\n\tSUCCEEDED\x10\x02\x12\n\n\x06\x46\x41ILED\x10\x03\"1\n\x13ListPaymentsRequest\x12\x1a\n\x12include_incomplete\x18\x01 \x01(\x08\"B\n\x14ListPaymentsResponse\x12*\n\x08payments\x18\x01 \x03(\x0b\x32\x0e.lnrpc.PaymentR\x08payments\"\x1a\n\x18\x44\x65leteAllPaymentsRequest\"\x1b\n\x19\x44\x65leteAllPaymentsResponse\"C\n\x15\x41\x62\x61ndonChannelRequest\x12*\n\rchannel_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\"\x18\n\x16\x41\x62\x61ndonChannelResponse\"5\n\x11\x44\x65\x62ugLevelRequest\x12\x0c\n\x04show\x18\x01 \x01(\x08\x12\x12\n\nlevel_spec\x18\x02 \x01(\t\"6\n\x12\x44\x65\x62ugLevelResponse\x12 \n\x0bsub_systems\x18\x01 \x01(\tR\x0bsub_systems\"\x1f\n\x0cPayReqString\x12\x0f\n\x07pay_req\x18\x01 \x01(\t\"\xf2\x02\n\x06PayReq\x12 \n\x0b\x64\x65stination\x18\x01 \x01(\tR\x0b\x64\x65stination\x12\"\n\x0cpayment_hash\x18\x02 \x01(\tR\x0cpayment_hash\x12\"\n\x0cnum_satoshis\x18\x03 \x01(\x03R\x0cnum_satoshis\x12\x1c\n\ttimestamp\x18\x04 \x01(\x03R\ttimestamp\x12\x16\n\x06\x65xpiry\x18\x05 \x01(\x03R\x06\x65xpiry\x12 \n\x0b\x64\x65scription\x18\x06 \x01(\tR\x0b\x64\x65scription\x12*\n\x10\x64\x65scription_hash\x18\x07 \x01(\tR\x10\x64\x65scription_hash\x12$\n\rfallback_addr\x18\x08 \x01(\tR\rfallback_addr\x12 \n\x0b\x63ltv_expiry\x18\t \x01(\x03R\x0b\x63ltv_expiry\x12\x32\n\x0broute_hints\x18\n \x03(\x0b\x32\x10.lnrpc.RouteHintR\x0broute_hints\"\x12\n\x10\x46\x65\x65ReportRequest\"\x99\x01\n\x10\x43hannelFeeReport\x12!\n\nchan_point\x18\x01 \x01(\tR\rchannel_point\x12$\n\rbase_fee_msat\x18\x02 \x01(\x03R\rbase_fee_msat\x12 \n\x0b\x66\x65\x65_per_mil\x18\x03 \x01(\x03R\x0b\x66\x65\x65_per_mil\x12\x1a\n\x08\x66\x65\x65_rate\x18\x04 \x01(\x01R\x08\x66\x65\x65_rate\"\xbc\x01\n\x11\x46\x65\x65ReportResponse\x12;\n\x0c\x63hannel_fees\x18\x01 \x03(\x0b\x32\x17.lnrpc.ChannelFeeReportR\x0c\x63hannel_fees\x12 \n\x0b\x64\x61y_fee_sum\x18\x02 \x01(\x04R\x0b\x64\x61y_fee_sum\x12\"\n\x0cweek_fee_sum\x18\x03 \x01(\x04R\x0cweek_fee_sum\x12$\n\rmonth_fee_sum\x18\x04 \x01(\x04R\rmonth_fee_sum\"\xdb\x01\n\x13PolicyUpdateRequest\x12\x18\n\x06global\x18\x01 \x01(\x08H\x00R\x06global\x12\x35\n\nchan_point\x18\x02 \x01(\x0b\x32\x13.lnrpc.ChannelPointH\x00R\nchan_point\x12$\n\rbase_fee_msat\x18\x03 \x01(\x03R\rbase_fee_msat\x12\x1a\n\x08\x66\x65\x65_rate\x18\x04 \x01(\x01R\x08\x66\x65\x65_rate\x12(\n\x0ftime_lock_delta\x18\x05 \x01(\rR\x0ftime_lock_deltaB\x07\n\x05scope\"\x16\n\x14PolicyUpdateResponse\"\xa2\x01\n\x18\x46orwardingHistoryRequest\x12\x1e\n\nstart_time\x18\x01 \x01(\x04R\nstart_time\x12\x1a\n\x08\x65nd_time\x18\x02 \x01(\x04R\x08\x65nd_time\x12\"\n\x0cindex_offset\x18\x03 \x01(\rR\x0cindex_offset\x12&\n\x0enum_max_events\x18\x04 \x01(\rR\x0enum_max_events\"\xd1\x01\n\x0f\x46orwardingEvent\x12\x1c\n\ttimestamp\x18\x01 \x01(\x04R\ttimestamp\x12\x1e\n\nchan_id_in\x18\x02 \x01(\x04R\nchan_id_in\x12 \n\x0b\x63han_id_out\x18\x04 \x01(\x04R\x0b\x63han_id_out\x12\x16\n\x06\x61mt_in\x18\x05 \x01(\x04R\x06\x61mt_in\x12\x18\n\x07\x61mt_out\x18\x06 \x01(\x04R\x07\x61mt_out\x12\x10\n\x03\x66\x65\x65\x18\x07 \x01(\x04R\x03\x66\x65\x65\x12\x1a\n\x08\x66\x65\x65_msat\x18\x08 \x01(\x04R\x08\x66\x65\x65_msat\"\x8f\x01\n\x19\x46orwardingHistoryResponse\x12\x44\n\x11\x66orwarding_events\x18\x01 \x03(\x0b\x32\x16.lnrpc.ForwardingEventR\x11\x66orwarding_events\x12,\n\x11last_offset_index\x18\x02 \x01(\rR\x11last_offset_index\"E\n\x1a\x45xportChannelBackupRequest\x12\'\n\nchan_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPoint\"f\n\rChannelBackup\x12\x33\n\nchan_point\x18\x01 \x01(\x0b\x32\x13.lnrpc.ChannelPointR\nchan_point\x12 \n\x0b\x63han_backup\x18\x02 \x01(\x0cR\x0b\x63han_backup\"v\n\x0fMultiChanBackup\x12\x35\n\x0b\x63han_points\x18\x01 \x03(\x0b\x32\x13.lnrpc.ChannelPointR\x0b\x63han_points\x12,\n\x11multi_chan_backup\x18\x02 \x01(\x0cR\x11multi_chan_backup\"\x19\n\x17\x43hanBackupExportRequest\"\xa3\x01\n\x12\x43hanBackupSnapshot\x12G\n\x13single_chan_backups\x18\x01 \x01(\x0b\x32\x15.lnrpc.ChannelBackupsR\x13single_chan_backups\x12\x44\n\x11multi_chan_backup\x18\x02 \x01(\x0b\x32\x16.lnrpc.MultiChanBackupR\x11multi_chan_backup\"J\n\x0e\x43hannelBackups\x12\x38\n\x0c\x63han_backups\x18\x01 \x03(\x0b\x32\x14.lnrpc.ChannelBackupR\x0c\x63han_backups\"\x91\x01\n\x18RestoreChanBackupRequest\x12;\n\x0c\x63han_backups\x18\x01 \x01(\x0b\x32\x15.lnrpc.ChannelBackupsH\x00R\x0c\x63han_backups\x12.\n\x11multi_chan_backup\x18\x02 \x01(\x0cH\x00R\x11multi_chan_backupB\x08\n\x06\x62\x61\x63kup\"\x17\n\x15RestoreBackupResponse\"\x1b\n\x19\x43hannelBackupSubscription\"\x1a\n\x18VerifyChanBackupResponse*}\n\x0b\x41\x64\x64ressType\x12\x17\n\x13WITNESS_PUBKEY_HASH\x10\x00\x12\x16\n\x12NESTED_PUBKEY_HASH\x10\x01\x12\x1e\n\x1aUNUSED_WITNESS_PUBKEY_HASH\x10\x02\x12\x1d\n\x19UNUSED_NESTED_PUBKEY_HASH\x10\x03\x32\x91\x03\n\x0eWalletUnlocker\x12M\n\x07GenSeed\x12\x15.lnrpc.GenSeedRequest\x1a\x16.lnrpc.GenSeedResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\x0b/v1/genseed\x12\\\n\nInitWallet\x12\x18.lnrpc.InitWalletRequest\x1a\x19.lnrpc.InitWalletResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x0e/v1/initwallet:\x01*\x12\x64\n\x0cUnlockWallet\x12\x1a.lnrpc.UnlockWalletRequest\x1a\x1b.lnrpc.UnlockWalletResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/v1/unlockwallet:\x01*\x12l\n\x0e\x43hangePassword\x12\x1c.lnrpc.ChangePasswordRequest\x1a\x1d.lnrpc.ChangePasswordResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/v1/changepassword:\x01*2\x96&\n\tLightning\x12j\n\rWalletBalance\x12\x1b.lnrpc.WalletBalanceRequest\x1a\x1c.lnrpc.WalletBalanceResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/balance/blockchain\x12k\n\x0e\x43hannelBalance\x12\x1c.lnrpc.ChannelBalanceRequest\x1a\x1d.lnrpc.ChannelBalanceResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/balance/channels\x12\x65\n\x0fGetTransactions\x12\x1d.lnrpc.GetTransactionsRequest\x1a\x19.lnrpc.TransactionDetails\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12\x62\n\x0b\x45stimateFee\x12\x19.lnrpc.EstimateFeeRequest\x1a\x1a.lnrpc.EstimateFeeResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/transactions/fee\x12[\n\tSendCoins\x12\x17.lnrpc.SendCoinsRequest\x1a\x18.lnrpc.SendCoinsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/v1/transactions:\x01*\x12W\n\x0bListUnspent\x12\x19.lnrpc.ListUnspentRequest\x1a\x1a.lnrpc.ListUnspentResponse\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/utxos\x12L\n\x15SubscribeTransactions\x12\x1d.lnrpc.GetTransactionsRequest\x1a\x12.lnrpc.Transaction0\x01\x12;\n\x08SendMany\x12\x16.lnrpc.SendManyRequest\x1a\x17.lnrpc.SendManyResponse\x12Y\n\nNewAddress\x12\x18.lnrpc.NewAddressRequest\x1a\x19.lnrpc.NewAddressResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/newaddress\x12`\n\x0bSignMessage\x12\x19.lnrpc.SignMessageRequest\x1a\x1a.lnrpc.SignMessageResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\"\x0f/v1/signmessage:\x01*\x12h\n\rVerifyMessage\x12\x1b.lnrpc.VerifyMessageRequest\x1a\x1c.lnrpc.VerifyMessageResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/v1/verifymessage:\x01*\x12Z\n\x0b\x43onnectPeer\x12\x19.lnrpc.ConnectPeerRequest\x1a\x1a.lnrpc.ConnectPeerResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\"\t/v1/peers:\x01*\x12j\n\x0e\x44isconnectPeer\x12\x1c.lnrpc.DisconnectPeerRequest\x1a\x1d.lnrpc.DisconnectPeerResponse\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/peers/{pub_key}\x12Q\n\tListPeers\x12\x17.lnrpc.ListPeersRequest\x1a\x18.lnrpc.ListPeersResponse\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/peers\x12M\n\x07GetInfo\x12\x15.lnrpc.GetInfoRequest\x1a\x16.lnrpc.GetInfoResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\x0b/v1/getinfo\x12n\n\x0fPendingChannels\x12\x1d.lnrpc.PendingChannelsRequest\x1a\x1e.lnrpc.PendingChannelsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/channels/pending\x12]\n\x0cListChannels\x12\x1a.lnrpc.ListChannelsRequest\x1a\x1b.lnrpc.ListChannelsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/channels\x12V\n\x16SubscribeChannelEvents\x12\x1f.lnrpc.ChannelEventSubscription\x1a\x19.lnrpc.ChannelEventUpdate0\x01\x12j\n\x0e\x43losedChannels\x12\x1c.lnrpc.ClosedChannelsRequest\x1a\x1d.lnrpc.ClosedChannelsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/channels/closed\x12Z\n\x0fOpenChannelSync\x12\x19.lnrpc.OpenChannelRequest\x1a\x13.lnrpc.ChannelPoint\"\x17\x82\xd3\xe4\x93\x02\x11\"\x0c/v1/channels:\x01*\x12\x43\n\x0bOpenChannel\x12\x19.lnrpc.OpenChannelRequest\x1a\x17.lnrpc.OpenStatusUpdate0\x01\x12\x9a\x01\n\x0c\x43loseChannel\x12\x1a.lnrpc.CloseChannelRequest\x1a\x18.lnrpc.CloseStatusUpdate\"R\x82\xd3\xe4\x93\x02L*J/v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}0\x01\x12\xa9\x01\n\x0e\x41\x62\x61ndonChannel\x12\x1c.lnrpc.AbandonChannelRequest\x1a\x1d.lnrpc.AbandonChannelResponse\"Z\x82\xd3\xe4\x93\x02T*R/v1/channels/abandon/{channel_point.funding_txid_str}/{channel_point.output_index}\x12:\n\x0bSendPayment\x12\x12.lnrpc.SendRequest\x1a\x13.lnrpc.SendResponse(\x01\x30\x01\x12`\n\x0fSendPaymentSync\x12\x12.lnrpc.SendRequest\x1a\x13.lnrpc.SendResponse\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/v1/channels/transactions:\x01*\x12\x41\n\x0bSendToRoute\x12\x19.lnrpc.SendToRouteRequest\x1a\x13.lnrpc.SendResponse(\x01\x30\x01\x12m\n\x0fSendToRouteSync\x12\x19.lnrpc.SendToRouteRequest\x1a\x13.lnrpc.SendResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/v1/channels/transactions/route:\x01*\x12P\n\nAddInvoice\x12\x0e.lnrpc.Invoice\x1a\x19.lnrpc.AddInvoiceResponse\"\x17\x82\xd3\xe4\x93\x02\x11\"\x0c/v1/invoices:\x01*\x12[\n\x0cListInvoices\x12\x19.lnrpc.ListInvoiceRequest\x1a\x1a.lnrpc.ListInvoiceResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/invoices\x12U\n\rLookupInvoice\x12\x12.lnrpc.PaymentHash\x1a\x0e.lnrpc.Invoice\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/invoice/{r_hash_str}\x12\x61\n\x11SubscribeInvoices\x12\x1a.lnrpc.InvoiceSubscription\x1a\x0e.lnrpc.Invoice\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/v1/invoices/subscribe0\x01\x12P\n\x0c\x44\x65\x63odePayReq\x12\x13.lnrpc.PayReqString\x1a\r.lnrpc.PayReq\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/payreq/{pay_req}\x12]\n\x0cListPayments\x12\x1a.lnrpc.ListPaymentsRequest\x1a\x1b.lnrpc.ListPaymentsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\x0c/v1/payments\x12l\n\x11\x44\x65leteAllPayments\x12\x1f.lnrpc.DeleteAllPaymentsRequest\x1a .lnrpc.DeleteAllPaymentsResponse\"\x14\x82\xd3\xe4\x93\x02\x0e*\x0c/v1/payments\x12S\n\rDescribeGraph\x12\x1a.lnrpc.ChannelGraphRequest\x1a\x13.lnrpc.ChannelGraph\"\x11\x82\xd3\xe4\x93\x02\x0b\x12\t/v1/graph\x12[\n\x0bGetChanInfo\x12\x16.lnrpc.ChanInfoRequest\x1a\x12.lnrpc.ChannelEdge\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/graph/edge/{chan_id}\x12X\n\x0bGetNodeInfo\x12\x16.lnrpc.NodeInfoRequest\x1a\x0f.lnrpc.NodeInfo\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/v1/graph/node/{pub_key}\x12n\n\x0bQueryRoutes\x12\x19.lnrpc.QueryRoutesRequest\x1a\x1a.lnrpc.QueryRoutesResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/graph/routes/{pub_key}/{amt}\x12W\n\x0eGetNetworkInfo\x12\x19.lnrpc.NetworkInfoRequest\x1a\x12.lnrpc.NetworkInfo\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/graph/info\x12\x35\n\nStopDaemon\x12\x12.lnrpc.StopRequest\x1a\x13.lnrpc.StopResponse\x12W\n\x15SubscribeChannelGraph\x12 .lnrpc.GraphTopologySubscription\x1a\x1a.lnrpc.GraphTopologyUpdate0\x01\x12\x41\n\nDebugLevel\x12\x18.lnrpc.DebugLevelRequest\x1a\x19.lnrpc.DebugLevelResponse\x12P\n\tFeeReport\x12\x17.lnrpc.FeeReportRequest\x1a\x18.lnrpc.FeeReportResponse\"\x10\x82\xd3\xe4\x93\x02\n\x12\x08/v1/fees\x12i\n\x13UpdateChannelPolicy\x12\x1a.lnrpc.PolicyUpdateRequest\x1a\x1b.lnrpc.PolicyUpdateResponse\"\x19\x82\xd3\xe4\x93\x02\x13\"\x0e/v1/chanpolicy:\x01*\x12m\n\x11\x46orwardingHistory\x12\x1f.lnrpc.ForwardingHistoryRequest\x1a .lnrpc.ForwardingHistoryResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\"\n/v1/switch:\x01*\x12\xa3\x01\n\x13\x45xportChannelBackup\x12!.lnrpc.ExportChannelBackupRequest\x1a\x14.lnrpc.ChannelBackup\"S\x82\xd3\xe4\x93\x02M\x12K/v1/channels/backup/{chan_point.funding_txid_str}/{chan_point.output_index}\x12q\n\x17\x45xportAllChannelBackups\x12\x1e.lnrpc.ChanBackupExportRequest\x1a\x19.lnrpc.ChanBackupSnapshot\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/channels/backup\x12u\n\x10VerifyChanBackup\x12\x19.lnrpc.ChanBackupSnapshot\x1a\x1f.lnrpc.VerifyChanBackupResponse\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/v1/channels/backup/verify:\x01*\x12~\n\x15RestoreChannelBackups\x12\x1f.lnrpc.RestoreChanBackupRequest\x1a\x1c.lnrpc.RestoreBackupResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/v1/channels/backup/restore:\x01*\x12Z\n\x17SubscribeChannelBackups\x12 .lnrpc.ChannelBackupSubscription\x1a\x19.lnrpc.ChanBackupSnapshot\"\x00\x30\x01\x42\'Z%github.com/lightningnetwork/lnd/lnrpcb\x06proto3')
   ,
   dependencies=[google_dot_api_dot_annotations__pb2.DESCRIPTOR,])
 
@@ -39,17 +39,27 @@ _ADDRESSTYPE = _descriptor.EnumDescriptor(
       name='NESTED_PUBKEY_HASH', index=1, number=1,
       serialized_options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='UNUSED_WITNESS_PUBKEY_HASH', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='UNUSED_NESTED_PUBKEY_HASH', index=3, number=3,
+      serialized_options=None,
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=15552,
-  serialized_end=15614,
+  serialized_start=18166,
+  serialized_end=18291,
 )
 _sym_db.RegisterEnumDescriptor(_ADDRESSTYPE)
 
 AddressType = enum_type_wrapper.EnumTypeWrapper(_ADDRESSTYPE)
 WITNESS_PUBKEY_HASH = 0
 NESTED_PUBKEY_HASH = 1
+UNUSED_WITNESS_PUBKEY_HASH = 2
+UNUSED_NESTED_PUBKEY_HASH = 3
 
 
 _CHANNELCLOSESUMMARY_CLOSURETYPE = _descriptor.EnumDescriptor(
@@ -85,10 +95,126 @@ _CHANNELCLOSESUMMARY_CLOSURETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4314,
-  serialized_end=4452,
+  serialized_start=4957,
+  serialized_end=5095,
 )
 _sym_db.RegisterEnumDescriptor(_CHANNELCLOSESUMMARY_CLOSURETYPE)
+
+_PEER_SYNCTYPE = _descriptor.EnumDescriptor(
+  name='SyncType',
+  full_name='lnrpc.Peer.SyncType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UNKNOWN_SYNC', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ACTIVE_SYNC', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='PASSIVE_SYNC', index=2, number=2,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=5619,
+  serialized_end=5682,
+)
+_sym_db.RegisterEnumDescriptor(_PEER_SYNCTYPE)
+
+_CHANNELEVENTUPDATE_UPDATETYPE = _descriptor.EnumDescriptor(
+  name='UpdateType',
+  full_name='lnrpc.ChannelEventUpdate.UpdateType',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OPEN_CHANNEL', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CLOSED_CHANNEL', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ACTIVE_CHANNEL', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='INACTIVE_CHANNEL', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=9756,
+  serialized_end=9848,
+)
+_sym_db.RegisterEnumDescriptor(_CHANNELEVENTUPDATE_UPDATETYPE)
+
+_INVOICE_INVOICESTATE = _descriptor.EnumDescriptor(
+  name='InvoiceState',
+  full_name='lnrpc.Invoice.InvoiceState',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='OPEN', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SETTLED', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CANCELED', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='ACCEPTED', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=14350,
+  serialized_end=14415,
+)
+_sym_db.RegisterEnumDescriptor(_INVOICE_INVOICESTATE)
+
+_PAYMENT_PAYMENTSTATUS = _descriptor.EnumDescriptor(
+  name='PaymentStatus',
+  full_name='lnrpc.Payment.PaymentStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UNKNOWN', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='IN_FLIGHT', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SUCCEEDED', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='FAILED', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=15376,
+  serialized_end=15446,
+)
+_sym_db.RegisterEnumDescriptor(_PAYMENT_PAYMENTSTATUS)
 
 
 _GENSEEDREQUEST = _descriptor.Descriptor(
@@ -202,6 +328,13 @@ _INITWALLETREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='channel_backups', full_name='lnrpc.InitWalletRequest.channel_backups', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -214,8 +347,8 @@ _INITWALLETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=191,
-  serialized_end=317,
+  serialized_start=192,
+  serialized_end=370,
 )
 
 
@@ -238,8 +371,8 @@ _INITWALLETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=319,
-  serialized_end=339,
+  serialized_start=372,
+  serialized_end=392,
 )
 
 
@@ -264,6 +397,13 @@ _UNLOCKWALLETREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='channel_backups', full_name='lnrpc.UnlockWalletRequest.channel_backups', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -276,8 +416,8 @@ _UNLOCKWALLETREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=341,
-  serialized_end=412,
+  serialized_start=394,
+  serialized_end=517,
 )
 
 
@@ -300,8 +440,8 @@ _UNLOCKWALLETRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=414,
-  serialized_end=436,
+  serialized_start=519,
+  serialized_end=541,
 )
 
 
@@ -338,8 +478,8 @@ _CHANGEPASSWORDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=438,
-  serialized_end=509,
+  serialized_start=543,
+  serialized_end=614,
 )
 
 
@@ -362,8 +502,8 @@ _CHANGEPASSWORDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=511,
-  serialized_end=535,
+  serialized_start=616,
+  serialized_end=640,
 )
 
 
@@ -396,12 +536,12 @@ _UTXO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='amount_sat', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='script_pubkey', full_name='lnrpc.Utxo.script_pubkey', index=3,
+      name='pk_script', full_name='lnrpc.Utxo.pk_script', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='script_pubkey', file=DESCRIPTOR),
+      serialized_options=None, json_name='pk_script', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='outpoint', full_name='lnrpc.Utxo.outpoint', index=4,
       number=5, type=11, cpp_type=10, label=1,
@@ -428,8 +568,8 @@ _UTXO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=538,
-  serialized_end=775,
+  serialized_start=643,
+  serialized_end=868,
 )
 
 
@@ -496,6 +636,13 @@ _TRANSACTION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='dest_addresses', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='raw_tx_hex', full_name='lnrpc.Transaction.raw_tx_hex', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='raw_tx_hex', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -508,8 +655,8 @@ _TRANSACTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=778,
-  serialized_end=1059,
+  serialized_start=871,
+  serialized_end=1184,
 )
 
 
@@ -532,8 +679,8 @@ _GETTRANSACTIONSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1061,
-  serialized_end=1085,
+  serialized_start=1186,
+  serialized_end=1210,
 )
 
 
@@ -563,8 +710,8 @@ _TRANSACTIONDETAILS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1087,
-  serialized_end=1163,
+  serialized_start=1212,
+  serialized_end=1288,
 )
 
 
@@ -604,8 +751,8 @@ _FEELIMIT = _descriptor.Descriptor(
       name='limit', full_name='lnrpc.FeeLimit.limit',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1165,
-  serialized_end=1220,
+  serialized_start=1290,
+  serialized_end=1345,
 )
 
 
@@ -672,6 +819,20 @@ _SENDREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='outgoing_chan_id', full_name='lnrpc.SendRequest.outgoing_chan_id', index=8,
+      number=9, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='cltv_limit', full_name='lnrpc.SendRequest.cltv_limit', index=9,
+      number=10, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -684,8 +845,8 @@ _SENDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1223,
-  serialized_end=1422,
+  serialized_start=1348,
+  serialized_end=1593,
 )
 
 
@@ -736,8 +897,8 @@ _SENDRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1425,
-  serialized_end=1609,
+  serialized_start=1596,
+  serialized_end=1780,
 )
 
 
@@ -763,9 +924,9 @@ _SENDTOROUTEREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='routes', full_name='lnrpc.SendToRouteRequest.routes', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='route', full_name='lnrpc.SendToRouteRequest.route', index=2,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -781,8 +942,8 @@ _SENDTOROUTEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1611,
-  serialized_end=1712,
+  serialized_start=1782,
+  serialized_end=1888,
 )
 
 
@@ -829,8 +990,53 @@ _CHANNELPOINT = _descriptor.Descriptor(
       name='funding_txid', full_name='lnrpc.ChannelPoint.funding_txid',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1715,
-  serialized_end=1877,
+  serialized_start=1891,
+  serialized_end=2053,
+)
+
+
+_OUTPOINT = _descriptor.Descriptor(
+  name='OutPoint',
+  full_name='lnrpc.OutPoint',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='txid_bytes', full_name='lnrpc.OutPoint.txid_bytes', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='txid_bytes', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='txid_str', full_name='lnrpc.OutPoint.txid_str', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='txid_str', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='output_index', full_name='lnrpc.OutPoint.output_index', index=2,
+      number=3, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='output_index', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2055,
+  serialized_end=2161,
 )
 
 
@@ -867,8 +1073,121 @@ _LIGHTNINGADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1879,
-  serialized_end=1941,
+  serialized_start=2163,
+  serialized_end=2225,
+)
+
+
+_ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY = _descriptor.Descriptor(
+  name='AddrToAmountEntry',
+  full_name='lnrpc.EstimateFeeRequest.AddrToAmountEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='lnrpc.EstimateFeeRequest.AddrToAmountEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='lnrpc.EstimateFeeRequest.AddrToAmountEntry.value', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=_b('8\001'),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2338,
+  serialized_end=2389,
+)
+
+_ESTIMATEFEEREQUEST = _descriptor.Descriptor(
+  name='EstimateFeeRequest',
+  full_name='lnrpc.EstimateFeeRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='AddrToAmount', full_name='lnrpc.EstimateFeeRequest.AddrToAmount', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target_conf', full_name='lnrpc.EstimateFeeRequest.target_conf', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[_ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2228,
+  serialized_end=2389,
+)
+
+
+_ESTIMATEFEERESPONSE = _descriptor.Descriptor(
+  name='EstimateFeeResponse',
+  full_name='lnrpc.EstimateFeeResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='fee_sat', full_name='lnrpc.EstimateFeeResponse.fee_sat', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='fee_sat', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='feerate_sat_per_byte', full_name='lnrpc.EstimateFeeResponse.feerate_sat_per_byte', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='feerate_sat_per_byte', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2391,
+  serialized_end=2490,
 )
 
 
@@ -905,8 +1224,8 @@ _SENDMANYREQUEST_ADDRTOAMOUNTENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2070,
-  serialized_end=2121,
+  serialized_start=2338,
+  serialized_end=2389,
 )
 
 _SENDMANYREQUEST = _descriptor.Descriptor(
@@ -949,8 +1268,8 @@ _SENDMANYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1944,
-  serialized_end=2121,
+  serialized_start=2493,
+  serialized_end=2670,
 )
 
 
@@ -980,8 +1299,8 @@ _SENDMANYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2123,
-  serialized_end=2161,
+  serialized_start=2672,
+  serialized_end=2710,
 )
 
 
@@ -1020,6 +1339,13 @@ _SENDCOINSREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='send_all', full_name='lnrpc.SendCoinsRequest.send_all', index=4,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1032,8 +1358,8 @@ _SENDCOINSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2163,
-  serialized_end=2254,
+  serialized_start=2712,
+  serialized_end=2821,
 )
 
 
@@ -1063,8 +1389,8 @@ _SENDCOINSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2256,
-  serialized_end=2295,
+  serialized_start=2823,
+  serialized_end=2862,
 )
 
 
@@ -1101,8 +1427,8 @@ _LISTUNSPENTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2297,
-  serialized_end=2355,
+  serialized_start=2864,
+  serialized_end=2922,
 )
 
 
@@ -1132,8 +1458,8 @@ _LISTUNSPENTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2357,
-  serialized_end=2413,
+  serialized_start=2924,
+  serialized_end=2980,
 )
 
 
@@ -1163,8 +1489,8 @@ _NEWADDRESSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2415,
-  serialized_end=2468,
+  serialized_start=2982,
+  serialized_end=3035,
 )
 
 
@@ -1194,8 +1520,8 @@ _NEWADDRESSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2470,
-  serialized_end=2516,
+  serialized_start=3037,
+  serialized_end=3083,
 )
 
 
@@ -1225,8 +1551,8 @@ _SIGNMESSAGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2518,
-  serialized_end=2556,
+  serialized_start=3085,
+  serialized_end=3123,
 )
 
 
@@ -1256,8 +1582,8 @@ _SIGNMESSAGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2558,
-  serialized_end=2609,
+  serialized_start=3125,
+  serialized_end=3176,
 )
 
 
@@ -1294,8 +1620,8 @@ _VERIFYMESSAGEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2611,
-  serialized_end=2681,
+  serialized_start=3178,
+  serialized_end=3248,
 )
 
 
@@ -1332,8 +1658,8 @@ _VERIFYMESSAGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2683,
-  serialized_end=2752,
+  serialized_start=3250,
+  serialized_end=3319,
 )
 
 
@@ -1370,8 +1696,8 @@ _CONNECTPEERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2754,
-  serialized_end=2827,
+  serialized_start=3321,
+  serialized_end=3394,
 )
 
 
@@ -1394,8 +1720,8 @@ _CONNECTPEERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2829,
-  serialized_end=2850,
+  serialized_start=3396,
+  serialized_end=3417,
 )
 
 
@@ -1425,8 +1751,8 @@ _DISCONNECTPEERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2852,
-  serialized_end=2901,
+  serialized_start=3419,
+  serialized_end=3468,
 )
 
 
@@ -1449,8 +1775,8 @@ _DISCONNECTPEERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2903,
-  serialized_end=2927,
+  serialized_start=3470,
+  serialized_end=3494,
 )
 
 
@@ -1501,8 +1827,8 @@ _HTLC = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2930,
-  serialized_end=3064,
+  serialized_start=3497,
+  serialized_end=3631,
 )
 
 
@@ -1632,6 +1958,20 @@ _CHANNEL = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='private', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='initiator', full_name='lnrpc.Channel.initiator', index=17,
+      number=18, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='initiator', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='chan_status_flags', full_name='lnrpc.Channel.chan_status_flags', index=18,
+      number=19, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_status_flags', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1644,8 +1984,8 @@ _CHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3067,
-  serialized_end=3705,
+  serialized_start=3634,
+  serialized_end=4348,
 )
 
 
@@ -1696,8 +2036,8 @@ _LISTCHANNELSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3707,
-  serialized_end=3815,
+  serialized_start=4350,
+  serialized_end=4458,
 )
 
 
@@ -1727,8 +2067,8 @@ _LISTCHANNELSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3817,
-  serialized_end=3883,
+  serialized_start=4460,
+  serialized_end=4526,
 )
 
 
@@ -1822,8 +2162,8 @@ _CHANNELCLOSESUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3886,
-  serialized_end=4452,
+  serialized_start=4529,
+  serialized_end=5095,
 )
 
 
@@ -1888,8 +2228,8 @@ _CLOSEDCHANNELSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4455,
-  serialized_end=4603,
+  serialized_start=5098,
+  serialized_end=5246,
 )
 
 
@@ -1919,8 +2259,8 @@ _CLOSEDCHANNELSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4605,
-  serialized_end=4685,
+  serialized_start=5248,
+  serialized_end=5328,
 )
 
 
@@ -1987,11 +2327,19 @@ _PEER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='ping_time', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='sync_type', full_name='lnrpc.Peer.sync_type', index=8,
+      number=10, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='sync_type', file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
+    _PEER_SYNCTYPE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -1999,8 +2347,8 @@ _PEER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4688,
-  serialized_end=4922,
+  serialized_start=5331,
+  serialized_end=5682,
 )
 
 
@@ -2023,8 +2371,8 @@ _LISTPEERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4924,
-  serialized_end=4942,
+  serialized_start=5684,
+  serialized_end=5702,
 )
 
 
@@ -2054,8 +2402,8 @@ _LISTPEERSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4944,
-  serialized_end=4998,
+  serialized_start=5704,
+  serialized_end=5758,
 )
 
 
@@ -2078,8 +2426,8 @@ _GETINFOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5000,
-  serialized_end=5016,
+  serialized_start=5760,
+  serialized_end=5776,
 )
 
 
@@ -2152,42 +2500,49 @@ _GETINFORESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='testnet', file=DESCRIPTOR),
+      serialized_options=_b('\030\001'), json_name='testnet', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='chains', full_name='lnrpc.GetInfoResponse.chains', index=9,
-      number=11, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='chains', file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='uris', full_name='lnrpc.GetInfoResponse.uris', index=10,
+      name='uris', full_name='lnrpc.GetInfoResponse.uris', index=9,
       number=12, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='uris', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='best_header_timestamp', full_name='lnrpc.GetInfoResponse.best_header_timestamp', index=11,
+      name='best_header_timestamp', full_name='lnrpc.GetInfoResponse.best_header_timestamp', index=10,
       number=13, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='best_header_timestamp', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='version', full_name='lnrpc.GetInfoResponse.version', index=12,
+      name='version', full_name='lnrpc.GetInfoResponse.version', index=11,
       number=14, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='version', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='num_inactive_channels', full_name='lnrpc.GetInfoResponse.num_inactive_channels', index=13,
+      name='num_inactive_channels', full_name='lnrpc.GetInfoResponse.num_inactive_channels', index=12,
       number=15, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='num_inactive_channels', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='chains', full_name='lnrpc.GetInfoResponse.chains', index=13,
+      number=16, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chains', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='color', full_name='lnrpc.GetInfoResponse.color', index=14,
+      number=17, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='color', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -2200,8 +2555,46 @@ _GETINFORESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5019,
-  serialized_end=5546,
+  serialized_start=5779,
+  serialized_end=6352,
+)
+
+
+_CHAIN = _descriptor.Descriptor(
+  name='Chain',
+  full_name='lnrpc.Chain',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chain', full_name='lnrpc.Chain.chain', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chain', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='network', full_name='lnrpc.Chain.network', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='network', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=6354,
+  serialized_end=6409,
 )
 
 
@@ -2245,8 +2638,8 @@ _CONFIRMATIONUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5548,
-  serialized_end=5633,
+  serialized_start=6411,
+  serialized_end=6496,
 )
 
 
@@ -2276,8 +2669,8 @@ _CHANNELOPENUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5635,
-  serialized_end=5713,
+  serialized_start=6498,
+  serialized_end=6576,
 )
 
 
@@ -2314,8 +2707,8 @@ _CHANNELCLOSEUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5715,
-  serialized_end=5797,
+  serialized_start=6578,
+  serialized_end=6660,
 )
 
 
@@ -2366,8 +2759,8 @@ _CLOSECHANNELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5799,
-  serialized_end=5922,
+  serialized_start=6662,
+  serialized_end=6785,
 )
 
 
@@ -2386,14 +2779,7 @@ _CLOSESTATUSUPDATE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='close_pending', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='confirmation', full_name='lnrpc.CloseStatusUpdate.confirmation', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='confirmation', file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='chan_close', full_name='lnrpc.CloseStatusUpdate.chan_close', index=2,
+      name='chan_close', full_name='lnrpc.CloseStatusUpdate.chan_close', index=1,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -2414,8 +2800,8 @@ _CLOSESTATUSUPDATE = _descriptor.Descriptor(
       name='update', full_name='lnrpc.CloseStatusUpdate.update',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=5925,
-  serialized_end=6142,
+  serialized_start=6788,
+  serialized_end=6940,
 )
 
 
@@ -2452,8 +2838,8 @@ _PENDINGUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6144,
-  serialized_end=6215,
+  serialized_start=6942,
+  serialized_end=7013,
 )
 
 
@@ -2553,8 +2939,8 @@ _OPENCHANNELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6218,
-  serialized_end=6627,
+  serialized_start=7016,
+  serialized_end=7425,
 )
 
 
@@ -2573,14 +2959,7 @@ _OPENSTATUSUPDATE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='chan_pending', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='confirmation', full_name='lnrpc.OpenStatusUpdate.confirmation', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='confirmation', file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='chan_open', full_name='lnrpc.OpenStatusUpdate.chan_open', index=2,
+      name='chan_open', full_name='lnrpc.OpenStatusUpdate.chan_open', index=1,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -2601,8 +2980,8 @@ _OPENSTATUSUPDATE = _descriptor.Descriptor(
       name='update', full_name='lnrpc.OpenStatusUpdate.update',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=6630,
-  serialized_end=6841,
+  serialized_start=7428,
+  serialized_end=7574,
 )
 
 
@@ -2667,8 +3046,8 @@ _PENDINGHTLC = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=6844,
-  serialized_end=7051,
+  serialized_start=7577,
+  serialized_end=7784,
 )
 
 
@@ -2691,8 +3070,8 @@ _PENDINGCHANNELSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=7053,
-  serialized_end=7077,
+  serialized_start=7786,
+  serialized_end=7810,
 )
 
 
@@ -2750,8 +3129,8 @@ _PENDINGCHANNELSRESPONSE_PENDINGCHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=7600,
-  serialized_end=7802,
+  serialized_start=8333,
+  serialized_end=8535,
 )
 
 _PENDINGCHANNELSRESPONSE_PENDINGOPENCHANNEL = _descriptor.Descriptor(
@@ -2808,8 +3187,8 @@ _PENDINGCHANNELSRESPONSE_PENDINGOPENCHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=7805,
-  serialized_end=8050,
+  serialized_start=8538,
+  serialized_end=8783,
 )
 
 _PENDINGCHANNELSRESPONSE_WAITINGCLOSECHANNEL = _descriptor.Descriptor(
@@ -2845,8 +3224,8 @@ _PENDINGCHANNELSRESPONSE_WAITINGCLOSECHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8052,
-  serialized_end=8175,
+  serialized_start=8785,
+  serialized_end=8908,
 )
 
 _PENDINGCHANNELSRESPONSE_CLOSEDCHANNEL = _descriptor.Descriptor(
@@ -2882,8 +3261,8 @@ _PENDINGCHANNELSRESPONSE_CLOSEDCHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8177,
-  serialized_end=8292,
+  serialized_start=8910,
+  serialized_end=9025,
 )
 
 _PENDINGCHANNELSRESPONSE_FORCECLOSEDCHANNEL = _descriptor.Descriptor(
@@ -2954,8 +3333,8 @@ _PENDINGCHANNELSRESPONSE_FORCECLOSEDCHANNEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8295,
-  serialized_end=8658,
+  serialized_start=9028,
+  serialized_end=9391,
 )
 
 _PENDINGCHANNELSRESPONSE = _descriptor.Descriptor(
@@ -3012,8 +3391,95 @@ _PENDINGCHANNELSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=7080,
-  serialized_end=8658,
+  serialized_start=7813,
+  serialized_end=9391,
+)
+
+
+_CHANNELEVENTSUBSCRIPTION = _descriptor.Descriptor(
+  name='ChannelEventSubscription',
+  full_name='lnrpc.ChannelEventSubscription',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=9393,
+  serialized_end=9419,
+)
+
+
+_CHANNELEVENTUPDATE = _descriptor.Descriptor(
+  name='ChannelEventUpdate',
+  full_name='lnrpc.ChannelEventUpdate',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='open_channel', full_name='lnrpc.ChannelEventUpdate.open_channel', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='open_channel', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='closed_channel', full_name='lnrpc.ChannelEventUpdate.closed_channel', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='closed_channel', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='active_channel', full_name='lnrpc.ChannelEventUpdate.active_channel', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='active_channel', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='inactive_channel', full_name='lnrpc.ChannelEventUpdate.inactive_channel', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='inactive_channel', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='type', full_name='lnrpc.ChannelEventUpdate.type', index=4,
+      number=5, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='type', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _CHANNELEVENTUPDATE_UPDATETYPE,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='channel', full_name='lnrpc.ChannelEventUpdate.channel',
+      index=0, containing_type=None, fields=[]),
+  ],
+  serialized_start=9422,
+  serialized_end=9859,
 )
 
 
@@ -3036,8 +3502,8 @@ _WALLETBALANCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8660,
-  serialized_end=8682,
+  serialized_start=9861,
+  serialized_end=9883,
 )
 
 
@@ -3081,8 +3547,8 @@ _WALLETBALANCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8685,
-  serialized_end=8842,
+  serialized_start=9886,
+  serialized_end=10043,
 )
 
 
@@ -3105,8 +3571,8 @@ _CHANNELBALANCEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8844,
-  serialized_end=8867,
+  serialized_start=10045,
+  serialized_end=10068,
 )
 
 
@@ -3143,8 +3609,8 @@ _CHANNELBALANCERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8869,
-  serialized_end=8971,
+  serialized_start=10070,
+  serialized_end=10172,
 )
 
 
@@ -3170,23 +3636,37 @@ _QUERYROUTESREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='num_routes', full_name='lnrpc.QueryRoutesRequest.num_routes', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='final_cltv_delta', full_name='lnrpc.QueryRoutesRequest.final_cltv_delta', index=3,
+      name='final_cltv_delta', full_name='lnrpc.QueryRoutesRequest.final_cltv_delta', index=2,
       number=4, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='fee_limit', full_name='lnrpc.QueryRoutesRequest.fee_limit', index=4,
+      name='fee_limit', full_name='lnrpc.QueryRoutesRequest.fee_limit', index=3,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ignored_nodes', full_name='lnrpc.QueryRoutesRequest.ignored_nodes', index=4,
+      number=6, type=12, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='ignored_edges', full_name='lnrpc.QueryRoutesRequest.ignored_edges', index=5,
+      number=7, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='source_pub_key', full_name='lnrpc.QueryRoutesRequest.source_pub_key', index=6,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -3202,8 +3682,46 @@ _QUERYROUTESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=8974,
-  serialized_end=9106,
+  serialized_start=10175,
+  serialized_end=10383,
+)
+
+
+_EDGELOCATOR = _descriptor.Descriptor(
+  name='EdgeLocator',
+  full_name='lnrpc.EdgeLocator',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='channel_id', full_name='lnrpc.EdgeLocator.channel_id', index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='direction_reverse', full_name='lnrpc.EdgeLocator.direction_reverse', index=1,
+      number=2, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=10385,
+  serialized_end=10445,
 )
 
 
@@ -3233,8 +3751,8 @@ _QUERYROUTESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9108,
-  serialized_end=9167,
+  serialized_start=10447,
+  serialized_end=10506,
 )
 
 
@@ -3313,8 +3831,8 @@ _HOP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9170,
-  serialized_end=9433,
+  serialized_start=10509,
+  serialized_end=10772,
 )
 
 
@@ -3379,8 +3897,8 @@ _ROUTE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9436,
-  serialized_end=9669,
+  serialized_start=10775,
+  serialized_end=11008,
 )
 
 
@@ -3410,8 +3928,8 @@ _NODEINFOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9671,
-  serialized_end=9705,
+  serialized_start=11010,
+  serialized_end=11044,
 )
 
 
@@ -3443,6 +3961,13 @@ _NODEINFO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='total_capacity', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='channels', full_name='lnrpc.NodeInfo.channels', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='channels', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -3455,8 +3980,8 @@ _NODEINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9708,
-  serialized_end=9836,
+  serialized_start=11047,
+  serialized_end=11223,
 )
 
 
@@ -3514,8 +4039,8 @@ _LIGHTNINGNODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=9839,
-  serialized_end=10008,
+  serialized_start=11226,
+  serialized_end=11395,
 )
 
 
@@ -3552,8 +4077,8 @@ _NODEADDRESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10010,
-  serialized_end=10069,
+  serialized_start=11397,
+  serialized_end=11456,
 )
 
 
@@ -3599,6 +4124,13 @@ _ROUTINGPOLICY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='disabled', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_htlc_msat', full_name='lnrpc.RoutingPolicy.max_htlc_msat', index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='max_htlc_msat', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -3611,8 +4143,8 @@ _ROUTINGPOLICY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10072,
-  serialized_end=10273,
+  serialized_start=11459,
+  serialized_end=11698,
 )
 
 
@@ -3691,8 +4223,8 @@ _CHANNELEDGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10276,
-  serialized_end=10591,
+  serialized_start=11701,
+  serialized_end=12016,
 )
 
 
@@ -3722,8 +4254,8 @@ _CHANNELGRAPHREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10593,
-  serialized_end=10664,
+  serialized_start=12018,
+  serialized_end=12089,
 )
 
 
@@ -3760,8 +4292,8 @@ _CHANNELGRAPH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10666,
-  serialized_end=10766,
+  serialized_start=12091,
+  serialized_end=12191,
 )
 
 
@@ -3791,8 +4323,8 @@ _CHANINFOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10768,
-  serialized_end=10802,
+  serialized_start=12193,
+  serialized_end=12227,
 )
 
 
@@ -3815,8 +4347,8 @@ _NETWORKINFOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10804,
-  serialized_end=10824,
+  serialized_start=12229,
+  serialized_end=12249,
 )
 
 
@@ -3890,6 +4422,13 @@ _NETWORKINFO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='max_channel_size', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='median_channel_size_sat', full_name='lnrpc.NetworkInfo.median_channel_size_sat', index=9,
+      number=10, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='median_channel_size_sat', file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -3902,8 +4441,8 @@ _NETWORKINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=10827,
-  serialized_end=11214,
+  serialized_start=12252,
+  serialized_end=12697,
 )
 
 
@@ -3926,8 +4465,8 @@ _STOPREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11216,
-  serialized_end=11229,
+  serialized_start=12699,
+  serialized_end=12712,
 )
 
 
@@ -3950,8 +4489,8 @@ _STOPRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11231,
-  serialized_end=11245,
+  serialized_start=12714,
+  serialized_end=12728,
 )
 
 
@@ -3974,8 +4513,8 @@ _GRAPHTOPOLOGYSUBSCRIPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11247,
-  serialized_end=11274,
+  serialized_start=12730,
+  serialized_end=12757,
 )
 
 
@@ -4019,8 +4558,8 @@ _GRAPHTOPOLOGYUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11277,
-  serialized_end=11440,
+  serialized_start=12760,
+  serialized_end=12923,
 )
 
 
@@ -4059,6 +4598,13 @@ _NODEUPDATE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='color', full_name='lnrpc.NodeUpdate.color', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -4071,8 +4617,8 @@ _NODEUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11442,
-  serialized_end=11535,
+  serialized_start=12925,
+  serialized_end=13033,
 )
 
 
@@ -4137,8 +4683,8 @@ _CHANNELEDGEUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11538,
-  serialized_end=11730,
+  serialized_start=13036,
+  serialized_end=13228,
 )
 
 
@@ -4189,8 +4735,8 @@ _CLOSEDCHANNELUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11732,
-  serialized_end=11852,
+  serialized_start=13230,
+  serialized_end=13350,
 )
 
 
@@ -4248,8 +4794,8 @@ _HOPHINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=11855,
-  serialized_end=12066,
+  serialized_start=13353,
+  serialized_end=13564,
 )
 
 
@@ -4279,8 +4825,8 @@ _ROUTEHINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=12068,
-  serialized_end=12125,
+  serialized_start=13566,
+  serialized_end=13623,
 )
 
 
@@ -4304,7 +4850,7 @@ _INVOICE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='receipt', file=DESCRIPTOR),
+      serialized_options=_b('\030\001'), json_name='receipt', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='r_preimage', full_name='lnrpc.Invoice.r_preimage', index=2,
       number=3, type=12, cpp_type=9, label=1,
@@ -4332,7 +4878,7 @@ _INVOICE = _descriptor.Descriptor(
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      serialized_options=None, json_name='settled', file=DESCRIPTOR),
+      serialized_options=_b('\030\001'), json_name='settled', file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='creation_date', full_name='lnrpc.Invoice.creation_date', index=6,
       number=7, type=3, cpp_type=2, label=1,
@@ -4431,11 +4977,19 @@ _INVOICE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='amt_paid_msat', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='state', full_name='lnrpc.Invoice.state', index=20,
+      number=21, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='state', file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
+    _INVOICE_INVOICESTATE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -4443,8 +4997,8 @@ _INVOICE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=12128,
-  serialized_end=12791,
+  serialized_start=13626,
+  serialized_end=14415,
 )
 
 
@@ -4488,8 +5042,8 @@ _ADDINVOICERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=12793,
-  serialized_end=12909,
+  serialized_start=14417,
+  serialized_end=14533,
 )
 
 
@@ -4526,8 +5080,8 @@ _PAYMENTHASH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=12911,
-  serialized_end=12980,
+  serialized_start=14535,
+  serialized_end=14604,
 )
 
 
@@ -4578,8 +5132,8 @@ _LISTINVOICEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=12983,
-  serialized_end=13147,
+  serialized_start=14607,
+  serialized_end=14771,
 )
 
 
@@ -4623,8 +5177,8 @@ _LISTINVOICERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13150,
-  serialized_end=13309,
+  serialized_start=14774,
+  serialized_end=14933,
 )
 
 
@@ -4661,8 +5215,8 @@ _INVOICESUBSCRIPTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13311,
-  serialized_end=13398,
+  serialized_start=14935,
+  serialized_end=15022,
 )
 
 
@@ -4729,11 +5283,26 @@ _PAYMENT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, json_name='value_msat', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='payment_request', full_name='lnrpc.Payment.payment_request', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='payment_request', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='lnrpc.Payment.status', index=9,
+      number=10, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='status', file=DESCRIPTOR),
   ],
   extensions=[
   ],
   nested_types=[],
   enum_types=[
+    _PAYMENT_PAYMENTSTATUS,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -4741,8 +5310,8 @@ _PAYMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13401,
-  serialized_end=13654,
+  serialized_start=15025,
+  serialized_end=15446,
 )
 
 
@@ -4753,6 +5322,13 @@ _LISTPAYMENTSREQUEST = _descriptor.Descriptor(
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
+    _descriptor.FieldDescriptor(
+      name='include_incomplete', full_name='lnrpc.ListPaymentsRequest.include_incomplete', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -4765,8 +5341,8 @@ _LISTPAYMENTSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13656,
-  serialized_end=13677,
+  serialized_start=15448,
+  serialized_end=15497,
 )
 
 
@@ -4796,8 +5372,8 @@ _LISTPAYMENTSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13679,
-  serialized_end=13745,
+  serialized_start=15499,
+  serialized_end=15565,
 )
 
 
@@ -4820,8 +5396,8 @@ _DELETEALLPAYMENTSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13747,
-  serialized_end=13773,
+  serialized_start=15567,
+  serialized_end=15593,
 )
 
 
@@ -4844,8 +5420,8 @@ _DELETEALLPAYMENTSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13775,
-  serialized_end=13802,
+  serialized_start=15595,
+  serialized_end=15622,
 )
 
 
@@ -4875,8 +5451,8 @@ _ABANDONCHANNELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13804,
-  serialized_end=13871,
+  serialized_start=15624,
+  serialized_end=15691,
 )
 
 
@@ -4899,8 +5475,8 @@ _ABANDONCHANNELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13873,
-  serialized_end=13897,
+  serialized_start=15693,
+  serialized_end=15717,
 )
 
 
@@ -4937,8 +5513,8 @@ _DEBUGLEVELREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13899,
-  serialized_end=13952,
+  serialized_start=15719,
+  serialized_end=15772,
 )
 
 
@@ -4968,8 +5544,8 @@ _DEBUGLEVELRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=13954,
-  serialized_end=14008,
+  serialized_start=15774,
+  serialized_end=15828,
 )
 
 
@@ -4999,8 +5575,8 @@ _PAYREQSTRING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14010,
-  serialized_end=14041,
+  serialized_start=15830,
+  serialized_end=15861,
 )
 
 
@@ -5093,8 +5669,8 @@ _PAYREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14044,
-  serialized_end=14414,
+  serialized_start=15864,
+  serialized_end=16234,
 )
 
 
@@ -5117,8 +5693,8 @@ _FEEREPORTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14416,
-  serialized_end=14434,
+  serialized_start=16236,
+  serialized_end=16254,
 )
 
 
@@ -5169,8 +5745,8 @@ _CHANNELFEEREPORT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14437,
-  serialized_end=14590,
+  serialized_start=16257,
+  serialized_end=16410,
 )
 
 
@@ -5221,8 +5797,8 @@ _FEEREPORTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14593,
-  serialized_end=14781,
+  serialized_start=16413,
+  serialized_end=16601,
 )
 
 
@@ -5283,8 +5859,8 @@ _POLICYUPDATEREQUEST = _descriptor.Descriptor(
       name='scope', full_name='lnrpc.PolicyUpdateRequest.scope',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=14784,
-  serialized_end=15003,
+  serialized_start=16604,
+  serialized_end=16823,
 )
 
 
@@ -5307,8 +5883,8 @@ _POLICYUPDATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=15005,
-  serialized_end=15027,
+  serialized_start=16825,
+  serialized_end=16847,
 )
 
 
@@ -5359,8 +5935,8 @@ _FORWARDINGHISTORYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=15030,
-  serialized_end=15192,
+  serialized_start=16850,
+  serialized_end=17012,
 )
 
 
@@ -5432,8 +6008,8 @@ _FORWARDINGEVENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=15195,
-  serialized_end=15404,
+  serialized_start=17015,
+  serialized_end=17224,
 )
 
 
@@ -5470,12 +6046,327 @@ _FORWARDINGHISTORYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=15407,
-  serialized_end=15550,
+  serialized_start=17227,
+  serialized_end=17370,
 )
 
+
+_EXPORTCHANNELBACKUPREQUEST = _descriptor.Descriptor(
+  name='ExportChannelBackupRequest',
+  full_name='lnrpc.ExportChannelBackupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chan_point', full_name='lnrpc.ExportChannelBackupRequest.chan_point', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17372,
+  serialized_end=17441,
+)
+
+
+_CHANNELBACKUP = _descriptor.Descriptor(
+  name='ChannelBackup',
+  full_name='lnrpc.ChannelBackup',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chan_point', full_name='lnrpc.ChannelBackup.chan_point', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_point', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='chan_backup', full_name='lnrpc.ChannelBackup.chan_backup', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_backup', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17443,
+  serialized_end=17545,
+)
+
+
+_MULTICHANBACKUP = _descriptor.Descriptor(
+  name='MultiChanBackup',
+  full_name='lnrpc.MultiChanBackup',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chan_points', full_name='lnrpc.MultiChanBackup.chan_points', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_points', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='multi_chan_backup', full_name='lnrpc.MultiChanBackup.multi_chan_backup', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='multi_chan_backup', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17547,
+  serialized_end=17665,
+)
+
+
+_CHANBACKUPEXPORTREQUEST = _descriptor.Descriptor(
+  name='ChanBackupExportRequest',
+  full_name='lnrpc.ChanBackupExportRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17667,
+  serialized_end=17692,
+)
+
+
+_CHANBACKUPSNAPSHOT = _descriptor.Descriptor(
+  name='ChanBackupSnapshot',
+  full_name='lnrpc.ChanBackupSnapshot',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='single_chan_backups', full_name='lnrpc.ChanBackupSnapshot.single_chan_backups', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='single_chan_backups', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='multi_chan_backup', full_name='lnrpc.ChanBackupSnapshot.multi_chan_backup', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='multi_chan_backup', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17695,
+  serialized_end=17858,
+)
+
+
+_CHANNELBACKUPS = _descriptor.Descriptor(
+  name='ChannelBackups',
+  full_name='lnrpc.ChannelBackups',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chan_backups', full_name='lnrpc.ChannelBackups.chan_backups', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_backups', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=17860,
+  serialized_end=17934,
+)
+
+
+_RESTORECHANBACKUPREQUEST = _descriptor.Descriptor(
+  name='RestoreChanBackupRequest',
+  full_name='lnrpc.RestoreChanBackupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chan_backups', full_name='lnrpc.RestoreChanBackupRequest.chan_backups', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='chan_backups', file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='multi_chan_backup', full_name='lnrpc.RestoreChanBackupRequest.multi_chan_backup', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, json_name='multi_chan_backup', file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='backup', full_name='lnrpc.RestoreChanBackupRequest.backup',
+      index=0, containing_type=None, fields=[]),
+  ],
+  serialized_start=17937,
+  serialized_end=18082,
+)
+
+
+_RESTOREBACKUPRESPONSE = _descriptor.Descriptor(
+  name='RestoreBackupResponse',
+  full_name='lnrpc.RestoreBackupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=18084,
+  serialized_end=18107,
+)
+
+
+_CHANNELBACKUPSUBSCRIPTION = _descriptor.Descriptor(
+  name='ChannelBackupSubscription',
+  full_name='lnrpc.ChannelBackupSubscription',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=18109,
+  serialized_end=18136,
+)
+
+
+_VERIFYCHANBACKUPRESPONSE = _descriptor.Descriptor(
+  name='VerifyChanBackupResponse',
+  full_name='lnrpc.VerifyChanBackupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=18138,
+  serialized_end=18164,
+)
+
+_INITWALLETREQUEST.fields_by_name['channel_backups'].message_type = _CHANBACKUPSNAPSHOT
+_UNLOCKWALLETREQUEST.fields_by_name['channel_backups'].message_type = _CHANBACKUPSNAPSHOT
 _UTXO.fields_by_name['type'].enum_type = _ADDRESSTYPE
-_UTXO.fields_by_name['outpoint'].message_type = _CHANNELPOINT
+_UTXO.fields_by_name['outpoint'].message_type = _OUTPOINT
 _TRANSACTIONDETAILS.fields_by_name['transactions'].message_type = _TRANSACTION
 _FEELIMIT.oneofs_by_name['limit'].fields.append(
   _FEELIMIT.fields_by_name['fixed'])
@@ -5485,13 +6376,15 @@ _FEELIMIT.oneofs_by_name['limit'].fields.append(
 _FEELIMIT.fields_by_name['percent'].containing_oneof = _FEELIMIT.oneofs_by_name['limit']
 _SENDREQUEST.fields_by_name['fee_limit'].message_type = _FEELIMIT
 _SENDRESPONSE.fields_by_name['payment_route'].message_type = _ROUTE
-_SENDTOROUTEREQUEST.fields_by_name['routes'].message_type = _ROUTE
+_SENDTOROUTEREQUEST.fields_by_name['route'].message_type = _ROUTE
 _CHANNELPOINT.oneofs_by_name['funding_txid'].fields.append(
   _CHANNELPOINT.fields_by_name['funding_txid_bytes'])
 _CHANNELPOINT.fields_by_name['funding_txid_bytes'].containing_oneof = _CHANNELPOINT.oneofs_by_name['funding_txid']
 _CHANNELPOINT.oneofs_by_name['funding_txid'].fields.append(
   _CHANNELPOINT.fields_by_name['funding_txid_str'])
 _CHANNELPOINT.fields_by_name['funding_txid_str'].containing_oneof = _CHANNELPOINT.oneofs_by_name['funding_txid']
+_ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY.containing_type = _ESTIMATEFEEREQUEST
+_ESTIMATEFEEREQUEST.fields_by_name['AddrToAmount'].message_type = _ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY
 _SENDMANYREQUEST_ADDRTOAMOUNTENTRY.containing_type = _SENDMANYREQUEST
 _SENDMANYREQUEST.fields_by_name['AddrToAmount'].message_type = _SENDMANYREQUEST_ADDRTOAMOUNTENTRY
 _LISTUNSPENTRESPONSE.fields_by_name['utxos'].message_type = _UTXO
@@ -5502,30 +6395,25 @@ _LISTCHANNELSRESPONSE.fields_by_name['channels'].message_type = _CHANNEL
 _CHANNELCLOSESUMMARY.fields_by_name['close_type'].enum_type = _CHANNELCLOSESUMMARY_CLOSURETYPE
 _CHANNELCLOSESUMMARY_CLOSURETYPE.containing_type = _CHANNELCLOSESUMMARY
 _CLOSEDCHANNELSRESPONSE.fields_by_name['channels'].message_type = _CHANNELCLOSESUMMARY
+_PEER.fields_by_name['sync_type'].enum_type = _PEER_SYNCTYPE
+_PEER_SYNCTYPE.containing_type = _PEER
 _LISTPEERSRESPONSE.fields_by_name['peers'].message_type = _PEER
+_GETINFORESPONSE.fields_by_name['chains'].message_type = _CHAIN
 _CHANNELOPENUPDATE.fields_by_name['channel_point'].message_type = _CHANNELPOINT
 _CLOSECHANNELREQUEST.fields_by_name['channel_point'].message_type = _CHANNELPOINT
 _CLOSESTATUSUPDATE.fields_by_name['close_pending'].message_type = _PENDINGUPDATE
-_CLOSESTATUSUPDATE.fields_by_name['confirmation'].message_type = _CONFIRMATIONUPDATE
 _CLOSESTATUSUPDATE.fields_by_name['chan_close'].message_type = _CHANNELCLOSEUPDATE
 _CLOSESTATUSUPDATE.oneofs_by_name['update'].fields.append(
   _CLOSESTATUSUPDATE.fields_by_name['close_pending'])
 _CLOSESTATUSUPDATE.fields_by_name['close_pending'].containing_oneof = _CLOSESTATUSUPDATE.oneofs_by_name['update']
 _CLOSESTATUSUPDATE.oneofs_by_name['update'].fields.append(
-  _CLOSESTATUSUPDATE.fields_by_name['confirmation'])
-_CLOSESTATUSUPDATE.fields_by_name['confirmation'].containing_oneof = _CLOSESTATUSUPDATE.oneofs_by_name['update']
-_CLOSESTATUSUPDATE.oneofs_by_name['update'].fields.append(
   _CLOSESTATUSUPDATE.fields_by_name['chan_close'])
 _CLOSESTATUSUPDATE.fields_by_name['chan_close'].containing_oneof = _CLOSESTATUSUPDATE.oneofs_by_name['update']
 _OPENSTATUSUPDATE.fields_by_name['chan_pending'].message_type = _PENDINGUPDATE
-_OPENSTATUSUPDATE.fields_by_name['confirmation'].message_type = _CONFIRMATIONUPDATE
 _OPENSTATUSUPDATE.fields_by_name['chan_open'].message_type = _CHANNELOPENUPDATE
 _OPENSTATUSUPDATE.oneofs_by_name['update'].fields.append(
   _OPENSTATUSUPDATE.fields_by_name['chan_pending'])
 _OPENSTATUSUPDATE.fields_by_name['chan_pending'].containing_oneof = _OPENSTATUSUPDATE.oneofs_by_name['update']
-_OPENSTATUSUPDATE.oneofs_by_name['update'].fields.append(
-  _OPENSTATUSUPDATE.fields_by_name['confirmation'])
-_OPENSTATUSUPDATE.fields_by_name['confirmation'].containing_oneof = _OPENSTATUSUPDATE.oneofs_by_name['update']
 _OPENSTATUSUPDATE.oneofs_by_name['update'].fields.append(
   _OPENSTATUSUPDATE.fields_by_name['chan_open'])
 _OPENSTATUSUPDATE.fields_by_name['chan_open'].containing_oneof = _OPENSTATUSUPDATE.oneofs_by_name['update']
@@ -5543,10 +6431,30 @@ _PENDINGCHANNELSRESPONSE.fields_by_name['pending_open_channels'].message_type = 
 _PENDINGCHANNELSRESPONSE.fields_by_name['pending_closing_channels'].message_type = _PENDINGCHANNELSRESPONSE_CLOSEDCHANNEL
 _PENDINGCHANNELSRESPONSE.fields_by_name['pending_force_closing_channels'].message_type = _PENDINGCHANNELSRESPONSE_FORCECLOSEDCHANNEL
 _PENDINGCHANNELSRESPONSE.fields_by_name['waiting_close_channels'].message_type = _PENDINGCHANNELSRESPONSE_WAITINGCLOSECHANNEL
+_CHANNELEVENTUPDATE.fields_by_name['open_channel'].message_type = _CHANNEL
+_CHANNELEVENTUPDATE.fields_by_name['closed_channel'].message_type = _CHANNELCLOSESUMMARY
+_CHANNELEVENTUPDATE.fields_by_name['active_channel'].message_type = _CHANNELPOINT
+_CHANNELEVENTUPDATE.fields_by_name['inactive_channel'].message_type = _CHANNELPOINT
+_CHANNELEVENTUPDATE.fields_by_name['type'].enum_type = _CHANNELEVENTUPDATE_UPDATETYPE
+_CHANNELEVENTUPDATE_UPDATETYPE.containing_type = _CHANNELEVENTUPDATE
+_CHANNELEVENTUPDATE.oneofs_by_name['channel'].fields.append(
+  _CHANNELEVENTUPDATE.fields_by_name['open_channel'])
+_CHANNELEVENTUPDATE.fields_by_name['open_channel'].containing_oneof = _CHANNELEVENTUPDATE.oneofs_by_name['channel']
+_CHANNELEVENTUPDATE.oneofs_by_name['channel'].fields.append(
+  _CHANNELEVENTUPDATE.fields_by_name['closed_channel'])
+_CHANNELEVENTUPDATE.fields_by_name['closed_channel'].containing_oneof = _CHANNELEVENTUPDATE.oneofs_by_name['channel']
+_CHANNELEVENTUPDATE.oneofs_by_name['channel'].fields.append(
+  _CHANNELEVENTUPDATE.fields_by_name['active_channel'])
+_CHANNELEVENTUPDATE.fields_by_name['active_channel'].containing_oneof = _CHANNELEVENTUPDATE.oneofs_by_name['channel']
+_CHANNELEVENTUPDATE.oneofs_by_name['channel'].fields.append(
+  _CHANNELEVENTUPDATE.fields_by_name['inactive_channel'])
+_CHANNELEVENTUPDATE.fields_by_name['inactive_channel'].containing_oneof = _CHANNELEVENTUPDATE.oneofs_by_name['channel']
 _QUERYROUTESREQUEST.fields_by_name['fee_limit'].message_type = _FEELIMIT
+_QUERYROUTESREQUEST.fields_by_name['ignored_edges'].message_type = _EDGELOCATOR
 _QUERYROUTESRESPONSE.fields_by_name['routes'].message_type = _ROUTE
 _ROUTE.fields_by_name['hops'].message_type = _HOP
 _NODEINFO.fields_by_name['node'].message_type = _LIGHTNINGNODE
+_NODEINFO.fields_by_name['channels'].message_type = _CHANNELEDGE
 _LIGHTNINGNODE.fields_by_name['addresses'].message_type = _NODEADDRESS
 _CHANNELEDGE.fields_by_name['node1_policy'].message_type = _ROUTINGPOLICY
 _CHANNELEDGE.fields_by_name['node2_policy'].message_type = _ROUTINGPOLICY
@@ -5560,7 +6468,11 @@ _CHANNELEDGEUPDATE.fields_by_name['routing_policy'].message_type = _ROUTINGPOLIC
 _CLOSEDCHANNELUPDATE.fields_by_name['chan_point'].message_type = _CHANNELPOINT
 _ROUTEHINT.fields_by_name['hop_hints'].message_type = _HOPHINT
 _INVOICE.fields_by_name['route_hints'].message_type = _ROUTEHINT
+_INVOICE.fields_by_name['state'].enum_type = _INVOICE_INVOICESTATE
+_INVOICE_INVOICESTATE.containing_type = _INVOICE
 _LISTINVOICERESPONSE.fields_by_name['invoices'].message_type = _INVOICE
+_PAYMENT.fields_by_name['status'].enum_type = _PAYMENT_PAYMENTSTATUS
+_PAYMENT_PAYMENTSTATUS.containing_type = _PAYMENT
 _LISTPAYMENTSRESPONSE.fields_by_name['payments'].message_type = _PAYMENT
 _ABANDONCHANNELREQUEST.fields_by_name['channel_point'].message_type = _CHANNELPOINT
 _PAYREQ.fields_by_name['route_hints'].message_type = _ROUTEHINT
@@ -5573,6 +6485,19 @@ _POLICYUPDATEREQUEST.oneofs_by_name['scope'].fields.append(
   _POLICYUPDATEREQUEST.fields_by_name['chan_point'])
 _POLICYUPDATEREQUEST.fields_by_name['chan_point'].containing_oneof = _POLICYUPDATEREQUEST.oneofs_by_name['scope']
 _FORWARDINGHISTORYRESPONSE.fields_by_name['forwarding_events'].message_type = _FORWARDINGEVENT
+_EXPORTCHANNELBACKUPREQUEST.fields_by_name['chan_point'].message_type = _CHANNELPOINT
+_CHANNELBACKUP.fields_by_name['chan_point'].message_type = _CHANNELPOINT
+_MULTICHANBACKUP.fields_by_name['chan_points'].message_type = _CHANNELPOINT
+_CHANBACKUPSNAPSHOT.fields_by_name['single_chan_backups'].message_type = _CHANNELBACKUPS
+_CHANBACKUPSNAPSHOT.fields_by_name['multi_chan_backup'].message_type = _MULTICHANBACKUP
+_CHANNELBACKUPS.fields_by_name['chan_backups'].message_type = _CHANNELBACKUP
+_RESTORECHANBACKUPREQUEST.fields_by_name['chan_backups'].message_type = _CHANNELBACKUPS
+_RESTORECHANBACKUPREQUEST.oneofs_by_name['backup'].fields.append(
+  _RESTORECHANBACKUPREQUEST.fields_by_name['chan_backups'])
+_RESTORECHANBACKUPREQUEST.fields_by_name['chan_backups'].containing_oneof = _RESTORECHANBACKUPREQUEST.oneofs_by_name['backup']
+_RESTORECHANBACKUPREQUEST.oneofs_by_name['backup'].fields.append(
+  _RESTORECHANBACKUPREQUEST.fields_by_name['multi_chan_backup'])
+_RESTORECHANBACKUPREQUEST.fields_by_name['multi_chan_backup'].containing_oneof = _RESTORECHANBACKUPREQUEST.oneofs_by_name['backup']
 DESCRIPTOR.message_types_by_name['GenSeedRequest'] = _GENSEEDREQUEST
 DESCRIPTOR.message_types_by_name['GenSeedResponse'] = _GENSEEDRESPONSE
 DESCRIPTOR.message_types_by_name['InitWalletRequest'] = _INITWALLETREQUEST
@@ -5590,7 +6515,10 @@ DESCRIPTOR.message_types_by_name['SendRequest'] = _SENDREQUEST
 DESCRIPTOR.message_types_by_name['SendResponse'] = _SENDRESPONSE
 DESCRIPTOR.message_types_by_name['SendToRouteRequest'] = _SENDTOROUTEREQUEST
 DESCRIPTOR.message_types_by_name['ChannelPoint'] = _CHANNELPOINT
+DESCRIPTOR.message_types_by_name['OutPoint'] = _OUTPOINT
 DESCRIPTOR.message_types_by_name['LightningAddress'] = _LIGHTNINGADDRESS
+DESCRIPTOR.message_types_by_name['EstimateFeeRequest'] = _ESTIMATEFEEREQUEST
+DESCRIPTOR.message_types_by_name['EstimateFeeResponse'] = _ESTIMATEFEERESPONSE
 DESCRIPTOR.message_types_by_name['SendManyRequest'] = _SENDMANYREQUEST
 DESCRIPTOR.message_types_by_name['SendManyResponse'] = _SENDMANYRESPONSE
 DESCRIPTOR.message_types_by_name['SendCoinsRequest'] = _SENDCOINSREQUEST
@@ -5619,6 +6547,7 @@ DESCRIPTOR.message_types_by_name['ListPeersRequest'] = _LISTPEERSREQUEST
 DESCRIPTOR.message_types_by_name['ListPeersResponse'] = _LISTPEERSRESPONSE
 DESCRIPTOR.message_types_by_name['GetInfoRequest'] = _GETINFOREQUEST
 DESCRIPTOR.message_types_by_name['GetInfoResponse'] = _GETINFORESPONSE
+DESCRIPTOR.message_types_by_name['Chain'] = _CHAIN
 DESCRIPTOR.message_types_by_name['ConfirmationUpdate'] = _CONFIRMATIONUPDATE
 DESCRIPTOR.message_types_by_name['ChannelOpenUpdate'] = _CHANNELOPENUPDATE
 DESCRIPTOR.message_types_by_name['ChannelCloseUpdate'] = _CHANNELCLOSEUPDATE
@@ -5630,11 +6559,14 @@ DESCRIPTOR.message_types_by_name['OpenStatusUpdate'] = _OPENSTATUSUPDATE
 DESCRIPTOR.message_types_by_name['PendingHTLC'] = _PENDINGHTLC
 DESCRIPTOR.message_types_by_name['PendingChannelsRequest'] = _PENDINGCHANNELSREQUEST
 DESCRIPTOR.message_types_by_name['PendingChannelsResponse'] = _PENDINGCHANNELSRESPONSE
+DESCRIPTOR.message_types_by_name['ChannelEventSubscription'] = _CHANNELEVENTSUBSCRIPTION
+DESCRIPTOR.message_types_by_name['ChannelEventUpdate'] = _CHANNELEVENTUPDATE
 DESCRIPTOR.message_types_by_name['WalletBalanceRequest'] = _WALLETBALANCEREQUEST
 DESCRIPTOR.message_types_by_name['WalletBalanceResponse'] = _WALLETBALANCERESPONSE
 DESCRIPTOR.message_types_by_name['ChannelBalanceRequest'] = _CHANNELBALANCEREQUEST
 DESCRIPTOR.message_types_by_name['ChannelBalanceResponse'] = _CHANNELBALANCERESPONSE
 DESCRIPTOR.message_types_by_name['QueryRoutesRequest'] = _QUERYROUTESREQUEST
+DESCRIPTOR.message_types_by_name['EdgeLocator'] = _EDGELOCATOR
 DESCRIPTOR.message_types_by_name['QueryRoutesResponse'] = _QUERYROUTESRESPONSE
 DESCRIPTOR.message_types_by_name['Hop'] = _HOP
 DESCRIPTOR.message_types_by_name['Route'] = _ROUTE
@@ -5683,6 +6615,16 @@ DESCRIPTOR.message_types_by_name['PolicyUpdateResponse'] = _POLICYUPDATERESPONSE
 DESCRIPTOR.message_types_by_name['ForwardingHistoryRequest'] = _FORWARDINGHISTORYREQUEST
 DESCRIPTOR.message_types_by_name['ForwardingEvent'] = _FORWARDINGEVENT
 DESCRIPTOR.message_types_by_name['ForwardingHistoryResponse'] = _FORWARDINGHISTORYRESPONSE
+DESCRIPTOR.message_types_by_name['ExportChannelBackupRequest'] = _EXPORTCHANNELBACKUPREQUEST
+DESCRIPTOR.message_types_by_name['ChannelBackup'] = _CHANNELBACKUP
+DESCRIPTOR.message_types_by_name['MultiChanBackup'] = _MULTICHANBACKUP
+DESCRIPTOR.message_types_by_name['ChanBackupExportRequest'] = _CHANBACKUPEXPORTREQUEST
+DESCRIPTOR.message_types_by_name['ChanBackupSnapshot'] = _CHANBACKUPSNAPSHOT
+DESCRIPTOR.message_types_by_name['ChannelBackups'] = _CHANNELBACKUPS
+DESCRIPTOR.message_types_by_name['RestoreChanBackupRequest'] = _RESTORECHANBACKUPREQUEST
+DESCRIPTOR.message_types_by_name['RestoreBackupResponse'] = _RESTOREBACKUPRESPONSE
+DESCRIPTOR.message_types_by_name['ChannelBackupSubscription'] = _CHANNELBACKUPSUBSCRIPTION
+DESCRIPTOR.message_types_by_name['VerifyChanBackupResponse'] = _VERIFYCHANBACKUPRESPONSE
 DESCRIPTOR.enum_types_by_name['AddressType'] = _ADDRESSTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -5805,12 +6747,41 @@ ChannelPoint = _reflection.GeneratedProtocolMessageType('ChannelPoint', (_messag
   ))
 _sym_db.RegisterMessage(ChannelPoint)
 
+OutPoint = _reflection.GeneratedProtocolMessageType('OutPoint', (_message.Message,), dict(
+  DESCRIPTOR = _OUTPOINT,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.OutPoint)
+  ))
+_sym_db.RegisterMessage(OutPoint)
+
 LightningAddress = _reflection.GeneratedProtocolMessageType('LightningAddress', (_message.Message,), dict(
   DESCRIPTOR = _LIGHTNINGADDRESS,
   __module__ = 'rpc_pb2'
   # @@protoc_insertion_point(class_scope:lnrpc.LightningAddress)
   ))
 _sym_db.RegisterMessage(LightningAddress)
+
+EstimateFeeRequest = _reflection.GeneratedProtocolMessageType('EstimateFeeRequest', (_message.Message,), dict(
+
+  AddrToAmountEntry = _reflection.GeneratedProtocolMessageType('AddrToAmountEntry', (_message.Message,), dict(
+    DESCRIPTOR = _ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY,
+    __module__ = 'rpc_pb2'
+    # @@protoc_insertion_point(class_scope:lnrpc.EstimateFeeRequest.AddrToAmountEntry)
+    ))
+  ,
+  DESCRIPTOR = _ESTIMATEFEEREQUEST,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.EstimateFeeRequest)
+  ))
+_sym_db.RegisterMessage(EstimateFeeRequest)
+_sym_db.RegisterMessage(EstimateFeeRequest.AddrToAmountEntry)
+
+EstimateFeeResponse = _reflection.GeneratedProtocolMessageType('EstimateFeeResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ESTIMATEFEERESPONSE,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.EstimateFeeResponse)
+  ))
+_sym_db.RegisterMessage(EstimateFeeResponse)
 
 SendManyRequest = _reflection.GeneratedProtocolMessageType('SendManyRequest', (_message.Message,), dict(
 
@@ -6016,6 +6987,13 @@ GetInfoResponse = _reflection.GeneratedProtocolMessageType('GetInfoResponse', (_
   ))
 _sym_db.RegisterMessage(GetInfoResponse)
 
+Chain = _reflection.GeneratedProtocolMessageType('Chain', (_message.Message,), dict(
+  DESCRIPTOR = _CHAIN,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.Chain)
+  ))
+_sym_db.RegisterMessage(Chain)
+
 ConfirmationUpdate = _reflection.GeneratedProtocolMessageType('ConfirmationUpdate', (_message.Message,), dict(
   DESCRIPTOR = _CONFIRMATIONUPDATE,
   __module__ = 'rpc_pb2'
@@ -6133,6 +7111,20 @@ _sym_db.RegisterMessage(PendingChannelsResponse.WaitingCloseChannel)
 _sym_db.RegisterMessage(PendingChannelsResponse.ClosedChannel)
 _sym_db.RegisterMessage(PendingChannelsResponse.ForceClosedChannel)
 
+ChannelEventSubscription = _reflection.GeneratedProtocolMessageType('ChannelEventSubscription', (_message.Message,), dict(
+  DESCRIPTOR = _CHANNELEVENTSUBSCRIPTION,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChannelEventSubscription)
+  ))
+_sym_db.RegisterMessage(ChannelEventSubscription)
+
+ChannelEventUpdate = _reflection.GeneratedProtocolMessageType('ChannelEventUpdate', (_message.Message,), dict(
+  DESCRIPTOR = _CHANNELEVENTUPDATE,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChannelEventUpdate)
+  ))
+_sym_db.RegisterMessage(ChannelEventUpdate)
+
 WalletBalanceRequest = _reflection.GeneratedProtocolMessageType('WalletBalanceRequest', (_message.Message,), dict(
   DESCRIPTOR = _WALLETBALANCEREQUEST,
   __module__ = 'rpc_pb2'
@@ -6167,6 +7159,13 @@ QueryRoutesRequest = _reflection.GeneratedProtocolMessageType('QueryRoutesReques
   # @@protoc_insertion_point(class_scope:lnrpc.QueryRoutesRequest)
   ))
 _sym_db.RegisterMessage(QueryRoutesRequest)
+
+EdgeLocator = _reflection.GeneratedProtocolMessageType('EdgeLocator', (_message.Message,), dict(
+  DESCRIPTOR = _EDGELOCATOR,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.EdgeLocator)
+  ))
+_sym_db.RegisterMessage(EdgeLocator)
 
 QueryRoutesResponse = _reflection.GeneratedProtocolMessageType('QueryRoutesResponse', (_message.Message,), dict(
   DESCRIPTOR = _QUERYROUTESRESPONSE,
@@ -6504,13 +7503,87 @@ ForwardingHistoryResponse = _reflection.GeneratedProtocolMessageType('Forwarding
   ))
 _sym_db.RegisterMessage(ForwardingHistoryResponse)
 
+ExportChannelBackupRequest = _reflection.GeneratedProtocolMessageType('ExportChannelBackupRequest', (_message.Message,), dict(
+  DESCRIPTOR = _EXPORTCHANNELBACKUPREQUEST,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ExportChannelBackupRequest)
+  ))
+_sym_db.RegisterMessage(ExportChannelBackupRequest)
+
+ChannelBackup = _reflection.GeneratedProtocolMessageType('ChannelBackup', (_message.Message,), dict(
+  DESCRIPTOR = _CHANNELBACKUP,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChannelBackup)
+  ))
+_sym_db.RegisterMessage(ChannelBackup)
+
+MultiChanBackup = _reflection.GeneratedProtocolMessageType('MultiChanBackup', (_message.Message,), dict(
+  DESCRIPTOR = _MULTICHANBACKUP,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.MultiChanBackup)
+  ))
+_sym_db.RegisterMessage(MultiChanBackup)
+
+ChanBackupExportRequest = _reflection.GeneratedProtocolMessageType('ChanBackupExportRequest', (_message.Message,), dict(
+  DESCRIPTOR = _CHANBACKUPEXPORTREQUEST,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChanBackupExportRequest)
+  ))
+_sym_db.RegisterMessage(ChanBackupExportRequest)
+
+ChanBackupSnapshot = _reflection.GeneratedProtocolMessageType('ChanBackupSnapshot', (_message.Message,), dict(
+  DESCRIPTOR = _CHANBACKUPSNAPSHOT,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChanBackupSnapshot)
+  ))
+_sym_db.RegisterMessage(ChanBackupSnapshot)
+
+ChannelBackups = _reflection.GeneratedProtocolMessageType('ChannelBackups', (_message.Message,), dict(
+  DESCRIPTOR = _CHANNELBACKUPS,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChannelBackups)
+  ))
+_sym_db.RegisterMessage(ChannelBackups)
+
+RestoreChanBackupRequest = _reflection.GeneratedProtocolMessageType('RestoreChanBackupRequest', (_message.Message,), dict(
+  DESCRIPTOR = _RESTORECHANBACKUPREQUEST,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.RestoreChanBackupRequest)
+  ))
+_sym_db.RegisterMessage(RestoreChanBackupRequest)
+
+RestoreBackupResponse = _reflection.GeneratedProtocolMessageType('RestoreBackupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _RESTOREBACKUPRESPONSE,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.RestoreBackupResponse)
+  ))
+_sym_db.RegisterMessage(RestoreBackupResponse)
+
+ChannelBackupSubscription = _reflection.GeneratedProtocolMessageType('ChannelBackupSubscription', (_message.Message,), dict(
+  DESCRIPTOR = _CHANNELBACKUPSUBSCRIPTION,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.ChannelBackupSubscription)
+  ))
+_sym_db.RegisterMessage(ChannelBackupSubscription)
+
+VerifyChanBackupResponse = _reflection.GeneratedProtocolMessageType('VerifyChanBackupResponse', (_message.Message,), dict(
+  DESCRIPTOR = _VERIFYCHANBACKUPRESPONSE,
+  __module__ = 'rpc_pb2'
+  # @@protoc_insertion_point(class_scope:lnrpc.VerifyChanBackupResponse)
+  ))
+_sym_db.RegisterMessage(VerifyChanBackupResponse)
+
 
 DESCRIPTOR._options = None
+_ESTIMATEFEEREQUEST_ADDRTOAMOUNTENTRY._options = None
 _SENDMANYREQUEST_ADDRTOAMOUNTENTRY._options = None
+_GETINFORESPONSE.fields_by_name['testnet']._options = None
 _HOP.fields_by_name['amt_to_forward']._options = None
 _HOP.fields_by_name['fee']._options = None
 _ROUTE.fields_by_name['total_fees']._options = None
 _ROUTE.fields_by_name['total_amt']._options = None
+_INVOICE.fields_by_name['receipt']._options = None
+_INVOICE.fields_by_name['settled']._options = None
 _INVOICE.fields_by_name['amt_paid']._options = None
 _PAYMENT.fields_by_name['value']._options = None
 
@@ -6520,8 +7593,8 @@ _WALLETUNLOCKER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=15617,
-  serialized_end=16018,
+  serialized_start=18294,
+  serialized_end=18695,
   methods=[
   _descriptor.MethodDescriptor(
     name='GenSeed',
@@ -6571,8 +7644,8 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=16021,
-  serialized_end=20099,
+  serialized_start=18698,
+  serialized_end=23584,
   methods=[
   _descriptor.MethodDescriptor(
     name='WalletBalance',
@@ -6602,9 +7675,18 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
     serialized_options=_b('\202\323\344\223\002\022\022\020/v1/transactions'),
   ),
   _descriptor.MethodDescriptor(
+    name='EstimateFee',
+    full_name='lnrpc.Lightning.EstimateFee',
+    index=3,
+    containing_service=None,
+    input_type=_ESTIMATEFEEREQUEST,
+    output_type=_ESTIMATEFEERESPONSE,
+    serialized_options=_b('\202\323\344\223\002\026\022\024/v1/transactions/fee'),
+  ),
+  _descriptor.MethodDescriptor(
     name='SendCoins',
     full_name='lnrpc.Lightning.SendCoins',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_SENDCOINSREQUEST,
     output_type=_SENDCOINSRESPONSE,
@@ -6613,7 +7695,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ListUnspent',
     full_name='lnrpc.Lightning.ListUnspent',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_LISTUNSPENTREQUEST,
     output_type=_LISTUNSPENTRESPONSE,
@@ -6622,7 +7704,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SubscribeTransactions',
     full_name='lnrpc.Lightning.SubscribeTransactions',
-    index=5,
+    index=6,
     containing_service=None,
     input_type=_GETTRANSACTIONSREQUEST,
     output_type=_TRANSACTION,
@@ -6631,7 +7713,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendMany',
     full_name='lnrpc.Lightning.SendMany',
-    index=6,
+    index=7,
     containing_service=None,
     input_type=_SENDMANYREQUEST,
     output_type=_SENDMANYRESPONSE,
@@ -6640,7 +7722,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='NewAddress',
     full_name='lnrpc.Lightning.NewAddress',
-    index=7,
+    index=8,
     containing_service=None,
     input_type=_NEWADDRESSREQUEST,
     output_type=_NEWADDRESSRESPONSE,
@@ -6649,7 +7731,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SignMessage',
     full_name='lnrpc.Lightning.SignMessage',
-    index=8,
+    index=9,
     containing_service=None,
     input_type=_SIGNMESSAGEREQUEST,
     output_type=_SIGNMESSAGERESPONSE,
@@ -6658,7 +7740,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='VerifyMessage',
     full_name='lnrpc.Lightning.VerifyMessage',
-    index=9,
+    index=10,
     containing_service=None,
     input_type=_VERIFYMESSAGEREQUEST,
     output_type=_VERIFYMESSAGERESPONSE,
@@ -6667,7 +7749,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ConnectPeer',
     full_name='lnrpc.Lightning.ConnectPeer',
-    index=10,
+    index=11,
     containing_service=None,
     input_type=_CONNECTPEERREQUEST,
     output_type=_CONNECTPEERRESPONSE,
@@ -6676,7 +7758,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='DisconnectPeer',
     full_name='lnrpc.Lightning.DisconnectPeer',
-    index=11,
+    index=12,
     containing_service=None,
     input_type=_DISCONNECTPEERREQUEST,
     output_type=_DISCONNECTPEERRESPONSE,
@@ -6685,7 +7767,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ListPeers',
     full_name='lnrpc.Lightning.ListPeers',
-    index=12,
+    index=13,
     containing_service=None,
     input_type=_LISTPEERSREQUEST,
     output_type=_LISTPEERSRESPONSE,
@@ -6694,7 +7776,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='GetInfo',
     full_name='lnrpc.Lightning.GetInfo',
-    index=13,
+    index=14,
     containing_service=None,
     input_type=_GETINFOREQUEST,
     output_type=_GETINFORESPONSE,
@@ -6703,7 +7785,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='PendingChannels',
     full_name='lnrpc.Lightning.PendingChannels',
-    index=14,
+    index=15,
     containing_service=None,
     input_type=_PENDINGCHANNELSREQUEST,
     output_type=_PENDINGCHANNELSRESPONSE,
@@ -6712,16 +7794,25 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ListChannels',
     full_name='lnrpc.Lightning.ListChannels',
-    index=15,
+    index=16,
     containing_service=None,
     input_type=_LISTCHANNELSREQUEST,
     output_type=_LISTCHANNELSRESPONSE,
     serialized_options=_b('\202\323\344\223\002\016\022\014/v1/channels'),
   ),
   _descriptor.MethodDescriptor(
+    name='SubscribeChannelEvents',
+    full_name='lnrpc.Lightning.SubscribeChannelEvents',
+    index=17,
+    containing_service=None,
+    input_type=_CHANNELEVENTSUBSCRIPTION,
+    output_type=_CHANNELEVENTUPDATE,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
     name='ClosedChannels',
     full_name='lnrpc.Lightning.ClosedChannels',
-    index=16,
+    index=18,
     containing_service=None,
     input_type=_CLOSEDCHANNELSREQUEST,
     output_type=_CLOSEDCHANNELSRESPONSE,
@@ -6730,7 +7821,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='OpenChannelSync',
     full_name='lnrpc.Lightning.OpenChannelSync',
-    index=17,
+    index=19,
     containing_service=None,
     input_type=_OPENCHANNELREQUEST,
     output_type=_CHANNELPOINT,
@@ -6739,7 +7830,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='OpenChannel',
     full_name='lnrpc.Lightning.OpenChannel',
-    index=18,
+    index=20,
     containing_service=None,
     input_type=_OPENCHANNELREQUEST,
     output_type=_OPENSTATUSUPDATE,
@@ -6748,7 +7839,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='CloseChannel',
     full_name='lnrpc.Lightning.CloseChannel',
-    index=19,
+    index=21,
     containing_service=None,
     input_type=_CLOSECHANNELREQUEST,
     output_type=_CLOSESTATUSUPDATE,
@@ -6757,7 +7848,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='AbandonChannel',
     full_name='lnrpc.Lightning.AbandonChannel',
-    index=20,
+    index=22,
     containing_service=None,
     input_type=_ABANDONCHANNELREQUEST,
     output_type=_ABANDONCHANNELRESPONSE,
@@ -6766,7 +7857,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendPayment',
     full_name='lnrpc.Lightning.SendPayment',
-    index=21,
+    index=23,
     containing_service=None,
     input_type=_SENDREQUEST,
     output_type=_SENDRESPONSE,
@@ -6775,7 +7866,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendPaymentSync',
     full_name='lnrpc.Lightning.SendPaymentSync',
-    index=22,
+    index=24,
     containing_service=None,
     input_type=_SENDREQUEST,
     output_type=_SENDRESPONSE,
@@ -6784,7 +7875,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendToRoute',
     full_name='lnrpc.Lightning.SendToRoute',
-    index=23,
+    index=25,
     containing_service=None,
     input_type=_SENDTOROUTEREQUEST,
     output_type=_SENDRESPONSE,
@@ -6793,7 +7884,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendToRouteSync',
     full_name='lnrpc.Lightning.SendToRouteSync',
-    index=24,
+    index=26,
     containing_service=None,
     input_type=_SENDTOROUTEREQUEST,
     output_type=_SENDRESPONSE,
@@ -6802,7 +7893,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='AddInvoice',
     full_name='lnrpc.Lightning.AddInvoice',
-    index=25,
+    index=27,
     containing_service=None,
     input_type=_INVOICE,
     output_type=_ADDINVOICERESPONSE,
@@ -6811,7 +7902,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ListInvoices',
     full_name='lnrpc.Lightning.ListInvoices',
-    index=26,
+    index=28,
     containing_service=None,
     input_type=_LISTINVOICEREQUEST,
     output_type=_LISTINVOICERESPONSE,
@@ -6820,7 +7911,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='LookupInvoice',
     full_name='lnrpc.Lightning.LookupInvoice',
-    index=27,
+    index=29,
     containing_service=None,
     input_type=_PAYMENTHASH,
     output_type=_INVOICE,
@@ -6829,7 +7920,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SubscribeInvoices',
     full_name='lnrpc.Lightning.SubscribeInvoices',
-    index=28,
+    index=30,
     containing_service=None,
     input_type=_INVOICESUBSCRIPTION,
     output_type=_INVOICE,
@@ -6838,7 +7929,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='DecodePayReq',
     full_name='lnrpc.Lightning.DecodePayReq',
-    index=29,
+    index=31,
     containing_service=None,
     input_type=_PAYREQSTRING,
     output_type=_PAYREQ,
@@ -6847,7 +7938,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ListPayments',
     full_name='lnrpc.Lightning.ListPayments',
-    index=30,
+    index=32,
     containing_service=None,
     input_type=_LISTPAYMENTSREQUEST,
     output_type=_LISTPAYMENTSRESPONSE,
@@ -6856,7 +7947,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='DeleteAllPayments',
     full_name='lnrpc.Lightning.DeleteAllPayments',
-    index=31,
+    index=33,
     containing_service=None,
     input_type=_DELETEALLPAYMENTSREQUEST,
     output_type=_DELETEALLPAYMENTSRESPONSE,
@@ -6865,7 +7956,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='DescribeGraph',
     full_name='lnrpc.Lightning.DescribeGraph',
-    index=32,
+    index=34,
     containing_service=None,
     input_type=_CHANNELGRAPHREQUEST,
     output_type=_CHANNELGRAPH,
@@ -6874,7 +7965,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='GetChanInfo',
     full_name='lnrpc.Lightning.GetChanInfo',
-    index=33,
+    index=35,
     containing_service=None,
     input_type=_CHANINFOREQUEST,
     output_type=_CHANNELEDGE,
@@ -6883,7 +7974,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='GetNodeInfo',
     full_name='lnrpc.Lightning.GetNodeInfo',
-    index=34,
+    index=36,
     containing_service=None,
     input_type=_NODEINFOREQUEST,
     output_type=_NODEINFO,
@@ -6892,7 +7983,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='QueryRoutes',
     full_name='lnrpc.Lightning.QueryRoutes',
-    index=35,
+    index=37,
     containing_service=None,
     input_type=_QUERYROUTESREQUEST,
     output_type=_QUERYROUTESRESPONSE,
@@ -6901,7 +7992,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='GetNetworkInfo',
     full_name='lnrpc.Lightning.GetNetworkInfo',
-    index=36,
+    index=38,
     containing_service=None,
     input_type=_NETWORKINFOREQUEST,
     output_type=_NETWORKINFO,
@@ -6910,7 +8001,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='StopDaemon',
     full_name='lnrpc.Lightning.StopDaemon',
-    index=37,
+    index=39,
     containing_service=None,
     input_type=_STOPREQUEST,
     output_type=_STOPRESPONSE,
@@ -6919,7 +8010,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SubscribeChannelGraph',
     full_name='lnrpc.Lightning.SubscribeChannelGraph',
-    index=38,
+    index=40,
     containing_service=None,
     input_type=_GRAPHTOPOLOGYSUBSCRIPTION,
     output_type=_GRAPHTOPOLOGYUPDATE,
@@ -6928,7 +8019,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='DebugLevel',
     full_name='lnrpc.Lightning.DebugLevel',
-    index=39,
+    index=41,
     containing_service=None,
     input_type=_DEBUGLEVELREQUEST,
     output_type=_DEBUGLEVELRESPONSE,
@@ -6937,7 +8028,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='FeeReport',
     full_name='lnrpc.Lightning.FeeReport',
-    index=40,
+    index=42,
     containing_service=None,
     input_type=_FEEREPORTREQUEST,
     output_type=_FEEREPORTRESPONSE,
@@ -6946,7 +8037,7 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='UpdateChannelPolicy',
     full_name='lnrpc.Lightning.UpdateChannelPolicy',
-    index=41,
+    index=43,
     containing_service=None,
     input_type=_POLICYUPDATEREQUEST,
     output_type=_POLICYUPDATERESPONSE,
@@ -6955,11 +8046,56 @@ _LIGHTNING = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='ForwardingHistory',
     full_name='lnrpc.Lightning.ForwardingHistory',
-    index=42,
+    index=44,
     containing_service=None,
     input_type=_FORWARDINGHISTORYREQUEST,
     output_type=_FORWARDINGHISTORYRESPONSE,
     serialized_options=_b('\202\323\344\223\002\017\"\n/v1/switch:\001*'),
+  ),
+  _descriptor.MethodDescriptor(
+    name='ExportChannelBackup',
+    full_name='lnrpc.Lightning.ExportChannelBackup',
+    index=45,
+    containing_service=None,
+    input_type=_EXPORTCHANNELBACKUPREQUEST,
+    output_type=_CHANNELBACKUP,
+    serialized_options=_b('\202\323\344\223\002M\022K/v1/channels/backup/{chan_point.funding_txid_str}/{chan_point.output_index}'),
+  ),
+  _descriptor.MethodDescriptor(
+    name='ExportAllChannelBackups',
+    full_name='lnrpc.Lightning.ExportAllChannelBackups',
+    index=46,
+    containing_service=None,
+    input_type=_CHANBACKUPEXPORTREQUEST,
+    output_type=_CHANBACKUPSNAPSHOT,
+    serialized_options=_b('\202\323\344\223\002\025\022\023/v1/channels/backup'),
+  ),
+  _descriptor.MethodDescriptor(
+    name='VerifyChanBackup',
+    full_name='lnrpc.Lightning.VerifyChanBackup',
+    index=47,
+    containing_service=None,
+    input_type=_CHANBACKUPSNAPSHOT,
+    output_type=_VERIFYCHANBACKUPRESPONSE,
+    serialized_options=_b('\202\323\344\223\002\037\"\032/v1/channels/backup/verify:\001*'),
+  ),
+  _descriptor.MethodDescriptor(
+    name='RestoreChannelBackups',
+    full_name='lnrpc.Lightning.RestoreChannelBackups',
+    index=48,
+    containing_service=None,
+    input_type=_RESTORECHANBACKUPREQUEST,
+    output_type=_RESTOREBACKUPRESPONSE,
+    serialized_options=_b('\202\323\344\223\002 \"\033/v1/channels/backup/restore:\001*'),
+  ),
+  _descriptor.MethodDescriptor(
+    name='SubscribeChannelBackups',
+    full_name='lnrpc.Lightning.SubscribeChannelBackups',
+    index=49,
+    containing_service=None,
+    input_type=_CHANNELBACKUPSUBSCRIPTION,
+    output_type=_CHANBACKUPSNAPSHOT,
+    serialized_options=None,
   ),
 ])
 _sym_db.RegisterServiceDescriptor(_LIGHTNING)
