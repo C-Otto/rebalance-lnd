@@ -1,8 +1,7 @@
 import sys
 from route_extension import RouteExtension
 
-MAX_ROUTES_TO_REQUEST = 60
-ROUTE_REQUEST_INCREMENT = 15
+MAX_ROUTES_TO_REQUEST = 100
 
 
 def debug(message):
@@ -17,6 +16,7 @@ class Routes:
         self.last_hop_channel = last_hop_channel
         self.all_routes = []
         self.returned_routes = []
+        self.ignored_edges = []
         self.num_requested_routes = 0
         self.route_extension = RouteExtension(self.lnd, last_hop_channel, self.payment_request)
 
@@ -38,18 +38,17 @@ class Routes:
                 return
             if self.num_requested_routes >= MAX_ROUTES_TO_REQUEST:
                 return
-            num_routes_to_request = self.num_requested_routes + ROUTE_REQUEST_INCREMENT
-            num_routes_to_request = min(MAX_ROUTES_TO_REQUEST, num_routes_to_request)
-            self.request_routes(num_routes_to_request)
+            self.request_route()
 
-    def request_routes(self, num_routes_to_request):
-        debug("requesting {:d} routes from lnd, please wait.".format(num_routes_to_request))
-        routes = self.lnd.get_routes(self.last_hop_channel.remote_pubkey, self.get_amount(), num_routes_to_request)
-        debug("lnd returned {:d} routes that will now be tested".format(len(routes)))
-        self.num_requested_routes = num_routes_to_request
-        for route in routes:
-            modified_route = self.add_rebalance_channel(route)
-            self.add_route(modified_route)
+    def request_route(self):
+        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, self.get_amount(), self.ignored_edges)
+        if routes is None:
+            self.num_requested_routes = MAX_ROUTES_TO_REQUEST
+        else:
+            self.num_requested_routes += 1
+            for route in routes:
+                modified_route = self.add_rebalance_channel(route)
+                self.add_route(modified_route)
 
     def add_rebalance_channel(self, route):
         return self.route_extension.add_rebalance_channel(route)
@@ -67,3 +66,22 @@ class Routes:
 
     def get_amount(self):
         return self.payment_request.num_satoshis
+
+    def ignore_first_hop(self, channel):
+        own_key = self.lnd.get_own_pubkey()
+        other_key = channel.remote_pubkey
+        self.ignore_edge_from_to(channel.chan_id, own_key, other_key)
+
+    def ignore_edge_on_route(self, failure_source_pubkey, route):
+        previous_pub_key = self.lnd.get_own_pubkey()
+        for hop in route.hops:
+            if hop.pub_key == failure_source_pubkey:
+                debug("ignoring channel %s" % hop.chan_id)
+                self.ignore_edge_from_to(hop.chan_id, previous_pub_key, failure_source_pubkey)
+            else:
+                previous_pub_key = hop.pub_key
+
+    def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
+        direction_reverse = from_pubkey > to_pubkey
+        edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
+        self.ignored_edges.append(edge)

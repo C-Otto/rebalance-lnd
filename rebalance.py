@@ -59,9 +59,7 @@ def main():
         sys.exit()
 
     max_fee_factor = arguments.max_fee_factor
-    response = Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor).rebalance()
-    if response:
-        print(response)
+    Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor).rebalance()
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):

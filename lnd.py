@@ -2,13 +2,20 @@ import os
 from os.path import expanduser
 import codecs
 import grpc
+import sys
 
 import rpc_pb2 as ln
 import rpc_pb2_grpc as lnrpc
+import router_pb2 as lnrouter
+import router_pb2_grpc as lnrouterrpc
 
 SERVER = 'localhost:10009'
 LND_DIR = expanduser("~/.lnd")
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
+
+
+def debug(message):
+    sys.stderr.write(message + "\n")
 
 
 class Lnd:
@@ -21,7 +28,10 @@ class Lnd:
         ]
         grpc_channel = grpc.secure_channel(SERVER, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
+        self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
         self.graph = None
+        self.info = None
+        self.channels = None
 
     @staticmethod
     def get_credentials(lnd_dir):
@@ -33,7 +43,9 @@ class Lnd:
         return combined_credentials
 
     def get_info(self):
-        return self.stub.GetInfo(ln.GetInfoRequest())
+        if self.info is None:
+            self.info = self.stub.GetInfo(ln.GetInfoRequest())
+        return self.info
 
     def get_graph(self):
         if self.graph is None:
@@ -64,19 +76,24 @@ class Lnd:
         return self.stub.DecodePayReq(request)
 
     def get_channels(self):
-        request = ln.ListChannelsRequest(
-            active_only=True,
-        )
-        return self.stub.ListChannels(request).channels
+        if self.channels is None:
+            request = ln.ListChannelsRequest(
+                active_only=True,
+            )
+            self.channels = self.stub.ListChannels(request).channels
+        return self.channels
 
-    def get_routes(self, pub_key, amount, num_routes):
+    def get_route(self, pub_key, amount, ignored_edges):
         request = ln.QueryRoutesRequest(
             pub_key=pub_key,
             amt=amount,
-            num_routes=num_routes,
+            ignored_edges=ignored_edges,
         )
-        response = self.stub.QueryRoutes(request)
-        return response.routes
+        try:
+            response = self.stub.QueryRoutes(request)
+            return response.routes
+        except:
+            return None
 
     def get_policy(self, channel_id, source_pubkey):
         # node1_policy contains the fee base and rate for payments from node1 to node2
@@ -88,11 +105,11 @@ class Lnd:
                     result = edge.node2_policy
                 return result
 
-    def send_payment(self, payment_request, routes):
-        payment_hash = payment_request.payment_hash
-        request = ln.SendToRouteRequest()
+    def send_payment(self, payment_request, route):
+        request = lnrouter.SendToRouteRequest(route=route)
+        request.payment_hash = self.hex_string_to_bytes(payment_request.payment_hash)
+        return self.router_stub.SendToRoute(request)
 
-        request.payment_hash_string = payment_hash
-        request.routes.extend(routes)
-
-        return self.stub.SendToRouteSync(request)
+    @staticmethod
+    def hex_string_to_bytes(hex_string):
+        return hex_string.decode("hex")
