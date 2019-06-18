@@ -17,12 +17,15 @@ def debugnobreak(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor):
+    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor):
         self.lnd = lnd
         self.first_hop_channel_id = first_hop_channel_id
         self.last_hop_channel = last_hop_channel
         self.amount = amount
         self.channel_ratio = channel_ratio
+        self.excluded = []
+        if excluded:
+            self.excluded = excluded
         self.max_fee_factor = max_fee_factor
 
     def rebalance(self):
@@ -135,9 +138,9 @@ class Logic:
         for channel in self.lnd.get_channels():
             if self.low_local_ratio_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel)
-            if self.first_hop_channel_id:
-                if channel.chan_id != self.first_hop_channel_id:
-                    routes.ignore_first_hop(channel)
+            if channel.chan_id in self.excluded:
+                debug("Ignoring %s as first hop" % channel.chan_id)
+                routes.ignore_first_hop(channel)
 
     @staticmethod
     def bytes_to_hex_string(data):

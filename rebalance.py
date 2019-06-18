@@ -59,7 +59,8 @@ def main():
         sys.exit()
 
     max_fee_factor = arguments.max_fee_factor
-    Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, max_fee_factor).rebalance()
+    excluded = arguments.exclude
+    Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor).rebalance()
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):
@@ -131,6 +132,11 @@ def get_argument_parser():
                                  help="Amount of the rebalance, in satoshis. If not specified, "
                                       "the amount computed for a perfect rebalance will be used"
                                       " (up to the maximum of 4,294,967 satoshis)")
+    rebalance_group.add_argument("-e", "--exclude",
+                                 type=int,
+                                 action="append",
+                                 help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
+                                      "out of excluded channels)")
     rebalance_group.add_argument("--max-fee-factor",
                                  type=float,
                                  default=10,
