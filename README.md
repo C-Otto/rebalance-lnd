@@ -4,7 +4,12 @@ Using this script you can easily rebalance individual channels of your lnd node.
 
 ## Installation
 
-This script needs an active lnd (https://github.com/lightningnetwork/lnd) instance running.
+This script needs an active lnd 0.7+ (https://github.com/lightningnetwork/lnd) instance running.
+If you compile lnd yourself, you need to include the `routerrpc `build tag.
+
+Example:
+`make install tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
+
 You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the sources.
