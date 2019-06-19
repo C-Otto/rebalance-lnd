@@ -72,6 +72,9 @@ class Logic:
                 elif code == 18:
                     debugnobreak("Unknown next peer, ")
                     routes.ignore_edge_on_route(failure_source_pubkey, route)
+                elif code == 12:
+                    debugnobreak("Fee insufficient, ")
+                    routes.ignore_edge_on_route(failure_source_pubkey, route)
                 else:
                     debug(repr(response))
                     debug("Unknown error code %s" % repr(code))
