@@ -73,13 +73,14 @@ class Routes:
         self.ignore_edge_from_to(channel.chan_id, own_key, other_key)
 
     def ignore_edge_on_route(self, failure_source_pubkey, route):
-        previous_pub_key = self.lnd.get_own_pubkey()
+        ignore_next = False
         for hop in route.hops:
-            if hop.pub_key == failure_source_pubkey:
+            if ignore_next:
                 debug("ignoring channel %s" % hop.chan_id)
-                self.ignore_edge_from_to(hop.chan_id, previous_pub_key, failure_source_pubkey)
-            else:
-                previous_pub_key = hop.pub_key
+                self.ignore_edge_from_to(hop.chan_id, failure_source_pubkey, hop.pub_key)
+                return
+            if hop.pub_key == failure_source_pubkey:
+                ignore_next = True
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
         direction_reverse = from_pubkey > to_pubkey
