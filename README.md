@@ -4,7 +4,12 @@ Using this script you can easily rebalance individual channels of your lnd node.
 
 ## Installation
 
-This script needs an active lnd (https://github.com/lightningnetwork/lnd) instance running.
+This script needs an active lnd 0.7+ (https://github.com/lightningnetwork/lnd) instance running.
+If you compile lnd yourself, you need to include the `routerrpc `build tag.
+
+Example:
+`make install tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
+
 You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the sources.
@@ -20,7 +25,7 @@ $ pip install -r requirements.txt
 ### Command line arguments
 ```
 usage: rebalance.py [-h] [-r RATIO] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL]
-                    [-a AMOUNT] [--max-fee-factor MAX_FEE_FACTOR]
+                    [-a AMOUNT] [-e EXCLUDE] [--max-fee-factor MAX_FEE_FACTOR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -54,6 +59,9 @@ rebalance:
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
+  -e EXCLUDE, --exclude EXCLUDE
+                        Exclude the given channel ID as the outgoing channel
+                        (no funds will be taken out of excluded channels)
   --max-fee-factor MAX_FEE_FACTOR
                         (default: 10) Reject routes that cost more than x
                         times the lnd default (base: 1 sat, rate: 1 millionth
