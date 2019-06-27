@@ -41,14 +41,27 @@ class Routes:
             self.request_route()
 
     def request_route(self):
-        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, self.get_amount(), self.ignored_edges)
+        fee_last_hop_msat = self.route_extension.get_fee_msat(self.get_amount() * 1000, self.last_hop_channel.chan_id,
+                                                              self.last_hop_channel.remote_pubkey)
+        fee_last_hop = fee_last_hop_msat // 1000
+        amount = self.get_amount() + fee_last_hop
+        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
             self.num_requested_routes += 1
             for route in routes:
+                self.subtract_from_amounts(route, fee_last_hop_msat)
                 modified_route = self.add_rebalance_channel(route)
                 self.add_route(modified_route)
+
+    @staticmethod
+    def subtract_from_amounts(route, fee_last_hop_msat):
+        route.total_amt_msat -= fee_last_hop_msat
+        route.total_amt -= fee_last_hop_msat // 1000
+        for hop in reversed(route.hops):
+            hop.amt_to_forward_msat -= fee_last_hop_msat
+            hop.amt_to_forward -= fee_last_hop_msat // 1000
 
     def add_rebalance_channel(self, route):
         return self.route_extension.add_rebalance_channel(route)
