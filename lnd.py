@@ -112,4 +112,5 @@ class Lnd:
 
     @staticmethod
     def hex_string_to_bytes(hex_string):
-        return hex_string.decode("hex")
+        decode_hex = codecs.getdecoder("hex_codec")
+        return decode_hex(hex_string)[0]

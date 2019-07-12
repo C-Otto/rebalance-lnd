@@ -146,4 +146,4 @@ class Logic:
 
     @staticmethod
     def bytes_to_hex_string(data):
-        return base64.b16encode(data).lower()
+        return base64.b16encode(data).decode().lower()
