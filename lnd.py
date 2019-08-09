@@ -67,7 +67,13 @@ class Lnd:
             value=amount,
         )
         add_invoice_response = self.stub.AddInvoice(invoice_request)
-        return self.decode_payment_request(add_invoice_response.payment_request)
+        return add_invoice_response.payment_request
+
+    def decode_payment_request(self, payment_request):
+        request = ln.PayReqString(
+            pay_req=payment_request,
+        )
+        return self.stub.DecodePayReq(request)
 
     def decode_payment_request(self, payment_request):
         request = ln.PayReqString(

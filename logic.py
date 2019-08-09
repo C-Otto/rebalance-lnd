@@ -1,5 +1,7 @@
 import base64
 import sys
+import os, glob
+import time
 
 from routes import Routes
 
@@ -127,9 +129,34 @@ class Logic:
             debug("Skipping route due to high fees (%d msat): %s" % (route.total_fees_msat, Routes.print_route(route)))
         return too_high
 
+    def remove_expired_invoices(self):
+        for filename in glob.glob("./payment_request_*"):
+            payment_request = open(filename, 'r').read()
+            payment_request_decoded = self.lnd.decode_payment_request(payment_request)
+            if int(time.time()) - payment_request_decoded.expiry > payment_request_decoded.timestamp:
+                os.remove(filename)
+
+    def cached_invoice(self):
+        filename = "./payment_request_%s.txt" % self.amount
+        try:
+            return open(filename, 'r').read()
+        except FileNotFoundError:
+            return
+
+    def cache_invoice(self, payment_request):
+        filename = "./payment_request_%s.txt" % self.amount
+        f = open(filename, "w+")
+        f.write(payment_request)
+        f.close()
+
     def generate_invoice(self):
+        self.remove_expired_invoices()
         memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
-        return self.lnd.generate_invoice(memo, self.amount)
+        payment_request = self.cached_invoice()
+        if payment_request is None:
+            payment_request = self.lnd.generate_invoice(memo, self.amount)
+            self.cache_invoice(payment_request)
+        return self.lnd.decode_payment_request(payment_request)
 
     def get_channel_for_channel_id(self, channel_id):
         for channel in self.lnd.get_channels():
