@@ -19,6 +19,14 @@ def main():
     arguments = argument_parser.parse_args()
     first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
+    cert = arguments.cert
+    macaroon = arguments.macaroon
+
+    if (cert is None and macaroon is not None) or (cert is not None and macaroon is None):
+        print("Both or none of --cert and --macaroon must be set")
+        sys.exit()
+
+    lnd = Lnd(arguments.cert, arguments.macaroon, arguments.server)
 
     if arguments.ratio < 1 or arguments.ratio > 50:
         print("--ratio must be between 1 and 50")
@@ -32,9 +40,9 @@ def main():
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
         if incoming:
-            list_incoming_candidates(channel_ratio)
+            list_incoming_candidates(lnd, channel_ratio)
         else:
-            list_outgoing_candidates(channel_ratio)
+            list_outgoing_candidates(lnd, channel_ratio)
         sys.exit()
 
     if to_channel is None:
@@ -45,14 +53,14 @@ def main():
     if to_channel and to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        candidates = get_incoming_rebalance_candidates(channel_ratio)
+        candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
         candidate = candidates[index]
         last_hop_channel = candidate
     else:
         # else the channel argument should be the channel ID
-        last_hop_channel = get_channel_for_channel_id(to_channel)
+        last_hop_channel = get_channel_for_channel_id(lnd, to_channel)
 
-    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel)
+    amount = get_amount(lnd, arguments, first_hop_channel_id, last_hop_channel)
 
     if amount == 0:
         print("Amount is 0, nothing to do")
@@ -63,13 +71,13 @@ def main():
     Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor).rebalance()
 
 
-def get_amount(arguments, first_hop_channel_id, last_hop_channel):
+def get_amount(lnd, arguments, first_hop_channel_id, last_hop_channel):
     if arguments.amount:
         amount = int(arguments.amount)
     else:
         amount = get_rebalance_amount(last_hop_channel)
         if first_hop_channel_id:
-            first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+            first_hop_channel = get_channel_for_channel_id(lnd, first_hop_channel_id)
             rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
             if amount > rebalance_amount_from_channel:
                 amount = rebalance_amount_from_channel
@@ -80,7 +88,7 @@ def get_amount(arguments, first_hop_channel_id, last_hop_channel):
     return amount
 
 
-def get_channel_for_channel_id(channel_id):
+def get_channel_for_channel_id(lnd, channel_id):
     for channel in lnd.get_channels():
         if channel.chan_id == channel_id:
             return channel
@@ -142,16 +150,27 @@ def get_argument_parser():
                                  default=10,
                                  help="(default: 10) Reject routes that cost more than x times the lnd default "
                                       "(base: 1 sat, rate: 1 millionth sat) per hop on average")
+    rebalance_group.add_argument("-s", "--server",
+                                 type=str,
+                                 help="(default: localhost:10009) Server address and port separated by \":\"")
+    rebalance_group.add_argument("-c", "--cert",
+                                 type=str,
+                                 help="Path to the node certificate. Will look inside ~/.lnd if not provided "
+                                      "(--macaroon must be set)")
+    rebalance_group.add_argument("-m", "--macaroon",
+                                 type=str,
+                                 help="Path to admin.macaroon. Will look inside ~/.lnd if not provided "
+                                      "(--cert must be set)")
     return parser
 
 
-def list_incoming_candidates(channel_ratio):
-    candidates = get_incoming_rebalance_candidates(channel_ratio)
+def list_incoming_candidates(lnd, channel_ratio):
+    candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
     list_candidates(candidates)
 
 
-def list_outgoing_candidates(channel_ratio):
-    candidates = get_outgoing_rebalance_candidates(channel_ratio)
+def list_outgoing_candidates(lnd, channel_ratio):
+    candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
     list_candidates(candidates)
 
 
@@ -179,13 +198,13 @@ def get_rebalance_amount(channel):
     return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
-def get_incoming_rebalance_candidates(channel_ratio):
+def get_incoming_rebalance_candidates(lnd, channel_ratio):
     low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, lnd.get_channels()))
     low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
     return sorted(low_local, key=get_remote_surplus, reverse=False)
 
 
-def get_outgoing_rebalance_candidates(channel_ratio):
+def get_outgoing_rebalance_candidates(lnd, channel_ratio):
     high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, lnd.get_channels()))
     high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
     return sorted(high_local, key=get_remote_surplus, reverse=True)
@@ -222,6 +241,4 @@ def get_columns():
     else:
         return 80
 
-
-lnd = Lnd()
 main()

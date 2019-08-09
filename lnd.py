@@ -19,14 +19,14 @@ def debug(message):
 
 
 class Lnd:
-    def __init__(self):
+    def __init__(self, cert, macaroon, server):
         os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
-        combined_credentials = self.get_credentials(LND_DIR)
+        combined_credentials = self.get_credentials(LND_DIR, cert, macaroon)
         channel_options = [
             ('grpc.max_message_length', MESSAGE_SIZE_MB),
             ('grpc.max_receive_message_length', MESSAGE_SIZE_MB)
         ]
-        grpc_channel = grpc.secure_channel(SERVER, combined_credentials, channel_options)
+        grpc_channel = grpc.secure_channel(server if server is not None else SERVER, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
         self.graph = None
@@ -34,10 +34,18 @@ class Lnd:
         self.channels = None
 
     @staticmethod
-    def get_credentials(lnd_dir):
-        tls_certificate = open(lnd_dir + '/tls.cert', 'rb').read()
+    def get_credentials(lnd_dir, cert, macaroon):
+        if cert is not None:
+            cert_path = cert
+        else:
+            cert_path = lnd_dir + '/tls.cert'
+        if macaroon is not None:
+            macaroon_path = macaroon
+        else:
+            macaroon_path = lnd_dir + '/data/chain/bitcoin/mainnet/admin.macaroon'
+        tls_certificate = open(cert_path, 'rb').read()
         ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
-        macaroon = codecs.encode(open(lnd_dir + '/data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
+        macaroon = codecs.encode(open(macaroon_path, 'rb').read(), 'hex')
         auth_credentials = grpc.metadata_call_credentials(lambda _, callback: callback([('macaroon', macaroon)], None))
         combined_credentials = grpc.composite_channel_credentials(ssl_credentials, auth_credentials)
         return combined_credentials
