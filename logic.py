@@ -137,14 +137,14 @@ class Logic:
                 os.remove(filename)
 
     def cached_invoice(self):
-        filename = "./payment_request_%s.txt" % self.amount
+        filename = "./payment_request_%s_%s.txt" % (self.last_hop_channel.chan_id, self.amount)
         try:
             return open(filename, 'r').read()
         except FileNotFoundError:
             return
 
     def cache_invoice(self, payment_request):
-        filename = "./payment_request_%s.txt" % self.amount
+        filename = "./payment_request_%s_%s.txt" % (self.last_hop_channel.chan_id, self.amount)
         f = open(filename, "w+")
         f.write(payment_request)
         f.close()
