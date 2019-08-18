@@ -8,7 +8,7 @@ This script needs an active lnd 0.7+ (https://github.com/lightningnetwork/lnd) i
 If you compile lnd yourself, you need to include the `routerrpc `build tag.
 
 Example:
-`make install tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
+`make tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
 
 You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
