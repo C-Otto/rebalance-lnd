@@ -89,7 +89,7 @@ class Routes:
         ignore_next = False
         for hop in route.hops:
             if ignore_next:
-                debug("ignoring channel %s" % hop.chan_id)
+                debug("ignoring channel %s (from %s to %s)" % (hop.chan_id, failure_source_pubkey, hop.pub_key))
                 self.ignore_edge_from_to(hop.chan_id, failure_source_pubkey, hop.pub_key)
                 return
             if hop.pub_key == failure_source_pubkey:

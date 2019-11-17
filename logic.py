@@ -64,7 +64,12 @@ class Logic:
                 return
             else:
                 code = response.failure.code
-                failure_source_pubkey = self.bytes_to_hex_string(response.failure.failure_source_pubkey)
+
+                if response.failure.failure_source_index > 0:
+                    failure_source_pubkey = route.hops[response.failure.failure_source_index-1].pub_key
+                else:
+                    failure_source_pubkey = route.hops[-1].pub_key
+
                 if code == 15:
                     debugnobreak("Temporary channel failure, ")
                     routes.ignore_edge_on_route(failure_source_pubkey, route)
