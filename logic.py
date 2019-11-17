@@ -43,47 +43,60 @@ class Logic:
         tried_routes = []
         while routes.has_next():
             route = routes.get_next()
-            if self.route_is_invalid(route, routes):
-                continue
-            tried_routes.append(route)
 
-            debug("")
-            debug("Trying route #%d" % len(tried_routes))
-            debug(Routes.print_route(route))
-
-            response = self.lnd.send_payment(payment_request, route)
-            is_successful = response.failure.code == 0
-
-            if is_successful:
-                debug("Success! Paid fees: %s sat (%s msat)" % (route.total_fees, route.total_fees_msat))
-                debug("Successful route:")
-                debug(Routes.print_route(route))
-                debug("")
-                debug("Tried routes:")
-                debug("\n".join(Routes.print_route(route) for route in tried_routes))
+            success = self.try_route(payment_request, route, routes, tried_routes)
+            if success:
                 return
-            else:
-                code = response.failure.code
-
-                if response.failure.failure_source_index > 0:
-                    failure_source_pubkey = route.hops[response.failure.failure_source_index-1].pub_key
-                else:
-                    failure_source_pubkey = route.hops[-1].pub_key
-
-                if code == 15:
-                    debugnobreak("Temporary channel failure, ")
-                    routes.ignore_edge_on_route(failure_source_pubkey, route)
-                elif code == 18:
-                    debugnobreak("Unknown next peer, ")
-                    routes.ignore_edge_on_route(failure_source_pubkey, route)
-                elif code == 12:
-                    debugnobreak("Fee insufficient, ")
-                    routes.ignore_edge_on_route(failure_source_pubkey, route)
-                else:
-                    debug(repr(response))
-                    debug("Unknown error code %s" % repr(code))
         debug("Could not find any suitable route")
         return None
+
+    def try_route(self, payment_request, route, routes, tried_routes):
+        if self.route_is_invalid(route, routes):
+            return False
+
+        tried_routes.append(route)
+        debug("")
+        debug("Trying route #%d" % len(tried_routes))
+        debug(Routes.print_route(route))
+
+        response = self.lnd.send_payment(payment_request, route)
+        is_successful = response.failure.code == 0
+        if is_successful:
+            debug("Success! Paid fees: %s sat (%s msat)" % (route.total_fees, route.total_fees_msat))
+            debug("Successful route:")
+            debug(Routes.print_route(route))
+            debug("")
+            debug("Tried routes:")
+            debug("\n".join(Routes.print_route(route) for route in tried_routes))
+            return True
+        else:
+            self.handle_error(response, route, routes)
+            return False
+
+    @staticmethod
+    def handle_error(response, route, routes):
+        code = response.failure.code
+        failure_source_pubkey = Logic.get_failure_source_pubkey(response, route)
+        if code == 15:
+            debugnobreak("Temporary channel failure, ")
+            routes.ignore_edge_on_route(failure_source_pubkey, route)
+        elif code == 18:
+            debugnobreak("Unknown next peer, ")
+            routes.ignore_edge_on_route(failure_source_pubkey, route)
+        elif code == 12:
+            debugnobreak("Fee insufficient, ")
+            routes.ignore_edge_on_route(failure_source_pubkey, route)
+        else:
+            debug(repr(response))
+            debug("Unknown error code %s" % repr(code))
+
+    @staticmethod
+    def get_failure_source_pubkey(response, route):
+        if response.failure.failure_source_index == 0:
+            failure_source_pubkey = route.hops[-1].pub_key
+        else:
+            failure_source_pubkey = route.hops[response.failure.failure_source_index - 1].pub_key
+        return failure_source_pubkey
 
     def route_is_invalid(self, route, routes):
         first_hop = route.hops[0]
