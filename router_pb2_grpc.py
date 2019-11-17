@@ -44,6 +44,16 @@ class RouterStub(object):
         request_serializer=router__pb2.QueryMissionControlRequest.SerializeToString,
         response_deserializer=router__pb2.QueryMissionControlResponse.FromString,
         )
+    self.QueryProbability = channel.unary_unary(
+        '/routerrpc.Router/QueryProbability',
+        request_serializer=router__pb2.QueryProbabilityRequest.SerializeToString,
+        response_deserializer=router__pb2.QueryProbabilityResponse.FromString,
+        )
+    self.BuildRoute = channel.unary_unary(
+        '/routerrpc.Router/BuildRoute',
+        request_serializer=router__pb2.BuildRouteRequest.SerializeToString,
+        response_deserializer=router__pb2.BuildRouteResponse.FromString,
+        )
 
 
 class RouterServicer(object):
@@ -106,6 +116,25 @@ class RouterServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def QueryProbability(self, request, context):
+    """*
+    QueryProbability returns the current success probability estimate for a
+    given node pair and amount.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def BuildRoute(self, request, context):
+    """*
+    BuildRoute builds a fully specified route based on a list of hop public
+    keys. It retrieves the relevant channel policies from the graph in order to
+    calculate the correct fees and time locks.
+    """
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_RouterServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -138,6 +167,16 @@ def add_RouterServicer_to_server(servicer, server):
           servicer.QueryMissionControl,
           request_deserializer=router__pb2.QueryMissionControlRequest.FromString,
           response_serializer=router__pb2.QueryMissionControlResponse.SerializeToString,
+      ),
+      'QueryProbability': grpc.unary_unary_rpc_method_handler(
+          servicer.QueryProbability,
+          request_deserializer=router__pb2.QueryProbabilityRequest.FromString,
+          response_serializer=router__pb2.QueryProbabilityResponse.SerializeToString,
+      ),
+      'BuildRoute': grpc.unary_unary_rpc_method_handler(
+          servicer.BuildRoute,
+          request_deserializer=router__pb2.BuildRouteRequest.FromString,
+          response_serializer=router__pb2.BuildRouteResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
