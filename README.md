@@ -4,7 +4,7 @@ Using this script you can easily rebalance individual channels of your lnd node.
 
 ## Installation
 
-This script needs an active lnd 0.7+ (https://github.com/lightningnetwork/lnd) instance running.
+This script needs an active lnd 0.7.1+ (https://github.com/lightningnetwork/lnd) instance running.
 If you compile lnd yourself, you need to include the `routerrpc `build tag.
 
 Example:

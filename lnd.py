@@ -85,6 +85,7 @@ class Lnd:
             pub_key=pub_key,
             amt=amount,
             ignored_edges=ignored_edges,
+            use_mission_control=True,
         )
         try:
             response = self.stub.QueryRoutes(request)
