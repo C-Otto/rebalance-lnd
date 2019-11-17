@@ -1,5 +1,5 @@
 import sys
-import rpc_pb2 as ln
+from grpc_generated import rpc_pb2 as ln
 
 
 def debug(message):

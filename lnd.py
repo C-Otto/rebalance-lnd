@@ -4,10 +4,7 @@ import codecs
 import grpc
 import sys
 
-import rpc_pb2 as ln
-import rpc_pb2_grpc as lnrpc
-import router_pb2 as lnrouter
-import router_pb2_grpc as lnrouterrpc
+from grpc_generated import router_pb2_grpc as lnrouterrpc, router_pb2 as lnrouter, rpc_pb2_grpc as lnrpc, rpc_pb2 as ln
 
 SERVER = 'localhost:10009'
 LND_DIR = expanduser("~/.lnd")
