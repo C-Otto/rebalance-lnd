@@ -1,3 +1,4 @@
 .idea/
 *.iml
 venv/
+grpc_generated/*.proto
