@@ -13,36 +13,31 @@ class RouteExtension:
         self.rebalance_channel = rebalance_channel
         self.payment = payment
 
-    def add_rebalance_channel(self, route):
+    def add_rebalance_channel(self, route, amount_msat):
         hops = route.hops
-        last_hop = hops[-1]
-        amount_msat = int(last_hop.amt_to_forward_msat)
 
         expiry_last_hop = self.lnd.get_current_height() + self.get_expiry_delta_last_hop()
-        total_time_lock = expiry_last_hop
-
-        self.update_amounts(hops)
-        total_time_lock = self.update_expiry(hops, total_time_lock)
+        total_time_lock = self.update_expiry(hops, expiry_last_hop)
+        route.total_time_lock = total_time_lock
 
         hops.extend([self.create_new_hop(amount_msat, self.rebalance_channel, expiry_last_hop)])
+        self.update_amounts(hops)
 
-        self.update_route_totals(route, total_time_lock)
+        self.update_route_totals(route)
         return route
 
     @staticmethod
-    def update_route_totals(route, total_time_lock):
+    def update_route_totals(route):
         total_fee_msat = 0
         for hop in route.hops:
             total_fee_msat += hop.fee_msat
 
-        total_amount_msat = route.hops[-1].amt_to_forward_msat + total_fee_msat
+        total_amount_msat = route.hops[0].amt_to_forward_msat + route.hops[0].fee_msat
 
         route.total_amt_msat = total_amount_msat
         route.total_amt = total_amount_msat // 1000
         route.total_fees_msat = total_fee_msat
         route.total_fees = total_fee_msat // 1000
-
-        route.total_time_lock = total_time_lock
 
     def create_new_hop(self, amount_msat, channel, expiry):
         new_hop = ln.Hop(
@@ -58,18 +53,16 @@ class RouteExtension:
         return new_hop
 
     def update_amounts(self, hops):
-        additional_fees = 0
-        hop_out_channel_id = self.rebalance_channel.chan_id
-        for hop in reversed(hops):
-            amount_to_forward_msat = hop.amt_to_forward_msat + additional_fees
-            hop.amt_to_forward_msat = amount_to_forward_msat
-            hop.amt_to_forward = amount_to_forward_msat // 1000
+        last_hop = hops[-1]
+        previous_channel_must_forward_msat = last_hop.amt_to_forward_msat
+        hop_out_channel_id = last_hop.chan_id
 
-            fee_msat_before = hop.fee_msat
-            new_fee_msat = self.get_fee_msat(amount_to_forward_msat, hop_out_channel_id, hop.pub_key)
+        for hop in reversed(hops[:-1]):
+            hop.amt_to_forward_msat = previous_channel_must_forward_msat
+            new_fee_msat = self.get_fee_msat(hop.amt_to_forward_msat, hop_out_channel_id, hop.pub_key)
             hop.fee_msat = new_fee_msat
             hop.fee = new_fee_msat // 1000
-            additional_fees += new_fee_msat - fee_msat_before
+            previous_channel_must_forward_msat = hop.amt_to_forward_msat + hop.fee_msat
             hop_out_channel_id = hop.chan_id
 
     def get_expiry_delta_last_hop(self):

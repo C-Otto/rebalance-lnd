@@ -51,20 +51,11 @@ class Routes:
         else:
             self.num_requested_routes += 1
             for route in routes:
-                self.subtract_from_amounts(route, fee_last_hop_msat)
                 modified_route = self.add_rebalance_channel(route)
                 self.add_route(modified_route)
 
-    @staticmethod
-    def subtract_from_amounts(route, fee_last_hop_msat):
-        route.total_amt_msat -= fee_last_hop_msat
-        route.total_amt -= fee_last_hop_msat // 1000
-        for hop in reversed(route.hops):
-            hop.amt_to_forward_msat -= fee_last_hop_msat
-            hop.amt_to_forward -= fee_last_hop_msat // 1000
-
     def add_rebalance_channel(self, route):
-        return self.route_extension.add_rebalance_channel(route)
+        return self.route_extension.add_rebalance_channel(route, self.get_amount() * 1000)
 
     def add_route(self, route):
         if route is None:
