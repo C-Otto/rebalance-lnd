@@ -118,6 +118,7 @@ class Logic:
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.fees_too_high(route):
+            routes.ignore_highest_fee_hop(route)
             return True
         return False
 
@@ -145,10 +146,7 @@ class Logic:
         hops_with_fees = len(route.hops) - 1
         lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE_SAT_MSAT + (self.amount * DEFAULT_FEE_RATE_MSAT))
         limit = self.max_fee_factor * lnd_fees
-        too_high = route.total_fees_msat > limit
-        if too_high:
-            debug("Skipping route due to high fees (%d msat): %s" % (route.total_fees_msat, Routes.print_route(route)))
-        return too_high
+        return route.total_fees_msat > limit
 
     def generate_invoice(self):
         memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id

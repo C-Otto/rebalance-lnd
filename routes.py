@@ -86,6 +86,26 @@ class Routes:
             if hop.pub_key == failure_source_pubkey:
                 ignore_next = True
 
+    def ignore_highest_fee_hop(self, route):
+        max_fee_msat = 0
+        max_fee_hop_index = None
+        index = 0
+        for hop in route.hops:
+            if hop.fee_msat > max_fee_msat:
+                max_fee_msat = hop.fee_msat
+                max_fee_hop_index = index
+            index += 1
+
+        max_fee_hop = route.hops[max_fee_hop_index]
+        dest_pub_key = max_fee_hop.pub_key
+        if max_fee_hop_index > 0:
+            src_pub_key = route.hops[max_fee_hop_index - 1].pub_key
+        else:
+            src_pub_key = self.lnd.get_own_pubkey()
+        debug("Ignoring %s (from %s to %s) because of high fees (%s msat), "
+              % (max_fee_hop.chan_id, src_pub_key, dest_pub_key, max_fee_msat))
+        self.ignore_edge_from_to(max_fee_hop.chan_id, src_pub_key, dest_pub_key)
+
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
         direction_reverse = from_pubkey > to_pubkey
         edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
