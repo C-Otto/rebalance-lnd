@@ -1,4 +1,3 @@
-import base64
 import sys
 
 from routes import Routes
@@ -159,7 +158,3 @@ class Logic:
             if channel.chan_id in self.excluded:
                 debug("Ignoring %s as first hop" % channel.chan_id)
                 routes.ignore_first_hop(channel)
-
-    @staticmethod
-    def bytes_to_hex_string(data):
-        return base64.b16encode(data).decode().lower()
