@@ -1,3 +1,4 @@
+import base64
 import sys
 from route_extension import RouteExtension
 
@@ -111,4 +112,4 @@ class Routes:
 
     def ignore_node(self, pub_key):
         debug("ignoring node %s" % pub_key)
-        self.ignored_nodes.append(pub_key.encode('utf-8'))
+        self.ignored_nodes.append(base64.b16decode(pub_key, True))
