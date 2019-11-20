@@ -8,6 +8,10 @@ def debug(message):
     sys.stderr.write(message + "\n")
 
 
+def debugnobreak(message):
+    sys.stderr.write(message)
+
+
 class Routes:
     def __init__(self, lnd, payment_request, first_hop_channel_id, last_hop_channel):
         self.lnd = lnd
@@ -17,6 +21,7 @@ class Routes:
         self.all_routes = []
         self.returned_routes = []
         self.ignored_edges = []
+        self.ignored_nodes = []
         self.num_requested_routes = 0
         self.route_extension = RouteExtension(self.lnd, last_hop_channel, self.payment_request)
 
@@ -45,7 +50,7 @@ class Routes:
                                                               self.last_hop_channel.remote_pubkey)
         fee_last_hop = fee_last_hop_msat // 1000
         amount = self.get_amount() + fee_last_hop
-        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges)
+        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges, self.ignored_nodes)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
@@ -85,24 +90,24 @@ class Routes:
             if hop.pub_key == failure_source_pubkey:
                 ignore_next = True
 
-    def ignore_highest_fee_hop(self, route):
+    def ignore_node_with_highest_fee(self, route):
         max_fee_msat = 0
-        max_fee_hop_index = None
-        index = 0
+        max_fee_hop = None
         for hop in route.hops:
             if hop.fee_msat > max_fee_msat:
                 max_fee_msat = hop.fee_msat
-                max_fee_hop_index = index
-            index += 1
+                max_fee_hop = hop
 
-        src_pub_key = route.hops[max_fee_hop_index].pub_key
-        dest_pub_key = route.hops[max_fee_hop_index + 1].pub_key
-        chan_id = route.hops[max_fee_hop_index + 1].chan_id
-        debug("High fees (%s msat), " % max_fee_msat)
-        self.ignore_edge_from_to(chan_id, src_pub_key, dest_pub_key)
+        pub_key = max_fee_hop.pub_key
+        debugnobreak("High fees (%s msat), " % max_fee_msat)
+        self.ignore_node(pub_key)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
         debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
         direction_reverse = from_pubkey > to_pubkey
         edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
         self.ignored_edges.append(edge)
+
+    def ignore_node(self, pub_key):
+        debug("ignoring node %s" % pub_key)
+        self.ignored_nodes.append(pub_key.encode('utf-8'))

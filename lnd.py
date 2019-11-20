@@ -80,11 +80,12 @@ class Lnd:
             self.channels = self.stub.ListChannels(request).channels
         return self.channels
 
-    def get_route(self, pub_key, amount, ignored_edges):
+    def get_route(self, pub_key, amount, ignored_edges, ignored_nodes):
         request = ln.QueryRoutesRequest(
             pub_key=pub_key,
             amt=amount,
             ignored_edges=ignored_edges,
+            ignored_nodes=ignored_nodes,
             use_mission_control=True,
         )
         try:

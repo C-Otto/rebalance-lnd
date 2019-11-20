@@ -112,7 +112,7 @@ class Logic:
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.fees_too_high(route):
-            routes.ignore_highest_fee_hop(route)
+            routes.ignore_node_with_highest_fee(route)
             return True
         return False
 
