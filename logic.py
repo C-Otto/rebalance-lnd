@@ -86,9 +86,6 @@ class Logic:
         elif code == 12:
             debugnobreak("Fee insufficient, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
-        elif code == 1:
-            debugnobreak("Incorrect or unknown payment details, ")
-            routes.ignore_edge_on_route(route.hops[-2].pub_key, route)
         else:
             debug(repr(response))
             debug("Unknown error code %s" % repr(code))
