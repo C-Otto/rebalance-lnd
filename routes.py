@@ -96,7 +96,7 @@ class Routes:
                 max_fee_hop_index = index
             index += 1
 
-	src_pub_key = route.hops[max_fee_hop_index].pub_key
+        src_pub_key = route.hops[max_fee_hop_index].pub_key
         dest_pub_key = route.hops[max_fee_hop_index + 1].pub_key
         chan_id = route.hops[max_fee_hop_index + 1].chan_id
         debug("Ignoring %s (from %s to %s) because of high fees (%s msat)."
