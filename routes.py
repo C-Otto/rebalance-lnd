@@ -80,7 +80,6 @@ class Routes:
         ignore_next = False
         for hop in route.hops:
             if ignore_next:
-                debug("ignoring channel %s (from %s to %s)" % (hop.chan_id, failure_source_pubkey, hop.pub_key))
                 self.ignore_edge_from_to(hop.chan_id, failure_source_pubkey, hop.pub_key)
                 return
             if hop.pub_key == failure_source_pubkey:
@@ -99,11 +98,11 @@ class Routes:
         src_pub_key = route.hops[max_fee_hop_index].pub_key
         dest_pub_key = route.hops[max_fee_hop_index + 1].pub_key
         chan_id = route.hops[max_fee_hop_index + 1].chan_id
-        debug("Ignoring %s (from %s to %s) because of high fees (%s msat)."
-              % (chan_id, src_pub_key, dest_pub_key, max_fee_msat))
+        debug("High fees (%s msat), " % max_fee_msat)
         self.ignore_edge_from_to(chan_id, src_pub_key, dest_pub_key)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
+        debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
         direction_reverse = from_pubkey > to_pubkey
         edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
         self.ignored_edges.append(edge)
