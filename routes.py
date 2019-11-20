@@ -76,10 +76,10 @@ class Routes:
     def get_amount(self):
         return self.payment_request.num_satoshis
 
-    def ignore_first_hop(self, channel):
+    def ignore_first_hop(self, channel, show_message=True):
         own_key = self.lnd.get_own_pubkey()
         other_key = channel.remote_pubkey
-        self.ignore_edge_from_to(channel.chan_id, own_key, other_key)
+        self.ignore_edge_from_to(channel.chan_id, own_key, other_key, show_message)
 
     def ignore_edge_on_route(self, failure_source_pubkey, route):
         ignore_next = False
@@ -102,8 +102,9 @@ class Routes:
         debugnobreak("High fees (%s msat), " % max_fee_msat)
         self.ignore_node(pub_key)
 
-    def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey):
-        debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
+    def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
+        if show_message:
+            debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
         direction_reverse = from_pubkey > to_pubkey
         edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
         self.ignored_edges.append(edge)

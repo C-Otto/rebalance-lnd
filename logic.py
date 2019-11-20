@@ -100,15 +100,15 @@ class Logic:
     def route_is_invalid(self, route, routes):
         first_hop = route.hops[0]
         if self.does_not_have_requested_first_hop(first_hop):
-            debug("does not have requested first hop")
+            debugnobreak("Does not have requested first hop, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.low_local_ratio_after_sending(first_hop, route.total_amt):
-            debug("Low local ratio after sending, ignoring %s" % first_hop.chan_id)
+            debugnobreak("Low local ratio after sending, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.target_is_first_hop(first_hop):
-            debug("Ignoring %s as first hop" % first_hop.chan_id)
+            debugnobreak("Target channel is first hop, " % first_hop.chan_id)
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.fees_too_high(route):
@@ -154,7 +154,7 @@ class Logic:
     def initialize_ignored_channels(self, routes):
         for channel in self.lnd.get_channels():
             if self.low_local_ratio_after_sending(channel, self.amount):
-                routes.ignore_first_hop(channel)
+                routes.ignore_first_hop(channel, show_message=False)
             if channel.chan_id in self.excluded:
-                debug("Ignoring %s as first hop" % channel.chan_id)
+                debugnobreak("Channel is excluded, ")
                 routes.ignore_first_hop(channel)
