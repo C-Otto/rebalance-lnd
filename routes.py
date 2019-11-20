@@ -102,7 +102,7 @@ class Routes:
             src_pub_key = route.hops[max_fee_hop_index - 1].pub_key
         else:
             src_pub_key = self.lnd.get_own_pubkey()
-        debug("Ignoring %s (from %s to %s) because of high fees (%s msat), "
+        debug("Ignoring %s (from %s to %s) because of high fees (%s msat)."
               % (max_fee_hop.chan_id, src_pub_key, dest_pub_key, max_fee_msat))
         self.ignore_edge_from_to(max_fee_hop.chan_id, src_pub_key, dest_pub_key)
 
