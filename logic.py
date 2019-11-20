@@ -61,12 +61,15 @@ class Logic:
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
+            debug("")
+            debug("")
+            debug("")
             debug("Success! Paid fees: %s sat (%s msat)" % (route.total_fees, route.total_fees_msat))
             debug("Successful route:")
             debug(Routes.print_route(route))
             debug("")
-            debug("Tried routes:")
-            debug("\n".join(Routes.print_route(route) for route in tried_routes))
+            debug("")
+            debug("")
             return True
         else:
             self.handle_error(response, route, routes)
