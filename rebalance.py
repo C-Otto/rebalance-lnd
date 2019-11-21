@@ -60,7 +60,7 @@ def main():
 
     max_fee_factor = arguments.max_fee_factor
     excluded = arguments.exclude
-    Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor).rebalance()
+    return Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor).rebalance()
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):
@@ -224,4 +224,7 @@ def get_columns():
 
 
 lnd = Lnd()
-main()
+success = main()
+if success:
+    sys.exit(0)
+sys.exit(1)

@@ -45,9 +45,9 @@ class Logic:
 
             success = self.try_route(payment_request, route, routes, tried_routes)
             if success:
-                return
+                return True
         debug("Could not find any suitable route")
-        return None
+        return False
 
     def try_route(self, payment_request, route, routes, tried_routes):
         if self.route_is_invalid(route, routes):
