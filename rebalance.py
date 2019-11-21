@@ -64,18 +64,16 @@ def main():
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):
-    if arguments.amount:
-        amount = int(arguments.amount)
-    else:
-        amount = get_rebalance_amount(last_hop_channel)
-        if first_hop_channel_id:
-            first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
-            rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
-            if amount > rebalance_amount_from_channel:
-                amount = rebalance_amount_from_channel
+    amount = get_rebalance_amount(last_hop_channel)
+    if first_hop_channel_id:
+        first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+        rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
+        amount = min(amount, rebalance_amount_from_channel)
 
-    if amount > MAX_SATOSHIS_PER_TRANSACTION:
-        amount = MAX_SATOSHIS_PER_TRANSACTION
+    if arguments.amount:
+        amount = min(amount, int(arguments.amount))
+
+    amount = min(amount, MAX_SATOSHIS_PER_TRANSACTION)
 
     return amount
 
