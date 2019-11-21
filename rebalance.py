@@ -3,11 +3,10 @@
 import argparse
 import math
 import os
-import sys
 import platform
+import sys
 
 from lnd import Lnd
-
 from logic import Logic
 
 MAX_CHANNEL_CAPACITY = 16777215
@@ -22,12 +21,12 @@ def main():
 
     if arguments.ratio < 1 or arguments.ratio > 50:
         print("--ratio must be between 1 and 50")
-        sys.exit()
+        sys.exit(1)
     channel_ratio = float(arguments.ratio) / 100
 
     if arguments.incoming is not None and not arguments.list_candidates:
         print("--outgoing and --incoming only work in conjunction with --list-candidates")
-        sys.exit()
+        sys.exit(1)
 
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
@@ -35,11 +34,18 @@ def main():
             list_incoming_candidates(channel_ratio)
         else:
             list_outgoing_candidates(channel_ratio)
-        sys.exit()
+        sys.exit(1)
 
     if to_channel is None:
         argument_parser.print_help()
-        sys.exit()
+        sys.exit(1)
+
+    percentage = arguments.percentage
+    if percentage:
+        if percentage < 1 or percentage > 100:
+            print("--percentage must be between 1 and 100")
+            argument_parser.print_help()
+            sys.exit(1)
 
     # the 'to' argument might be an index, or a channel ID
     if to_channel and to_channel < 10000:
@@ -56,15 +62,20 @@ def main():
 
     if amount == 0:
         print("Amount is 0, nothing to do")
-        sys.exit()
+        sys.exit(0)
 
     max_fee_factor = arguments.max_fee_factor
     excluded = arguments.exclude
-    return Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor).rebalance()
+    return Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded,
+                 max_fee_factor).rebalance()
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):
     amount = get_rebalance_amount(last_hop_channel)
+
+    if arguments.percentage:
+        amount = int(round(amount * arguments.percentage / 100))
+
     if first_hop_channel_id:
         first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
         rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
@@ -124,11 +135,17 @@ def get_argument_parser():
                                  help="channel ID of the incoming channel "
                                       "(funds will be sent to this channel). "
                                       "You may also use the index as shown in the incoming candidate list (-l -i).")
-    rebalance_group.add_argument("-a", "--amount",
-                                 type=int,
-                                 help="Amount of the rebalance, in satoshis. If not specified, "
-                                      "the amount computed for a perfect rebalance will be used"
-                                      " (up to the maximum of 4,294,967 satoshis)")
+    amount_group = rebalance_group.add_mutually_exclusive_group()
+    amount_group.add_argument("-a", "--amount",
+                              type=int,
+                              help="Amount of the rebalance, in satoshis. If not specified, "
+                                   "the amount computed for a perfect rebalance will be used"
+                                   " (up to the maximum of 4,294,967 satoshis)")
+    amount_group.add_argument("-p", "--percentage",
+                              type=int,
+                              help="Set the amount to send to a percentage of the amount required to rabalance."
+                                   "As an example, if this is set to 50, the amount will half of the default."
+                                   "See --amount.")
     rebalance_group.add_argument("-e", "--exclude",
                                  type=int,
                                  action="append",

@@ -25,7 +25,8 @@ $ pip install -r requirements.txt
 ### Command line arguments
 ```
 usage: rebalance.py [-h] [-r RATIO] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL]
-                    [-a AMOUNT] [-e EXCLUDE] [--max-fee-factor MAX_FEE_FACTOR]
+                    [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
+                    [--max-fee-factor MAX_FEE_FACTOR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -59,6 +60,10 @@ rebalance:
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
+  -p PERCENTAGE, --percentage PERCENTAGE
+                        Set the amount to send to a percentage of the amount
+                        required to rabalance.As an example, if this is set to
+                        50, the amount will half of the default.See --amount.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel
                         (no funds will be taken out of excluded channels)
@@ -117,6 +122,10 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 `rebalance.py -t 23 -a 1613478`
 
 If you do not specify the amount, the rebalance amount for the destination channel (`-t`) is determined automatically.
+As an alternative to specify the amount you may also set a percentage of the rebalance amount using `-p`.
+For example, the following command tries to sends 20% of the amount required to rebalance the channel:
+
+`rebalance.py -t 23 -p 20`
 
 If you specify a channel using `-f`, the funds are taken from that channel. 
 
