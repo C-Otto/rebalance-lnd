@@ -89,7 +89,6 @@ def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-r", "--ratio",
                         type=int,
-                        dest="ratio",
                         default=50,
                         help="(default: 50) ratio for channel imbalance between 1 and 50, "
                              "eg. 45 to only show channels (-l) with less than 45%% of the "
