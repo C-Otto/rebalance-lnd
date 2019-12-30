@@ -111,7 +111,7 @@ class Logic:
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.target_is_first_hop(first_hop):
-            debugnobreak("Target channel is first hop, " % first_hop.chan_id)
+            debugnobreak("Target channel is first hop, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.fees_too_high(route):
