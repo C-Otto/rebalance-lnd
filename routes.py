@@ -51,7 +51,8 @@ class Routes:
                                                               self.last_hop_channel.remote_pubkey)
         fee_last_hop = fee_last_hop_msat // 1000
         amount = self.get_amount() + fee_last_hop
-        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges, self.ignored_nodes)
+        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges,
+                                    self.ignored_nodes, self.first_hop_channel_id)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
