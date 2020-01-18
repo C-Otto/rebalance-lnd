@@ -34,7 +34,7 @@ def main():
             list_incoming_candidates(channel_ratio)
         else:
             list_outgoing_candidates(channel_ratio)
-        sys.exit(1)
+        sys.exit(0)
 
     if to_channel is None and first_hop_channel_id is None:
         argument_parser.print_help()
