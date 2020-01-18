@@ -81,7 +81,7 @@ def get_amount(arguments, first_hop_channel_id, last_hop_channel):
     if arguments.percentage:
         amount = int(round(amount * arguments.percentage / 100))
 
-    if first_hop_channel_id:
+    if last_hop_channel and first_hop_channel_id:
         first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
         rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
         amount = min(amount, rebalance_amount_from_channel)
