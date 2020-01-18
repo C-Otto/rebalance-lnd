@@ -1,6 +1,5 @@
 import base64
 import sys
-from route_extension import RouteExtension
 
 MAX_ROUTES_TO_REQUEST = 100
 
@@ -24,7 +23,6 @@ class Routes:
         self.ignored_edges = []
         self.ignored_nodes = []
         self.num_requested_routes = 0
-        self.route_extension = RouteExtension(self.lnd, last_hop_channel, self.payment_request)
 
     def has_next(self):
         self.update_routes()
@@ -47,10 +45,7 @@ class Routes:
             self.request_route()
 
     def request_route(self):
-        fee_last_hop_msat = self.route_extension.get_fee_msat(self.get_amount() * 1000, self.last_hop_channel.chan_id,
-                                                              self.last_hop_channel.remote_pubkey)
-        fee_last_hop = fee_last_hop_msat // 1000
-        amount = self.get_amount() + fee_last_hop
+        amount = self.get_amount()
         routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges,
                                     self.ignored_nodes, self.first_hop_channel_id)
         if routes is None:
@@ -58,11 +53,7 @@ class Routes:
         else:
             self.num_requested_routes += 1
             for route in routes:
-                modified_route = self.add_rebalance_channel(route)
-                self.add_route(modified_route)
-
-    def add_rebalance_channel(self, route):
-        return self.route_extension.add_rebalance_channel(route, self.get_amount() * 1000)
+                self.add_route(route)
 
     def add_route(self, route):
         if route is None:

@@ -1,3 +1,4 @@
+import base64
 import os
 from os.path import expanduser
 import codecs
@@ -82,7 +83,8 @@ class Lnd:
 
     def get_route(self, pub_key, amount, ignored_edges, ignored_nodes, first_hop_channel_id):
         request = ln.QueryRoutesRequest(
-            pub_key=pub_key,
+            pub_key=self.get_own_pubkey(),
+            last_hop_pubkey=base64.b16decode(pub_key, True),
             amt=amount,
             ignored_edges=ignored_edges,
             ignored_nodes=ignored_nodes,
