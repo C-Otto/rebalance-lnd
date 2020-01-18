@@ -15,9 +15,9 @@ def debugnobreak(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor):
+    def __init__(self, lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor):
         self.lnd = lnd
-        self.first_hop_channel_id = first_hop_channel_id
+        self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.amount = amount
         self.channel_ratio = channel_ratio
@@ -34,11 +34,11 @@ class Logic:
             debug("Sending {:,} satoshis.".format(self.amount))
         if self.channel_ratio != 0.5:
             debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
-        if self.first_hop_channel_id:
-            debug("Forced first channel has ID %d" % self.first_hop_channel_id)
+        if self.first_hop_channel:
+            debug("Forced first channel has ID %d" % self.first_hop_channel.chan_id)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.first_hop_channel_id, self.last_hop_channel)
+        routes = Routes(self.lnd, payment_request, self.first_hop_channel, self.last_hop_channel)
 
         self.initialize_ignored_channels(routes)
 
@@ -115,7 +115,7 @@ class Logic:
         return False
 
     def low_local_ratio_after_sending(self, first_hop, total_amount):
-        if self.first_hop_channel_id:
+        if self.first_hop_channel:
             # Just use the computed/specified amount to drain the first hop, ignoring fees
             return False
         channel_id = first_hop.chan_id
@@ -136,7 +136,7 @@ class Logic:
         if self.last_hop_channel:
             memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
         else:
-            memo = "Rebalance of channel with ID %d" % self.first_hop_channel_id
+            memo = "Rebalance of channel with ID %d" % self.first_hop_channel.chan_id
         return self.lnd.generate_invoice(memo, self.amount)
 
     def get_channel_for_channel_id(self, channel_id):

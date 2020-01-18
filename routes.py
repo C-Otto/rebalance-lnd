@@ -13,10 +13,10 @@ def debugnobreak(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_channel_id, last_hop_channel):
+    def __init__(self, lnd, payment_request, first_hop_channel, last_hop_channel):
         self.lnd = lnd
         self.payment_request = payment_request
-        self.first_hop_channel_id = first_hop_channel_id
+        self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.all_routes = []
         self.returned_routes = []
@@ -50,8 +50,12 @@ class Routes:
             last_hop_pubkey = self.last_hop_channel.remote_pubkey
         else:
             last_hop_pubkey = None
+        if self.first_hop_channel:
+            first_hop_channel_id = self.first_hop_channel.chan_id
+        else:
+            first_hop_channel_id = None
         routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_edges,
-                                    self.ignored_nodes, self.first_hop_channel_id)
+                                    self.ignored_nodes, first_hop_channel_id)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:

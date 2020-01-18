@@ -58,7 +58,9 @@ def main():
         # else the channel argument should be the channel ID
         last_hop_channel = get_channel_for_channel_id(to_channel)
 
-    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel)
+    first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+
+    amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
     if amount == 0:
         print("Amount is 0, nothing to do")
@@ -66,23 +68,20 @@ def main():
 
     max_fee_factor = arguments.max_fee_factor
     excluded = arguments.exclude
-    return Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded,
+    return Logic(lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded,
                  max_fee_factor).rebalance()
 
 
-def get_amount(arguments, first_hop_channel_id, last_hop_channel):
+def get_amount(arguments, first_hop_channel, last_hop_channel):
     if last_hop_channel:
         amount = get_rebalance_amount(last_hop_channel)
     else:
-        first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
-        rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
-        amount = rebalance_amount_from_channel
+        amount = get_rebalance_amount(first_hop_channel)
 
     if arguments.percentage:
         amount = int(round(amount * arguments.percentage / 100))
 
-    if last_hop_channel and first_hop_channel_id:
-        first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+    if last_hop_channel and first_hop_channel:
         rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
         amount = min(amount, rebalance_amount_from_channel)
 
