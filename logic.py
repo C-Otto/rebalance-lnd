@@ -27,8 +27,11 @@ class Logic:
         self.max_fee_factor = max_fee_factor
 
     def rebalance(self):
-        debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
-               % self.last_hop_channel.chan_id).format(self.amount))
+        if self.last_hop_channel:
+            debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
+                   % self.last_hop_channel.chan_id).format(self.amount))
+        else:
+            debug("Sending {:,} satoshis.".format(self.amount))
         if self.channel_ratio != 0.5:
             debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
         if self.first_hop_channel_id:
@@ -130,7 +133,10 @@ class Logic:
         return route.total_fees_msat > limit
 
     def generate_invoice(self):
-        memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
+        if self.last_hop_channel:
+            memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
+        else:
+            memo = "Rebalance of channel with ID %d" % self.first_hop_channel_id
         return self.lnd.generate_invoice(memo, self.amount)
 
     def get_channel_for_channel_id(self, channel_id):

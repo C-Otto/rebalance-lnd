@@ -36,7 +36,7 @@ def main():
             list_outgoing_candidates(channel_ratio)
         sys.exit(1)
 
-    if to_channel is None:
+    if to_channel is None and first_hop_channel_id is None:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -71,7 +71,12 @@ def main():
 
 
 def get_amount(arguments, first_hop_channel_id, last_hop_channel):
-    amount = get_rebalance_amount(last_hop_channel)
+    if last_hop_channel:
+        amount = get_rebalance_amount(last_hop_channel)
+    else:
+        first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+        rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
+        amount = rebalance_amount_from_channel
 
     if arguments.percentage:
         amount = int(round(amount * arguments.percentage / 100))
@@ -123,7 +128,7 @@ def get_argument_parser():
 
     rebalance_group = parser.add_argument_group("rebalance",
                                                 "Rebalance a channel. You need to specify at least"
-                                                " the 'to' channel (-t).")
+                                                " the 'from' channel (-f) or the 'to' channel (-t).")
     rebalance_group.add_argument("-f", "--from",
                                  metavar="CHANNEL",
                                  type=int,

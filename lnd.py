@@ -82,9 +82,13 @@ class Lnd:
         return self.channels
 
     def get_route(self, pub_key, amount, ignored_edges, ignored_nodes, first_hop_channel_id):
+        if pub_key:
+            last_hop_pubkey = base64.b16decode(pub_key, True)
+        else:
+            last_hop_pubkey = None
         request = ln.QueryRoutesRequest(
             pub_key=self.get_own_pubkey(),
-            last_hop_pubkey=base64.b16decode(pub_key, True),
+            last_hop_pubkey=last_hop_pubkey,
             amt=amount,
             ignored_edges=ignored_edges,
             ignored_nodes=ignored_nodes,

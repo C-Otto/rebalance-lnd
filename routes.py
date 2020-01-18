@@ -46,7 +46,11 @@ class Routes:
 
     def request_route(self):
         amount = self.get_amount()
-        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges,
+        if self.last_hop_channel:
+            last_hop_pubkey = self.last_hop_channel.remote_pubkey
+        else:
+            last_hop_pubkey = None
+        routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_edges,
                                     self.ignored_nodes, self.first_hop_channel_id)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
