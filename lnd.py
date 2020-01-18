@@ -53,9 +53,6 @@ class Lnd:
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
 
-    def get_current_height(self):
-        return self.get_info().block_height
-
     def get_edges(self):
         return self.get_graph().edges
 
@@ -100,16 +97,6 @@ class Lnd:
             return response.routes
         except:
             return None
-
-    def get_policy(self, channel_id, source_pubkey):
-        # node1_policy contains the fee base and rate for payments from node1 to node2
-        for edge in self.get_edges():
-            if edge.channel_id == channel_id:
-                if edge.node1_pub == source_pubkey:
-                    result = edge.node1_policy
-                else:
-                    result = edge.node2_policy
-                return result
 
     def send_payment(self, payment_request, route):
         request = lnrouter.SendToRouteRequest(route=route)
