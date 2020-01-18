@@ -113,8 +113,9 @@ The bar (`=`) indicates the funds on the local side of the channel.
 The number next to the channel ID (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
-To actually rebalance a channel, run the script and specify the channel to send funds to using `-t`.
-Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send (using `-a`).
+To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
+It is possible to use both `-t` and `-f`, but at least one of these arguments must be given.
+You can also specify the amount to send (using `-a`).
 You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
 
 `rebalance.py -t 123[...]456 -a 1613478`
@@ -123,13 +124,11 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 
 `rebalance.py -t 23 -a 1613478`
 
-If you do not specify the amount, the rebalance amount for the destination channel (`-t`) is determined automatically.
+If you do not specify the amount, the rebalance amount is determined automatically.
 As an alternative to specify the amount you may also set a percentage of the rebalance amount using `-p`.
 For example, the following command tries to sends 20% of the amount required to rebalance the channel:
 
-`rebalance.py -t 23 -p 20`
-
-If you specify a channel using `-f`, the funds are taken from that channel. 
+`rebalance.py -t 23 -p 20` 
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 
