@@ -2,6 +2,9 @@
 
 Using this script you can easily rebalance individual channels of your lnd node.
 
+If you run lnd 0.9.0+, please have a look at
+https://github.com/C-Otto/rebalance-lnd/tree/lnd-v0.9.0
+
 ## Installation
 
 This script needs an active lnd 0.7.1+ (https://github.com/lightningnetwork/lnd) instance running.
