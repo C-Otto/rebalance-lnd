@@ -62,8 +62,8 @@ rebalance:
                         will be used (up to the maximum of 4,294,967 satoshis)
   -p PERCENTAGE, --percentage PERCENTAGE
                         Set the amount to send to a percentage of the amount
-                        required to rabalance.As an example, if this is set to
-                        50, the amount will half of the default.See --amount.
+                        required to rabalance. As an example, if this is set to
+                        50, the amount will half of the default. See --amount.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel
                         (no funds will be taken out of excluded channels)

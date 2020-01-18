@@ -143,8 +143,8 @@ def get_argument_parser():
                                    " (up to the maximum of 4,294,967 satoshis)")
     amount_group.add_argument("-p", "--percentage",
                               type=int,
-                              help="Set the amount to send to a percentage of the amount required to rabalance."
-                                   "As an example, if this is set to 50, the amount will half of the default."
+                              help="Set the amount to send to a percentage of the amount required to rabalance. "
+                                   "As an example, if this is set to 50, the amount will half of the default. "
                                    "See --amount.")
     rebalance_group.add_argument("-e", "--exclude",
                                  type=int,
