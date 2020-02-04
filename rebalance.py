@@ -34,9 +34,9 @@ def main():
             list_incoming_candidates(channel_ratio)
         else:
             list_outgoing_candidates(channel_ratio)
-        sys.exit(1)
+        sys.exit(0)
 
-    if to_channel is None:
+    if to_channel is None and first_hop_channel_id is None:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -58,7 +58,9 @@ def main():
         # else the channel argument should be the channel ID
         last_hop_channel = get_channel_for_channel_id(to_channel)
 
-    amount = get_amount(arguments, first_hop_channel_id, last_hop_channel)
+    first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+
+    amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
     if amount == 0:
         print("Amount is 0, nothing to do")
@@ -66,18 +68,20 @@ def main():
 
     max_fee_factor = arguments.max_fee_factor
     excluded = arguments.exclude
-    return Logic(lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded,
+    return Logic(lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded,
                  max_fee_factor).rebalance()
 
 
-def get_amount(arguments, first_hop_channel_id, last_hop_channel):
-    amount = get_rebalance_amount(last_hop_channel)
+def get_amount(arguments, first_hop_channel, last_hop_channel):
+    if last_hop_channel:
+        amount = get_rebalance_amount(last_hop_channel)
+    else:
+        amount = get_rebalance_amount(first_hop_channel)
 
     if arguments.percentage:
         amount = int(round(amount * arguments.percentage / 100))
 
-    if first_hop_channel_id:
-        first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+    if last_hop_channel and first_hop_channel:
         rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
         amount = min(amount, rebalance_amount_from_channel)
 
@@ -123,7 +127,7 @@ def get_argument_parser():
 
     rebalance_group = parser.add_argument_group("rebalance",
                                                 "Rebalance a channel. You need to specify at least"
-                                                " the 'to' channel (-t).")
+                                                " the 'from' channel (-f) or the 'to' channel (-t).")
     rebalance_group.add_argument("-f", "--from",
                                  metavar="CHANNEL",
                                  type=int,
@@ -143,8 +147,8 @@ def get_argument_parser():
                                    " (up to the maximum of 4,294,967 satoshis)")
     amount_group.add_argument("-p", "--percentage",
                               type=int,
-                              help="Set the amount to send to a percentage of the amount required to rabalance."
-                                   "As an example, if this is set to 50, the amount will half of the default."
+                              help="Set the amount to send to a percentage of the amount required to rabalance. "
+                                   "As an example, if this is set to 50, the amount will half of the default. "
                                    "See --amount.")
     rebalance_group.add_argument("-e", "--exclude",
                                  type=int,

@@ -15,9 +15,9 @@ def debugnobreak(message):
 
 
 class Logic:
-    def __init__(self, lnd, first_hop_channel_id, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor):
+    def __init__(self, lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor):
         self.lnd = lnd
-        self.first_hop_channel_id = first_hop_channel_id
+        self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.amount = amount
         self.channel_ratio = channel_ratio
@@ -27,15 +27,18 @@ class Logic:
         self.max_fee_factor = max_fee_factor
 
     def rebalance(self):
-        debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
-               % self.last_hop_channel.chan_id).format(self.amount))
+        if self.last_hop_channel:
+            debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
+                   % self.last_hop_channel.chan_id).format(self.amount))
+        else:
+            debug("Sending {:,} satoshis.".format(self.amount))
         if self.channel_ratio != 0.5:
             debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
-        if self.first_hop_channel_id:
-            debug("Forced first channel has ID %d" % self.first_hop_channel_id)
+        if self.first_hop_channel:
+            debug("Forced first channel has ID %d" % self.first_hop_channel.chan_id)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.first_hop_channel_id, self.last_hop_channel)
+        routes = Routes(self.lnd, payment_request, self.first_hop_channel, self.last_hop_channel)
 
         self.initialize_ignored_channels(routes)
 
@@ -102,16 +105,8 @@ class Logic:
 
     def route_is_invalid(self, route, routes):
         first_hop = route.hops[0]
-        if self.does_not_have_requested_first_hop(first_hop):
-            debugnobreak("Does not have requested first hop, ")
-            routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
-            return True
         if self.low_local_ratio_after_sending(first_hop, route.total_amt):
             debugnobreak("Low local ratio after sending, ")
-            routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
-            return True
-        if self.target_is_first_hop(first_hop):
-            debugnobreak("Target channel is first hop, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.fees_too_high(route):
@@ -119,13 +114,8 @@ class Logic:
             return True
         return False
 
-    def does_not_have_requested_first_hop(self, first_hop):
-        if not self.first_hop_channel_id:
-            return False
-        return first_hop.chan_id != self.first_hop_channel_id
-
     def low_local_ratio_after_sending(self, first_hop, total_amount):
-        if self.first_hop_channel_id:
+        if self.first_hop_channel:
             # Just use the computed/specified amount to drain the first hop, ignoring fees
             return False
         channel_id = first_hop.chan_id
@@ -136,9 +126,6 @@ class Logic:
         ratio = float(local) / (remote + local)
         return ratio < self.channel_ratio
 
-    def target_is_first_hop(self, first_hop):
-        return first_hop.chan_id == self.last_hop_channel.chan_id
-
     def fees_too_high(self, route):
         hops_with_fees = len(route.hops) - 1
         lnd_fees = hops_with_fees * (DEFAULT_BASE_FEE_SAT_MSAT + (self.amount * DEFAULT_FEE_RATE_MSAT))
@@ -146,7 +133,10 @@ class Logic:
         return route.total_fees_msat > limit
 
     def generate_invoice(self):
-        memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
+        if self.last_hop_channel:
+            memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
+        else:
+            memo = "Rebalance of channel with ID %d" % self.first_hop_channel.chan_id
         return self.lnd.generate_invoice(memo, self.amount)
 
     def get_channel_for_channel_id(self, channel_id):

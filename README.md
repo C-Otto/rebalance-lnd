@@ -7,7 +7,7 @@ https://github.com/C-Otto/rebalance-lnd/tree/lnd-v0.9.0
 
 ## Installation
 
-This script needs an active lnd 0.7.1+ (https://github.com/lightningnetwork/lnd) instance running.
+This script needs an active lnd 0.9.0+ (https://github.com/lightningnetwork/lnd) instance running.
 If you compile lnd yourself, you need to include the `routerrpc `build tag.
 
 Example:
@@ -50,7 +50,8 @@ list candidates:
                         funds on the local side (see --ratio)
 
 rebalance:
-  Rebalance a channel. You need to specify at least the 'to' channel (-t).
+  Rebalance a channel. You need to specify at least the 'from' channel (-f)
+  or the 'to' channel (-t).
 
   -f CHANNEL, --from CHANNEL
                         channel ID of the outgoing channel (funds will be
@@ -65,8 +66,9 @@ rebalance:
                         will be used (up to the maximum of 4,294,967 satoshis)
   -p PERCENTAGE, --percentage PERCENTAGE
                         Set the amount to send to a percentage of the amount
-                        required to rabalance.As an example, if this is set to
-                        50, the amount will half of the default.See --amount.
+                        required to rabalance. As an example, if this is set
+                        to 50, the amount will half of the default. See
+                        --amount.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel
                         (no funds will be taken out of excluded channels)
@@ -114,8 +116,9 @@ The bar (`=`) indicates the funds on the local side of the channel.
 The number next to the channel ID (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
-To actually rebalance a channel, run the script and specify the channel to send funds to using `-t`.
-Optionally you can also specify the channel to take the funds from (using `-f`), and the amount to send (using `-a`).
+To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
+It is possible to use both `-t` and `-f`, but at least one of these arguments must be given.
+You can also specify the amount to send (using `-a`).
 You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
 
 `rebalance.py -t 123[...]456 -a 1613478`
@@ -124,13 +127,11 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 
 `rebalance.py -t 23 -a 1613478`
 
-If you do not specify the amount, the rebalance amount for the destination channel (`-t`) is determined automatically.
+If you do not specify the amount, the rebalance amount is determined automatically.
 As an alternative to specify the amount you may also set a percentage of the rebalance amount using `-p`.
 For example, the following command tries to sends 20% of the amount required to rebalance the channel:
 
-`rebalance.py -t 23 -p 20`
-
-If you specify a channel using `-f`, the funds are taken from that channel. 
+`rebalance.py -t 23 -p 20` 
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 
@@ -139,7 +140,7 @@ The maximum amount you can send in one transaction currently is limited (by the 
 Contributions are highly welcome!
 Feel free to submit issues and pull requests on https://github.com/C-Otto/rebalance-lnd/
 
-Please also consider opening a channel with one of our nodes:
+Please also consider opening a channel with one of our nodes, or sending tips via keysend:
 
 * C-Otto: `027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71@137.226.34.46:9735`
 * wamde: `0269b91661812bae52280a68eec2b89d38bf26b33966441ad70aa365e120a125ff@82.36.141.97:9735`

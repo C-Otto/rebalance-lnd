@@ -1,3 +1,4 @@
+import base64
 import os
 from os.path import expanduser
 import codecs
@@ -52,9 +53,6 @@ class Lnd:
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
 
-    def get_current_height(self):
-        return self.get_info().block_height
-
     def get_edges(self):
         return self.get_graph().edges
 
@@ -80,29 +78,25 @@ class Lnd:
             self.channels = self.stub.ListChannels(request).channels
         return self.channels
 
-    def get_route(self, pub_key, amount, ignored_edges, ignored_nodes):
+    def get_route(self, pub_key, amount, ignored_edges, ignored_nodes, first_hop_channel_id):
+        if pub_key:
+            last_hop_pubkey = base64.b16decode(pub_key, True)
+        else:
+            last_hop_pubkey = None
         request = ln.QueryRoutesRequest(
-            pub_key=pub_key,
+            pub_key=self.get_own_pubkey(),
+            last_hop_pubkey=last_hop_pubkey,
             amt=amount,
             ignored_edges=ignored_edges,
             ignored_nodes=ignored_nodes,
             use_mission_control=True,
+            outgoing_chan_id=first_hop_channel_id,
         )
         try:
             response = self.stub.QueryRoutes(request)
             return response.routes
         except:
             return None
-
-    def get_policy(self, channel_id, source_pubkey):
-        # node1_policy contains the fee base and rate for payments from node1 to node2
-        for edge in self.get_edges():
-            if edge.channel_id == channel_id:
-                if edge.node1_pub == source_pubkey:
-                    result = edge.node1_policy
-                else:
-                    result = edge.node2_policy
-                return result
 
     def send_payment(self, payment_request, route):
         request = lnrouter.SendToRouteRequest(route=route)

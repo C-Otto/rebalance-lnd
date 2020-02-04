@@ -1,6 +1,5 @@
 import base64
 import sys
-from route_extension import RouteExtension
 
 MAX_ROUTES_TO_REQUEST = 100
 
@@ -14,17 +13,16 @@ def debugnobreak(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_channel_id, last_hop_channel):
+    def __init__(self, lnd, payment_request, first_hop_channel, last_hop_channel):
         self.lnd = lnd
         self.payment_request = payment_request
-        self.first_hop_channel_id = first_hop_channel_id
+        self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.all_routes = []
         self.returned_routes = []
         self.ignored_edges = []
         self.ignored_nodes = []
         self.num_requested_routes = 0
-        self.route_extension = RouteExtension(self.lnd, last_hop_channel, self.payment_request)
 
     def has_next(self):
         self.update_routes()
@@ -47,21 +45,23 @@ class Routes:
             self.request_route()
 
     def request_route(self):
-        fee_last_hop_msat = self.route_extension.get_fee_msat(self.get_amount() * 1000, self.last_hop_channel.chan_id,
-                                                              self.last_hop_channel.remote_pubkey)
-        fee_last_hop = fee_last_hop_msat // 1000
-        amount = self.get_amount() + fee_last_hop
-        routes = self.lnd.get_route(self.last_hop_channel.remote_pubkey, amount, self.ignored_edges, self.ignored_nodes)
+        amount = self.get_amount()
+        if self.last_hop_channel:
+            last_hop_pubkey = self.last_hop_channel.remote_pubkey
+        else:
+            last_hop_pubkey = None
+        if self.first_hop_channel:
+            first_hop_channel_id = self.first_hop_channel.chan_id
+        else:
+            first_hop_channel_id = None
+        routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_edges,
+                                    self.ignored_nodes, first_hop_channel_id)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
             self.num_requested_routes += 1
             for route in routes:
-                modified_route = self.add_rebalance_channel(route)
-                self.add_route(modified_route)
-
-    def add_rebalance_channel(self, route):
-        return self.route_extension.add_rebalance_channel(route, self.get_amount() * 1000)
+                self.add_route(route)
 
     def add_route(self, route):
         if route is None:
