@@ -2,9 +2,6 @@
 
 Using this script you can easily rebalance individual channels of your lnd node.
 
-If you run lnd 0.9.0+, please have a look at
-https://github.com/C-Otto/rebalance-lnd/tree/lnd-v0.9.0
-
 ## Installation
 
 This script needs an active lnd 0.9.0+ (https://github.com/lightningnetwork/lnd) instance running.
@@ -131,7 +128,7 @@ If you do not specify the amount, the rebalance amount is determined automatical
 As an alternative to specify the amount you may also set a percentage of the rebalance amount using `-p`.
 For example, the following command tries to sends 20% of the amount required to rebalance the channel:
 
-`rebalance.py -t 23 -p 20` 
+`rebalance.py -t 23 -p 20`
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 
