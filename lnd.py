@@ -7,8 +7,6 @@ import sys
 
 from grpc_generated import router_pb2_grpc as lnrouterrpc, router_pb2 as lnrouter, rpc_pb2_grpc as lnrpc, rpc_pb2 as ln
 
-SERVER = 'localhost:10009'
-LND_DIR = expanduser("~/.lnd")
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
 
@@ -17,14 +15,15 @@ def debug(message):
 
 
 class Lnd:
-    def __init__(self):
+    def __init__(self, lnd_dir, server):
         os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
-        combined_credentials = self.get_credentials(LND_DIR)
+        lnd_dir = expanduser(lnd_dir)
+        combined_credentials = self.get_credentials(lnd_dir)
         channel_options = [
             ('grpc.max_message_length', MESSAGE_SIZE_MB),
             ('grpc.max_receive_message_length', MESSAGE_SIZE_MB)
         ]
-        grpc_channel = grpc.secure_channel(SERVER, combined_credentials, channel_options)
+        grpc_channel = grpc.secure_channel(server, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
         self.graph = None

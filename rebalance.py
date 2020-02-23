@@ -16,6 +16,7 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 def main():
     argument_parser = get_argument_parser()
     arguments = argument_parser.parse_args()
+    lnd = Lnd(arguments.lnddir, arguments.grpc)
     first_hop_channel_id = vars(arguments)['from']
     to_channel = arguments.to
 
@@ -31,9 +32,9 @@ def main():
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
         if incoming:
-            list_incoming_candidates(channel_ratio)
+            list_incoming_candidates(lnd, channel_ratio)
         else:
-            list_outgoing_candidates(channel_ratio)
+            list_outgoing_candidates(lnd, channel_ratio)
         sys.exit(0)
 
     if to_channel is None and first_hop_channel_id is None:
@@ -51,14 +52,14 @@ def main():
     if to_channel and to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        candidates = get_incoming_rebalance_candidates(channel_ratio)
+        candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
         candidate = candidates[index]
         last_hop_channel = candidate
     else:
         # else the channel argument should be the channel ID
-        last_hop_channel = get_channel_for_channel_id(to_channel)
+        last_hop_channel = get_channel_for_channel_id(lnd, to_channel)
 
-    first_hop_channel = get_channel_for_channel_id(first_hop_channel_id)
+    first_hop_channel = get_channel_for_channel_id(lnd, first_hop_channel_id)
 
     amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
@@ -93,7 +94,7 @@ def get_amount(arguments, first_hop_channel, last_hop_channel):
     return amount
 
 
-def get_channel_for_channel_id(channel_id):
+def get_channel_for_channel_id(lnd, channel_id):
     for channel in lnd.get_channels():
         if channel.chan_id == channel_id:
             return channel
@@ -102,6 +103,14 @@ def get_channel_for_channel_id(channel_id):
 
 def get_argument_parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--lnddir",
+                        default="~/.lnd",
+                        dest="lnddir",
+                        help="(default ~/.lnd) lnd directory")
+    parser.add_argument("--grpc",
+                        default="localhost:10009",
+                        dest="grpc",
+                        help="(default localhost:10009) lnd gRPC endpoint")
     parser.add_argument("-r", "--ratio",
                         type=int,
                         default=50,
@@ -163,13 +172,13 @@ def get_argument_parser():
     return parser
 
 
-def list_incoming_candidates(channel_ratio):
-    candidates = get_incoming_rebalance_candidates(channel_ratio)
+def list_incoming_candidates(lnd, channel_ratio):
+    candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
     list_candidates(candidates)
 
 
-def list_outgoing_candidates(channel_ratio):
-    candidates = get_outgoing_rebalance_candidates(channel_ratio)
+def list_outgoing_candidates(lnd, channel_ratio):
+    candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
     list_candidates(candidates)
 
 
@@ -197,13 +206,13 @@ def get_rebalance_amount(channel):
     return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
-def get_incoming_rebalance_candidates(channel_ratio):
+def get_incoming_rebalance_candidates(lnd, channel_ratio):
     low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, lnd.get_channels()))
     low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
     return sorted(low_local, key=get_remote_surplus, reverse=False)
 
 
-def get_outgoing_rebalance_candidates(channel_ratio):
+def get_outgoing_rebalance_candidates(lnd, channel_ratio):
     high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, lnd.get_channels()))
     high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
     return sorted(high_local, key=get_remote_surplus, reverse=True)
@@ -241,7 +250,6 @@ def get_columns():
         return 80
 
 
-lnd = Lnd()
 success = main()
 if success:
     sys.exit(0)
