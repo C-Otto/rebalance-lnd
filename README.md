@@ -12,7 +12,7 @@ Example:
 
 You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
-If you need to change this, please have a look at the sources.
+If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
 You need to install Python. The gRPC dependencies can be installed by running:
 
@@ -24,12 +24,15 @@ $ pip install -r requirements.txt
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [-r RATIO] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-r RATIO] [-l]
+                    [-o | -i] [-f CHANNEL] [-t CHANNEL]
                     [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
                     [--max-fee-factor MAX_FEE_FACTOR]
 
 optional arguments:
   -h, --help            show this help message and exit
+  --lnddir LNDDIR       (default ~/.lnd) lnd directory
+  --grpc GRPC           (default localhost:10009) lnd gRPC endpoint
   -r RATIO, --ratio RATIO
                         (default: 50) ratio for channel imbalance between 1
                         and 50, eg. 45 to only show channels (-l) with less
@@ -63,7 +66,7 @@ rebalance:
                         will be used (up to the maximum of 4,294,967 satoshis)
   -p PERCENTAGE, --percentage PERCENTAGE
                         Set the amount to send to a percentage of the amount
-                        required to rabalance. As an example, if this is set
+                        required to rebalance. As an example, if this is set
                         to 50, the amount will half of the default. See
                         --amount.
   -e EXCLUDE, --exclude EXCLUDE
