@@ -1,4 +1,4 @@
 googleapis-common-protos==1.51.0
 grpcio==1.29.0
-protobuf==3.12.1
+protobuf==3.12.2
 six==1.15.0
