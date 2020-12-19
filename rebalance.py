@@ -5,6 +5,7 @@ import math
 import os
 import platform
 import sys
+import random
 
 from lnd import Lnd
 from logic import Logic
@@ -48,18 +49,30 @@ def main():
             argument_parser.print_help()
             sys.exit(1)
 
-    # the 'to' argument might be an index, or a channel ID
-    if to_channel and to_channel < 10000:
+    # the 'to' argument might be an index, or a channel ID, or random
+    if to_channel and 0 < to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
-        candidate = candidates[index]
-        last_hop_channel = candidate
+        last_hop_channel = get_incoming_rebalance_candidates(lnd, channel_ratio)[index]
+    elif to_channel == -1:
+        # here is the random case
+        last_hop_channel = random.choice(get_incoming_rebalance_candidates(lnd, channel_ratio))
     else:
         # else the channel argument should be the channel ID
         last_hop_channel = get_channel_for_channel_id(lnd, to_channel)
 
-    first_hop_channel = get_channel_for_channel_id(lnd, first_hop_channel_id)
+    # the 'from' argument might be an index, or a channel ID, or random
+    if first_hop_channel_id and 0 < first_hop_channel_id < 10000:
+        # here we are in the "channel" index case
+        index = int(first_hop_channel_id) * -1
+        candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
+        first_hop_channel = candidates[index]
+    elif first_hop_channel_id == -1:
+        # here is the random case
+        last_hop_channel = random.choice(get_incoming_rebalance_candidates(lnd, channel_ratio))
+    else:
+        # else the channel argument should be the channel ID
+        first_hop_channel = get_channel_for_channel_id(lnd, first_hop_channel_id)
 
     amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
@@ -141,13 +154,16 @@ def get_argument_parser():
                                  metavar="CHANNEL",
                                  type=int,
                                  help="channel ID of the outgoing channel "
-                                      "(funds will be taken from this channel)")
+                                      "(funds will be taken from this channel)"
+                                      "You may also use the index as shown in the incoming candidate list (-l -o), "
+                                      "or -1 to choose a random candidate.")
     rebalance_group.add_argument("-t", "--to",
                                  metavar="CHANNEL",
                                  type=int,
                                  help="channel ID of the incoming channel "
                                       "(funds will be sent to this channel). "
-                                      "You may also use the index as shown in the incoming candidate list (-l -i).")
+                                      "You may also use the index as shown in the incoming candidate list (-l -i), "
+                                      "or -1 to choose a random candidate.")
     amount_group = rebalance_group.add_mutually_exclusive_group()
     amount_group.add_argument("-a", "--amount",
                               type=int,
