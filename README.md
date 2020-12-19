@@ -55,11 +55,14 @@ rebalance:
 
   -f CHANNEL, --from CHANNEL
                         channel ID of the outgoing channel (funds will be
-                        taken from this channel)
+                        taken from this channel)You may also use the index as
+                        shown in the incoming candidate list (-l -o), or -1 to
+                        choose a random candidate.
   -t CHANNEL, --to CHANNEL
                         channel ID of the incoming channel (funds will be sent
                         to this channel). You may also use the index as shown
-                        in the incoming candidate list (-l -i).
+                        in the incoming candidate list (-l -i), or -1 to
+                        choose a random candidate.
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
