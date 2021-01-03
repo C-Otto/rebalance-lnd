@@ -98,6 +98,9 @@ class Lnd:
             return None
 
     def send_payment(self, payment_request, route):
+        last_hop = route.hops[-1]
+        last_hop.mpp_record.payment_addr = payment_request.payment_addr
+        last_hop.mpp_record.total_amt_msat = payment_request.num_msat
         request = lnrouter.SendToRouteRequest(route=route)
         request.payment_hash = self.hex_string_to_bytes(payment_request.payment_hash)
         return self.router_stub.SendToRoute(request)
