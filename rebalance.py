@@ -64,7 +64,7 @@ def main():
     # the 'from' argument might be an index, or a channel ID, or random
     if first_hop_channel_id and 0 < first_hop_channel_id < 10000:
         # here we are in the "channel" index case
-        index = int(first_hop_channel_id) * -1
+        index = int(first_hop_channel_id) - 1
         candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
         first_hop_channel = candidates[index]
     elif first_hop_channel_id == -1:
