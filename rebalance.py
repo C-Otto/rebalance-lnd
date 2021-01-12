@@ -209,6 +209,7 @@ def list_candidates(candidates):
 
         print("(%2d) Channel ID:  " % index + str(candidate.chan_id))
         print("Pubkey:           " + candidate.remote_pubkey)
+        print("Channel Point:    " + candidate.channel_point)
         print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))
         print("Capacity:         {:,}".format(candidate.capacity))
         print("Remote balance:   {:,}".format(candidate.remote_balance))

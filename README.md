@@ -100,6 +100,7 @@ on the local side:
 ```
 (23) Channel ID:  123[...]456
 Pubkey:           012345[...]abcdef
+Channel Point:    abc0123[...]abc:0
 Local ratio:      0.176
 Capacity:         5,000,000
 Remote balance:   4,110,320
