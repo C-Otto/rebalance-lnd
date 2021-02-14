@@ -14,11 +14,13 @@ You need to have admin rights to control this node.
 By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
-You need to install Python. The gRPC dependencies can be installed by running:
+You need to install Python 3. The gRPC dependencies can be installed by running:
 
 ```
 $ pip install -r requirements.txt
 ```
+
+If this fails, make sure you're running Python 3.
 
 ## Usage
 
