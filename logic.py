@@ -110,6 +110,11 @@ class Logic:
             debugnobreak("First hop would have low local ratio after sending, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
+        if self.first_hop_and_last_hop_use_same_channel(first_hop, last_hop):
+            debugnobreak("First hop and last hop use same channel, ")
+            hop_before_last_hop = route.hops[-2]
+            routes.ignore_edge_from_to(last_hop.chan_id, hop_before_last_hop.pub_key, last_hop.pub_key)
+            return True
         if self.high_local_ratio_after_receiving(last_hop):
             debugnobreak("Last hop would have high local ratio after receiving, ")
             hop_before_last_hop = route.hops[-2]
@@ -143,6 +148,10 @@ class Logic:
         local = channel.local_balance + amount
         ratio = float(local) / (remote + local)
         return ratio > self.channel_ratio
+
+    @staticmethod
+    def first_hop_and_last_hop_use_same_channel(first_hop, last_hop):
+        return first_hop.chan_id == last_hop.chan_id
 
     def fees_too_high(self, route):
         hops_with_fees = len(route.hops) - 1
