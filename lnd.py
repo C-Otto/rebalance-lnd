@@ -77,7 +77,7 @@ class Lnd:
             self.channels = self.stub.ListChannels(request).channels
         return self.channels
 
-    def get_route(self, pub_key, amount, ignored_edges, ignored_nodes, first_hop_channel_id):
+    def get_route(self, pub_key, amount, ignored_pairs, ignored_nodes, first_hop_channel_id):
         if pub_key:
             last_hop_pubkey = base64.b16decode(pub_key, True)
         else:
@@ -86,7 +86,7 @@ class Lnd:
             pub_key=self.get_own_pubkey(),
             last_hop_pubkey=last_hop_pubkey,
             amt=amount,
-            ignored_edges=ignored_edges,
+            ignored_pairs=ignored_pairs,
             ignored_nodes=ignored_nodes,
             use_mission_control=True,
             outgoing_chan_id=first_hop_channel_id,

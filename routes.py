@@ -20,7 +20,7 @@ class Routes:
         self.last_hop_channel = last_hop_channel
         self.all_routes = []
         self.returned_routes = []
-        self.ignored_edges = []
+        self.ignored_pairs = []
         self.ignored_nodes = []
         self.num_requested_routes = 0
 
@@ -54,7 +54,7 @@ class Routes:
             first_hop_channel_id = self.first_hop_channel.chan_id
         else:
             first_hop_channel_id = None
-        routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_edges,
+        routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_pairs,
                                     self.ignored_nodes, first_hop_channel_id)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
@@ -106,9 +106,8 @@ class Routes:
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
             debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
-        direction_reverse = from_pubkey > to_pubkey
-        edge = {"channel_id": chan_id, "direction_reverse": direction_reverse}
-        self.ignored_edges.append(edge)
+        pair = {"from": base64.b16decode(from_pubkey, True), "to": base64.b16decode(to_pubkey, True)}
+        self.ignored_pairs.append(pair)
 
     def ignore_node(self, pub_key):
         debug("ignoring node %s" % pub_key)

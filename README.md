@@ -11,7 +11,7 @@ Example:
 `make tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
 
 You need to have admin rights to control this node.
-By default this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
+By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
 You need to install Python 3. The gRPC dependencies can be installed by running:
