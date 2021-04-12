@@ -177,6 +177,11 @@ class Logic:
             from_pub_key = self.first_hop_channel.remote_pubkey
             to_pub_key = self.lnd.get_own_pubkey()
             routes.ignore_edge_from_to(chan_id, from_pub_key, to_pub_key, show_message=False)
+        if self.last_hop_channel:
+            chan_id = self.last_hop_channel.chan_id
+            from_pub_key = self.lnd.get_own_pubkey()
+            to_pub_key = self.last_hop_channel.remote_pubkey
+            routes.ignore_edge_from_to(chan_id, from_pub_key, to_pub_key, show_message=False)
         for channel in self.lnd.get_channels():
             if self.low_local_ratio_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
