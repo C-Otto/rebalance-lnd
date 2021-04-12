@@ -105,9 +105,15 @@ class Logic:
 
     def route_is_invalid(self, route, routes):
         first_hop = route.hops[0]
+        last_hop = route.hops[-1]
         if self.low_local_ratio_after_sending(first_hop, route.total_amt):
-            debugnobreak("Low local ratio after sending, ")
+            debugnobreak("First hop would have low local ratio after sending, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
+            return True
+        if self.high_local_ratio_after_receiving(last_hop):
+            debugnobreak("Last hop would have high local ratio after receiving, ")
+            hop_before_last_hop = route.hops[-2]
+            routes.ignore_edge_from_to(last_hop.chan_id, hop_before_last_hop.pub_key, last_hop.pub_key)
             return True
         if self.fees_too_high(route):
             routes.ignore_node_with_highest_fee(route)
@@ -125,6 +131,18 @@ class Logic:
         local = channel.local_balance - total_amount
         ratio = float(local) / (remote + local)
         return ratio < self.channel_ratio
+
+    def high_local_ratio_after_receiving(self, last_hop):
+        if self.last_hop_channel:
+            return False
+        channel_id = last_hop.chan_id
+        channel = self.get_channel_for_channel_id(channel_id)
+
+        amount = last_hop.amt_to_forward
+        remote = channel.remote_balance - amount
+        local = channel.local_balance + amount
+        ratio = float(local) / (remote + local)
+        return ratio > self.channel_ratio
 
     def fees_too_high(self, route):
         hops_with_fees = len(route.hops) - 1
