@@ -153,14 +153,14 @@ def get_argument_parser():
     rebalance_group.add_argument("-f", "--from",
                                  metavar="CHANNEL",
                                  type=int,
-                                 help="channel ID of the outgoing channel "
-                                      "(funds will be taken from this channel)"
+                                 help="Channel ID of the outgoing channel "
+                                      "(funds will be taken from this channel). "
                                       "You may also use the index as shown in the incoming candidate list (-l -o), "
                                       "or -1 to choose a random candidate.")
     rebalance_group.add_argument("-t", "--to",
                                  metavar="CHANNEL",
                                  type=int,
-                                 help="channel ID of the incoming channel "
+                                 help="Channel ID of the incoming channel "
                                       "(funds will be sent to this channel). "
                                       "You may also use the index as shown in the incoming candidate list (-l -i), "
                                       "or -1 to choose a random candidate.")
