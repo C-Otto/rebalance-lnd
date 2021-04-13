@@ -91,6 +91,9 @@ class Logic:
         elif code == 12:
             debugnobreak("Fee insufficient, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
+        elif code == 14:
+            debugnobreak("Channel disabled, ")
+            routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
             debug(repr(response))
             debug("Unknown error code %s" % repr(code))
