@@ -134,6 +134,9 @@ class Logic:
             return False
         channel_id = first_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
+        if channel is None:
+            debug("Unable to get channel information for hop %s" % repr(first_hop))
+            return True
 
         remote = channel.remote_balance + total_amount
         local = channel.local_balance - total_amount
@@ -145,6 +148,9 @@ class Logic:
             return False
         channel_id = last_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
+        if channel is None:
+            debug("Unable to get channel information for hop %s" % repr(last_hop))
+            return True
 
         amount = last_hop.amt_to_forward
         remote = channel.remote_balance - amount
@@ -177,6 +183,7 @@ class Logic:
                 if 'remote_balance' not in channel:
                     channel.remote_balance = 0
                 return channel
+        debug("Unable to find channel with id %d!" % channel_id)
 
     def initialize_ignored_channels(self, routes):
         if self.first_hop_channel:
