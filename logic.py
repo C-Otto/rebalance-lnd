@@ -178,9 +178,9 @@ class Logic:
     def get_channel_for_channel_id(self, channel_id):
         for channel in self.lnd.get_channels():
             if channel.chan_id == channel_id:
-                if 'local_balance' not in channel:
+                if not hasattr(channel, 'local_balance'):
                     channel.local_balance = 0
-                if 'remote_balance' not in channel:
+                if not hasattr(channel, 'remote_balance'):
                     channel.remote_balance = 0
                 return channel
         debug("Unable to find channel with id %d!" % channel_id)
