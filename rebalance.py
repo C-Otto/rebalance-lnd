@@ -248,6 +248,8 @@ def get_remote_surplus(channel):
 def get_capacity_and_ratio_bar(candidate):
     columns = get_columns()
     columns_scaled_to_capacity = int(round(columns * float(candidate.capacity) / MAX_CHANNEL_CAPACITY))
+    if candidate.capacity >= MAX_CHANNEL_CAPACITY:
+        columns_scaled_to_capacity = columns
 
     bar_width = columns_scaled_to_capacity - 2
     result = "|"
