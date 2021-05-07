@@ -13,7 +13,7 @@ def debugnobreak(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_channel, last_hop_channel):
+    def __init__(self, lnd, payment_request, first_hop_channel, last_hop_channel, fee_limit):
         self.lnd = lnd
         self.payment_request = payment_request
         self.first_hop_channel = first_hop_channel
@@ -23,6 +23,7 @@ class Routes:
         self.ignored_pairs = []
         self.ignored_nodes = []
         self.num_requested_routes = 0
+        self.fee_limit = fee_limit
 
     def has_next(self):
         self.update_routes()
@@ -55,7 +56,7 @@ class Routes:
         else:
             first_hop_channel_id = None
         routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_pairs,
-                                    self.ignored_nodes, first_hop_channel_id)
+                                    self.ignored_nodes, first_hop_channel_id, self.fee_limit)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
@@ -100,7 +101,6 @@ class Routes:
                 max_fee_hop = hop
 
         pub_key = max_fee_hop.pub_key
-        debugnobreak("High fees (%s msat), " % max_fee_msat)
         self.ignore_node(pub_key)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):

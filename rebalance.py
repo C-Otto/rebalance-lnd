@@ -81,9 +81,10 @@ def main():
         sys.exit(0)
 
     max_fee_factor = arguments.max_fee_factor
+    econ_fee = arguments.econ_fee
     excluded = arguments.exclude
     return Logic(lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded,
-                 max_fee_factor).rebalance()
+                 max_fee_factor, econ_fee).rebalance()
 
 
 def get_amount(arguments, first_hop_channel, last_hop_channel):
@@ -180,11 +181,15 @@ def get_argument_parser():
                                  action="append",
                                  help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
                                       "out of excluded channels)")
-    rebalance_group.add_argument("--max-fee-factor",
+    fee_group = rebalance_group.add_mutually_exclusive_group()
+    fee_group.add_argument("--max-fee-factor",
                                  type=float,
                                  default=10,
                                  help="(default: 10) Reject routes that cost more than x times the lnd default "
                                       "(base: 1 sat, rate: 1 millionth sat) per hop on average")
+    fee_group.add_argument("--econ-fee",
+                           action=argparse.BooleanOptionalAction,
+                           help="(default: disabled) Economy Fee Mode, see README.md")
     return parser
 
 

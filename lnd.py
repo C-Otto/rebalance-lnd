@@ -77,7 +77,11 @@ class Lnd:
             self.channels = self.stub.ListChannels(request).channels
         return self.channels
 
-    def get_route(self, pub_key, amount, ignored_pairs, ignored_nodes, first_hop_channel_id):
+    def get_route(self, pub_key, amount, ignored_pairs, ignored_nodes, first_hop_channel_id, fee_limit_sat):
+        if fee_limit_sat:
+            fee_limit = {"fixed": int(fee_limit_sat)}
+        else:
+            fee_limit = None
         if pub_key:
             last_hop_pubkey = base64.b16decode(pub_key, True)
         else:
@@ -87,6 +91,7 @@ class Lnd:
             last_hop_pubkey=last_hop_pubkey,
             amt=amount,
             ignored_pairs=ignored_pairs,
+            fee_limit=fee_limit,
             ignored_nodes=ignored_nodes,
             use_mission_control=True,
             outgoing_chan_id=first_hop_channel_id,
@@ -96,6 +101,16 @@ class Lnd:
             return response.routes
         except:
             return None
+
+    def get_policy_to(self, channel_id):
+        # node1_policy contains the fee base and rate for payments from node1 to node2
+        for edge in self.get_edges():
+            if edge.channel_id == channel_id:
+                if edge.node1_pub == self.get_own_pubkey():
+                    result = edge.node1_policy
+                else:
+                    result = edge.node2_policy
+                return result
 
     def send_payment(self, payment_request, route):
         last_hop = route.hops[-1]
