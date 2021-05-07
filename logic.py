@@ -242,6 +242,8 @@ class Logic:
             from_pub_key = self.first_hop_channel.remote_pubkey
             to_pub_key = self.lnd.get_own_pubkey()
             routes.ignore_edge_from_to(chan_id, from_pub_key, to_pub_key, show_message=False)
+            if not self.last_hop_channel:
+                self.ignore_last_hops_with_high_ratio(routes)
         if self.last_hop_channel:
             chan_id = self.last_hop_channel.chan_id
             from_pub_key = self.lnd.get_own_pubkey()
@@ -266,3 +268,15 @@ class Logic:
             if policy.fee_rate_milli_msat > last_hop_fee_rate:
                 to_pub_key = channel.remote_pubkey
                 routes.ignore_edge_from_to(chan_id, from_pub_key, to_pub_key, show_message=False)
+
+    def ignore_last_hops_with_high_ratio(self, routes):
+        for channel in self.lnd.get_channels():
+            channel_id = channel.chan_id
+            if channel is None:
+                return
+            remote = channel.remote_balance - self.amount
+            local = channel.local_balance + self.amount
+            ratio = float(local) / (remote + local)
+            if ratio > self.channel_ratio:
+                to_pub_key = self.lnd.get_own_pubkey()
+                routes.ignore_edge_from_to(channel_id, channel.remote_pubkey, to_pub_key, show_message=False)
