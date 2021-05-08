@@ -187,8 +187,7 @@ def get_argument_parser():
                                  default=10,
                                  help="(default: 10) Reject routes that cost more than x times the lnd default "
                                       "(base: 1 sat, rate: 1 millionth sat) per hop on average")
-    fee_group.add_argument("--econ-fee",
-                           action=argparse.BooleanOptionalAction,
+    fee_group.add_argument('--econ-fee', default=False, action='store_true',
                            help="(default: disabled) Economy Fee Mode, see README.md")
     return parser
 

@@ -29,7 +29,7 @@ If this fails, make sure you're running Python 3.
 usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-r RATIO] [-l]
                     [-o | -i] [-f CHANNEL] [-t CHANNEL]
                     [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
-                    [--max-fee-factor MAX_FEE_FACTOR | --econ-fee | --no-econ-fee]
+                    [--max-fee-factor MAX_FEE_FACTOR | --econ-fee]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -81,8 +81,7 @@ rebalance:
                         (default: 10) Reject routes that cost more than x
                         times the lnd default (base: 1 sat, rate: 1 millionth
                         sat) per hop on average
-  --econ-fee, --no-econ-fee
-                        (default: disabled) Economy Fee Mode, see README.md"
+  --econ-fee            (default: disabled) Economy Fee Mode, see README.md"
 ```
 
 ### List of channels
