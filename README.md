@@ -179,8 +179,8 @@ These fees are the possible future income (3).
 To determine the future income, the fee set as part of the channel policy is used in the computation.
 As such, if you set a too high fee rate, with `--econ-mode` you'd allow more expensive rebalance
 transactions. Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
-To protect you from making mistakes, `--econ-mode` only works if the inbound channel has a fee rate of less than
-10,000 sat per 1M sat (which corresponds to a 1% fee).
+To protect you from making mistakes, `--econ-mode` uses a fee rate of at most 1,000 sat per 1M sat (which corresponds
+to a 0.1% fee), even if the inbound channel is configured with a higher fee rate.
 
 ## Contributing
 

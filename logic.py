@@ -4,7 +4,7 @@ from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1000
 DEFAULT_FEE_RATE_MSAT = 0.001
-MAX_FEE_RATE = 10000
+MAX_FEE_RATE = 1000
 
 
 def debug(message):
@@ -61,11 +61,12 @@ class Logic:
         fee_limit = None
         if self.last_hop_channel and self.econ_fee:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
-            if policy.fee_rate_milli_msat > MAX_FEE_RATE:
-                debug("Unable to use --econ-fee, policy for inbound channel looks odd (fee rate %s)"
-                      % policy.fee_rate_milli_msat)
-                sys.exit(1)
-            fee_limit = self.fee_for_policy(self.amount, policy)
+            fee_rate = policy.fee_rate_milli_msat
+            if fee_rate > MAX_FEE_RATE:
+                debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
+                      % (MAX_FEE_RATE, fee_rate))
+                fee_rate = MAX_FEE_RATE
+            fee_limit = self.compute_fee(self.amount, fee_rate, policy)
             debug("Setting fee limit to %s (due to --econ-fee)" % int(fee_limit))
 
         return fee_limit
@@ -195,13 +196,14 @@ class Logic:
     def fees_too_high_econ_fee(self, route):
         policy_first_hop = self.lnd.get_policy_to(route.hops[0].chan_id)
         amount = route.total_amt
-        missed_fee = self.fee_for_policy(amount, policy_first_hop)
+        missed_fee = self.compute_fee(amount, policy_first_hop.fee_rate_milli_msat, policy_first_hop)
         policy_last_hop = self.lnd.get_policy_to(route.hops[-1].chan_id)
-        if policy_last_hop.fee_rate_milli_msat > MAX_FEE_RATE:
-            debug("Ignoring route, policy for inbound channel looks odd (fee rate %s)"
-                  % policy_last_hop.fee_rate_milli_msat)
-            return True
-        expected_fee = self.fee_for_policy(amount, policy_last_hop)
+        fee_rate_last_hop = policy_last_hop.fee_rate_milli_msat
+        if fee_rate_last_hop > MAX_FEE_RATE:
+            debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
+                  % (MAX_FEE_RATE, fee_rate_last_hop))
+            fee_rate_last_hop = MAX_FEE_RATE
+        expected_fee = self.compute_fee(amount, fee_rate_last_hop, policy_last_hop)
         rebalance_fee = route.total_fees
         high_fees = rebalance_fee + missed_fee > expected_fee
         if high_fees:
@@ -215,8 +217,8 @@ class Logic:
         return high_fees
 
     @staticmethod
-    def fee_for_policy(amount, policy):
-        expected_fee_msat = amount / 1000000 * policy.fee_rate_milli_msat + policy.fee_base_msat / 1000
+    def compute_fee(amount, fee_rate, policy):
+        expected_fee_msat = amount / 1000000 * fee_rate + policy.fee_base_msat / 1000
         return expected_fee_msat
 
     def generate_invoice(self):
