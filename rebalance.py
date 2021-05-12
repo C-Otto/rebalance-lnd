@@ -90,8 +90,18 @@ def main():
 def get_amount(arguments, first_hop_channel, last_hop_channel):
     if last_hop_channel:
         amount = get_rebalance_amount(last_hop_channel)
+        remote_surplus = get_remote_surplus(last_hop_channel)
+        if remote_surplus < 0:
+            print("Error: last hop needs to SEND {:,} sat to be balanced, you want it to RECEIVE funds. "
+                  "Specify amount manually if this was intended.".format(abs(remote_surplus)))
+            return 0
     else:
         amount = get_rebalance_amount(first_hop_channel)
+        remote_surplus = get_remote_surplus(first_hop_channel)
+        if remote_surplus > 0:
+            print("Error: first hop needs to RECEIVE {:,} sat to be balanced, you want it to SEND funds. "
+                  "Specify amount manually if this was intended.".format(remote_surplus))
+            return 0
 
     if arguments.percentage:
         amount = int(round(amount * arguments.percentage / 100))
