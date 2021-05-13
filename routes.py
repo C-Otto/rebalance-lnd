@@ -96,12 +96,17 @@ class Routes:
         max_fee_msat = 0
         max_fee_hop = None
         for hop in route.hops:
+            if self.last_hop_channel and self.last_hop_channel.chan_id == hop.chan_id:
+                continue
+            if self.first_hop_channel and self.first_hop_channel.chan_id == hop.chan_id:
+                continue
             if hop.fee_msat > max_fee_msat:
                 max_fee_msat = hop.fee_msat
                 max_fee_hop = hop
 
-        pub_key = max_fee_hop.pub_key
-        self.ignore_node(pub_key)
+        if max_fee_hop:
+            pub_key = max_fee_hop.pub_key
+            self.ignore_node(pub_key)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
