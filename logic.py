@@ -31,7 +31,7 @@ class Logic:
         self.econ_fee = econ_fee
 
     def rebalance(self):
-        fee_limit = self.get_fee_limit()
+        fee_limit_msat = self.get_fee_limit_msat()
         if self.last_hop_channel:
             debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
                    % self.last_hop_channel.chan_id).format(self.amount))
@@ -43,7 +43,13 @@ class Logic:
             debug("Forced first channel has ID %d" % self.first_hop_channel.chan_id)
 
         payment_request = self.generate_invoice()
-        routes = Routes(self.lnd, payment_request, self.first_hop_channel, self.last_hop_channel, fee_limit)
+        min_fee_last_hop = None
+        if self.econ_fee and self.first_hop_channel:
+            policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
+            min_fee_last_hop = self.compute_fee(self.amount, policy_first_hop.fee_rate_milli_msat, policy_first_hop)
+        routes = Routes(
+            self.lnd, payment_request, self.first_hop_channel, self.last_hop_channel, fee_limit_msat, min_fee_last_hop
+        )
 
         self.initialize_ignored_channels(routes)
 
@@ -57,8 +63,8 @@ class Logic:
         debug("Could not find any suitable route")
         return False
 
-    def get_fee_limit(self):
-        fee_limit = None
+    def get_fee_limit_msat(self):
+        fee_limit_msat = None
         if self.last_hop_channel and self.econ_fee:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
@@ -66,10 +72,10 @@ class Logic:
                 debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
                       % (MAX_FEE_RATE, fee_rate))
                 fee_rate = MAX_FEE_RATE
-            fee_limit = self.compute_fee(self.amount, fee_rate, policy)
-            debug("Setting fee limit to %s (due to --econ-fee)" % int(fee_limit))
+            fee_limit_msat = self.compute_fee(self.amount, fee_rate, policy)
+            debug("Setting fee limit to %s (due to --econ-fee)" % int(fee_limit_msat))
 
-        return fee_limit
+        return fee_limit_msat
 
     def try_route(self, payment_request, route, routes, tried_routes):
         if self.route_is_invalid(route, routes):
@@ -143,7 +149,7 @@ class Logic:
             routes.ignore_edge_from_to(last_hop.chan_id, hop_before_last_hop.pub_key, last_hop.pub_key)
             return True
         if self.fees_too_high(route):
-            routes.ignore_node_with_highest_fee(route)
+            routes.ignore_high_fee_hops(route)
             return True
         return False
 

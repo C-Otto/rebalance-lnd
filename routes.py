@@ -13,7 +13,9 @@ def debugnobreak(message):
 
 
 class Routes:
-    def __init__(self, lnd, payment_request, first_hop_channel, last_hop_channel, fee_limit):
+    def __init__(
+            self, lnd, payment_request, first_hop_channel, last_hop_channel, fee_limit_msat, min_fee_msat_last_hop
+    ):
         self.lnd = lnd
         self.payment_request = payment_request
         self.first_hop_channel = first_hop_channel
@@ -23,7 +25,8 @@ class Routes:
         self.ignored_pairs = []
         self.ignored_nodes = []
         self.num_requested_routes = 0
-        self.fee_limit = fee_limit
+        self.fee_limit_msat = fee_limit_msat
+        self.min_fee_msat_last_hop = min_fee_msat_last_hop
 
     def has_next(self):
         self.update_routes()
@@ -56,7 +59,7 @@ class Routes:
         else:
             first_hop_channel_id = None
         routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_pairs,
-                                    self.ignored_nodes, first_hop_channel_id, self.fee_limit)
+                                    self.ignored_nodes, first_hop_channel_id, self.fee_limit_msat)
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
@@ -100,7 +103,12 @@ class Routes:
                 return
             previous_pubkey = hop.pub_key
 
-    def ignore_node_with_highest_fee(self, route):
+    def ignore_high_fee_hops(self, route):
+        ignore = []
+        if self.min_fee_msat_last_hop:
+            for hop in route.hops:
+                if hop.fee_msat < self.min_fee_msat_last_hop:
+                    ignore.append(hop)
         max_fee_msat = 0
         max_fee_hop = None
         for hop in route.hops:
@@ -113,7 +121,9 @@ class Routes:
                 max_fee_hop = hop
 
         if max_fee_hop:
-            self.ignore_hop_on_route(max_fee_hop, route)
+            ignore.append(max_fee_hop)
+        for hop in ignore:
+            self.ignore_hop_on_route(hop, route)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
