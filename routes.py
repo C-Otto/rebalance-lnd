@@ -106,7 +106,7 @@ class Routes:
 
         if max_fee_hop:
             pub_key = max_fee_hop.pub_key
-            self.ignore_node(pub_key)
+            self.ignore_edge_on_route(pub_key, route)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
