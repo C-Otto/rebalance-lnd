@@ -92,6 +92,14 @@ class Routes:
             if hop.pub_key == failure_source_pubkey:
                 ignore_next = True
 
+    def ignore_hop_on_route(self, hop_to_ignore, route):
+        previous_pubkey = None
+        for hop in route.hops:
+            if hop == hop_to_ignore:
+                self.ignore_edge_from_to(hop.chan_id, previous_pubkey, hop.pub_key)
+                return
+            previous_pubkey = hop.pub_key
+
     def ignore_node_with_highest_fee(self, route):
         max_fee_msat = 0
         max_fee_hop = None
@@ -105,8 +113,7 @@ class Routes:
                 max_fee_hop = hop
 
         if max_fee_hop:
-            pub_key = max_fee_hop.pub_key
-            self.ignore_edge_on_route(pub_key, route)
+            self.ignore_hop_on_route(max_fee_hop, route)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
