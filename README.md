@@ -30,6 +30,7 @@ usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-r RATIO] [-l]
                     [-o | -i] [-f CHANNEL] [-t CHANNEL]
                     [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
                     [--max-fee-factor MAX_FEE_FACTOR | --econ-fee]
+                    [--econ-fee-factor ECON_FEE_FACTOR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -82,6 +83,14 @@ rebalance:
                         times the lnd default (base: 1 sat, rate: 1 millionth
                         sat) per hop on average
   --econ-fee            (default: disabled) Economy Fee Mode, see README.md"
+  --econ-fee-factor ECON_FEE_FACTOR
+                        (default: 1.0) When using --econ-fee, compare the
+                        costs against the expectedincome, scaled by this
+                        factor. As an example, with --econ-fee-factor 1.5,
+                        routes that cost at most 150% of the expected earnings
+                        are tried. Use values smaller than 1.0 to restrict
+                        routes to only consider those earning more/costing
+                        less.  
 ```
 
 ### List of channels
@@ -175,11 +184,22 @@ Finally, you rebalance channel B in the hope that lateron someone reqeusts your 
 through channel B towards the peer at the other end, so that you can earn fees for this.
 These fees are the possible future income (3).
 
+### Factor
+
+The value set with `--econ-fee-factor` is used to scale the future income used in the computation outlined above.
+
+As such, if you set `--econ-fee-factor` to a value higher than 1.0, routes that cost more than the future income are
+considered. As an example, with `--econ-fee --econ-fee-factor 1.5` includes routes that cost up to 150% of the future
+income.
+
+You can also use values smaller than 1.0 to restrict which routes are considered, so that only routes that earn more
+than the costs. 
+
 #### Warning
 To determine the future income, the fee set as part of the channel policy is used in the computation.
-As such, if you set a too high fee rate, with `--econ-mode` you'd allow more expensive rebalance
+As such, if you set a too high fee rate, with `--econ-fee` you'd allow more expensive rebalance
 transactions. Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
-To protect you from making mistakes, `--econ-mode` uses a fee rate of at most 1,000 sat per 1M sat (which corresponds
+To protect you from making mistakes, `--econ-fee` uses a fee rate of at most 1,000 sat per 1M sat (which corresponds
 to a 0.1% fee), even if the inbound channel is configured with a higher fee rate.
 
 ## Contributing

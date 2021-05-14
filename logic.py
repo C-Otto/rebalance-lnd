@@ -16,9 +16,18 @@ def debugnobreak(message):
 
 
 class Logic:
-    def __init__(self,
-                 lnd, first_hop_channel, last_hop_channel, amount, channel_ratio, excluded, max_fee_factor, econ_fee
-                 ):
+    def __init__(
+            self,
+            lnd,
+            first_hop_channel,
+            last_hop_channel,
+            amount,
+            channel_ratio,
+            excluded,
+            max_fee_factor,
+            econ_fee,
+            econ_fee_factor
+    ):
         self.lnd = lnd
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
@@ -29,6 +38,9 @@ class Logic:
             self.excluded = excluded
         self.max_fee_factor = max_fee_factor
         self.econ_fee = econ_fee
+        self.econ_fee_factor = econ_fee_factor
+        if not self.econ_fee_factor:
+            self.econ_fee_factor = 1.0
 
     def rebalance(self):
         fee_limit_msat = self.get_fee_limit_msat()
@@ -46,7 +58,8 @@ class Logic:
         min_fee_last_hop = None
         if self.econ_fee and self.first_hop_channel:
             policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
-            min_fee_last_hop = self.compute_fee(self.amount, policy_first_hop.fee_rate_milli_msat, policy_first_hop)
+            fee_rate = policy_first_hop.fee_rate_milli_msat
+            min_fee_last_hop = self.econ_fee_factor * self.compute_fee(self.amount, fee_rate, policy_first_hop)
         routes = Routes(
             self.lnd, payment_request, self.first_hop_channel, self.last_hop_channel, fee_limit_msat, min_fee_last_hop
         )
@@ -72,8 +85,9 @@ class Logic:
                 debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
                       % (MAX_FEE_RATE, fee_rate))
                 fee_rate = MAX_FEE_RATE
-            fee_limit_msat = self.compute_fee(self.amount, fee_rate, policy)
-            debug("Setting fee limit to %s (due to --econ-fee)" % int(fee_limit_msat))
+            fee_limit_msat = self.econ_fee_factor * self.compute_fee(self.amount, fee_rate, policy)
+            debug("Setting fee limit to %s (due to --econ-fee, factor %s)"
+                  % (int(fee_limit_msat), self.econ_fee_factor))
 
         return fee_limit_msat
 
@@ -209,17 +223,22 @@ class Logic:
             debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
                   % (MAX_FEE_RATE, fee_rate_last_hop))
             fee_rate_last_hop = MAX_FEE_RATE
-        expected_fee = self.compute_fee(amount, fee_rate_last_hop, policy_last_hop)
+        expected_fee = self.econ_fee_factor * self.compute_fee(amount, fee_rate_last_hop, policy_last_hop)
         rebalance_fee = route.total_fees
         high_fees = rebalance_fee + missed_fee > expected_fee
         if high_fees:
             difference = rebalance_fee + missed_fee - expected_fee
             debugnobreak("High fees ("
-                         "%s expected future fee income for inbound channel, "
+                         "%s expected future fee income for inbound channel (factor %s), "
                          "have to pay %s now, "
                          "missing out on %s future fees for outbound channel, "
-                         "difference %s), "
-                         % (int(expected_fee), int(rebalance_fee), int(missed_fee), int(difference)))
+                         "difference %s), " % (
+                             int(expected_fee),
+                             self.econ_fee_factor,
+                             int(rebalance_fee),
+                             int(missed_fee),
+                             int(difference)
+                         ))
         return high_fees
 
     @staticmethod
