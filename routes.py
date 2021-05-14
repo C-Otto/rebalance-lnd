@@ -106,9 +106,9 @@ class Routes:
     def ignore_high_fee_hops(self, route):
         ignore = []
         if self.min_fee_msat_last_hop:
-            for hop in route.hops:
-                if hop.fee_msat < self.min_fee_msat_last_hop:
-                    ignore.append(hop)
+            last_hop = route.hops[-1]
+            if last_hop.fee_msat < self.min_fee_msat_last_hop:
+                ignore.append(last_hop)
         max_fee_msat = 0
         max_fee_hop = None
         for hop in route.hops:
