@@ -96,7 +96,7 @@ class Routes:
                 ignore_next = True
 
     def ignore_hop_on_route(self, hop_to_ignore, route):
-        previous_pubkey = self.lnd.get_own_pubkey
+        previous_pubkey = self.lnd.get_own_pubkey()
         for hop in route.hops:
             if hop == hop_to_ignore:
                 self.ignore_edge_from_to(hop.chan_id, previous_pubkey, hop.pub_key)
