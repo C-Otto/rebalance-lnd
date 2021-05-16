@@ -45,14 +45,16 @@ class Logic:
     def rebalance(self):
         fee_limit_msat = self.get_fee_limit_msat()
         if self.last_hop_channel:
-            debug(("Sending {:,} satoshis to rebalance to channel with ID %d"
-                   % self.last_hop_channel.chan_id).format(self.amount))
+            debug(("Sending {:,} satoshis to rebalance to channel with ID %d (%s)"
+                   % (self.last_hop_channel.chan_id, self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)))
+                  .format(self.amount))
         else:
             debug("Sending {:,} satoshis.".format(self.amount))
         if self.channel_ratio != 0.5:
             debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
         if self.first_hop_channel:
-            debug("Forced first channel has ID %d" % self.first_hop_channel.chan_id)
+            debug("Forced first channel has ID %d (%s)"
+                  % (self.first_hop_channel.chan_id, self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)))
 
         payment_request = self.generate_invoice()
         min_fee_last_hop = None
@@ -103,15 +105,17 @@ class Logic:
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
+            last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
+            first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
             debug("")
             debug("")
             debug("")
-            debug("Success! Paid fees: %s sat (%s msat)" % (route.total_fees, route.total_fees_msat))
+            debug("Increased inbound liquidity on %s by %d sats" % (last_hop_alias, route.hops[-1].amt_to_forward))
+            debug("Decreased outbound liquidity on %s" % first_hop_alias)
+            debug("Fee: %d sats" % route.total_fees)
+            debug("")
             debug("Successful route:")
             debug(Routes.print_route(route))
-            debug("")
-            debug("")
-            debug("")
             return True
         else:
             self.handle_error(response, route, routes)

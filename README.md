@@ -111,6 +111,7 @@ on the local side:
 
 ```
 (23) Channel ID:  123[...]456
+Alias:            The Best Node Ever
 Pubkey:           012345[...]abcdef
 Channel Point:    abc0123[...]abc:0
 Local ratio:      0.176

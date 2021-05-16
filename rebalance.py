@@ -211,15 +211,15 @@ def get_argument_parser():
 
 def list_incoming_candidates(lnd, channel_ratio):
     candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
-    list_candidates(candidates)
+    list_candidates(lnd, candidates)
 
 
 def list_outgoing_candidates(lnd, channel_ratio):
     candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
-    list_candidates(candidates)
+    list_candidates(lnd, candidates)
 
 
-def list_candidates(candidates):
+def list_candidates(lnd, candidates):
     index = 0
     for candidate in candidates:
         index += 1
@@ -229,6 +229,7 @@ def list_candidates(candidates):
             rebalance_amount += " (max per transaction: {:,})".format(MAX_SATOSHIS_PER_TRANSACTION)
 
         print("(%2d) Channel ID:  " % index + str(candidate.chan_id))
+        print("Alias:            " + lnd.get_node_alias(candidate.remote_pubkey))
         print("Pubkey:           " + candidate.remote_pubkey)
         print("Channel Point:    " + candidate.channel_point)
         print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))

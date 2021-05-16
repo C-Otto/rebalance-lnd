@@ -44,6 +44,9 @@ class Lnd:
             self.info = self.stub.GetInfo(ln.GetInfoRequest())
         return self.info
 
+    def get_node_alias(self, pub_key):
+        return self.stub.GetNodeInfo(ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)).node.alias
+
     def get_graph(self):
         if self.graph is None:
             self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
