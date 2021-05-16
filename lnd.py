@@ -75,7 +75,7 @@ class Lnd:
     def get_channels(self):
         if self.channels is None:
             request = ln.ListChannelsRequest(
-                active_only=True,
+                active_only=False,
             )
             self.channels = self.stub.ListChannels(request).channels
         return self.channels

@@ -246,13 +246,15 @@ def get_rebalance_amount(channel):
 
 
 def get_incoming_rebalance_candidates(lnd, channel_ratio):
-    low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, lnd.get_channels()))
+    active = list(filter(lambda c: c.active, lnd.get_channels()))
+    low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, active))
     low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
     return sorted(low_local, key=get_remote_surplus, reverse=False)
 
 
 def get_outgoing_rebalance_candidates(lnd, channel_ratio):
-    high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, lnd.get_channels()))
+    active = list(filter(lambda c: c.active, lnd.get_channels()))
+    high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, active))
     high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
     return sorted(high_local, key=get_remote_surplus, reverse=True)
 
