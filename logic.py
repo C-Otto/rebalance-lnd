@@ -1,4 +1,5 @@
 import sys
+import math
 
 from routes import Routes
 
@@ -237,11 +238,11 @@ class Logic:
                          "have to pay %s now, "
                          "missing out on %s future fees for outbound channel, "
                          "difference %s), " % (
-                             int(expected_fee),
+                             math.floor(expected_fee),
                              self.econ_fee_factor,
                              int(rebalance_fee),
-                             int(missed_fee),
-                             int(difference)
+                             math.ceil(missed_fee),
+                             math.ceil(difference)
                          ))
         return high_fees
 
