@@ -193,8 +193,7 @@ As such, if you set `--econ-fee-factor` to a value higher than 1.0, routes that 
 considered. As an example, with `--econ-fee --econ-fee-factor 1.5` you can include routes that cost up to 150% of the
 future income.
 
-You can also use values smaller than 1.0 to restrict which routes are considered, so that only routes that earn more
-than the costs. 
+You can also use values smaller than 1.0 to restrict which routes are considered, i.e. routes that are cheaper. 
 
 #### Warning
 To determine the future income, the fee set as part of the channel policy is used in the computation.
