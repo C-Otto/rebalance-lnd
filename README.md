@@ -181,7 +181,7 @@ Furthermore, if in the future there is demand for your node to route funds
 through channel A, you cannot do that as much (because you reduced outbound liquidity in the channel).
 This is the implicit cost (2).
 
-Finally, you rebalance channel B in the hope that lateron someone reqeusts your node to forward funds from your own node
+Finally, you rebalance channel B in the hope that lateron someone requests your node to forward funds from your own node
 through channel B towards the peer at the other end, so that you can earn fees for this.
 These fees are the possible future income (3).
 
