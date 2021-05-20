@@ -82,7 +82,7 @@ rebalance:
                         (default: 10) Reject routes that cost more than x
                         times the lnd default (base: 1 sat, rate: 1 millionth
                         sat) per hop on average
-  --econ-fee            (default: disabled) Economy Fee Mode, see README.md"
+  --econ-fee            (default: disabled) Economy Fee Mode, see README.md
   --econ-fee-factor ECON_FEE_FACTOR
                         (default: 1.0) When using --econ-fee, compare the
                         costs against the expected income, scaled by this
