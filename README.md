@@ -145,7 +145,7 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 `rebalance.py -t 23 -a 1613478`
 
 If you do not specify the amount, the rebalance amount is determined automatically.
-As an alternative to specify the amount you may also set a percentage of the rebalance amount using `-p`.
+As an alternative to specifying the amount you may also set a percentage of the rebalance amount using `-p`.
 For example, the following command tries to send 20% of the amount required to rebalance the channel:
 
 `rebalance.py -t 23 -p 20`
