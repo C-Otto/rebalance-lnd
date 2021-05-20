@@ -201,7 +201,7 @@ def get_argument_parser():
     fee_group.add_argument('--econ-fee', default=False, action='store_true',
                            help="(default: disabled) Economy Fee Mode, see README.md")
     rebalance_group.add_argument('--econ-fee-factor', default=1.0, type=float,
-                                 help="(default: 1.0) When using --econ-fee, compare the costs against the expected"
+                                 help="(default: 1.0) When using --econ-fee, compare the costs against the expected "
                                       "income, scaled by this factor. As an example, with --econ-fee-factor 1.5, "
                                       "routes that cost at most 150%% of the expected earnings are tried. Use values "
                                       "smaller than 1.0 to restrict routes to only consider those earning "

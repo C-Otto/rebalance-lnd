@@ -85,7 +85,7 @@ rebalance:
   --econ-fee            (default: disabled) Economy Fee Mode, see README.md"
   --econ-fee-factor ECON_FEE_FACTOR
                         (default: 1.0) When using --econ-fee, compare the
-                        costs against the expectedincome, scaled by this
+                        costs against the expected income, scaled by this
                         factor. As an example, with --econ-fee-factor 1.5,
                         routes that cost at most 150% of the expected earnings
                         are tried. Use values smaller than 1.0 to restrict
