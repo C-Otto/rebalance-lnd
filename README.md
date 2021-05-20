@@ -190,8 +190,8 @@ These fees are the possible future income (3).
 The value set with `--econ-fee-factor` is used to scale the future income used in the computation outlined above.
 
 As such, if you set `--econ-fee-factor` to a value higher than 1.0, routes that cost more than the future income are
-considered. As an example, with `--econ-fee --econ-fee-factor 1.5` includes routes that cost up to 150% of the future
-income.
+considered. As an example, with `--econ-fee --econ-fee-factor 1.5` you can include routes that cost up to 150% of the
+future income.
 
 You can also use values smaller than 1.0 to restrict which routes are considered, so that only routes that earn more
 than the costs. 
