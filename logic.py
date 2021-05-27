@@ -224,15 +224,17 @@ class Logic:
         missed_fee = self.compute_fee(amount, policy_first_hop.fee_rate_milli_msat, policy_first_hop)
         policy_last_hop = self.lnd.get_policy_to(route.hops[-1].chan_id)
         fee_rate_last_hop = policy_last_hop.fee_rate_milli_msat
+        original_fee_rate_last_hop = fee_rate_last_hop
         if fee_rate_last_hop > MAX_FEE_RATE:
-            debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
-                  % (MAX_FEE_RATE, fee_rate_last_hop))
             fee_rate_last_hop = MAX_FEE_RATE
         expected_fee = self.econ_fee_factor * self.compute_fee(amount, fee_rate_last_hop, policy_last_hop)
         rebalance_fee = route.total_fees
         high_fees = rebalance_fee + missed_fee > expected_fee
         if high_fees:
             difference = rebalance_fee + missed_fee - expected_fee
+            if fee_rate_last_hop != original_fee_rate_last_hop:
+                debug("Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
+                      % (MAX_FEE_RATE, original_fee_rate_last_hop))
             debugnobreak("High fees ("
                          "%s expected future fee income for inbound channel (factor %s), "
                          "have to pay %s now, "
