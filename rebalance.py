@@ -223,6 +223,8 @@ def list_candidates(lnd, candidates):
     index = 0
     for candidate in candidates:
         index += 1
+        remote_available = max(0, candidate.remote_balance - candidate.remote_chan_reserve_sat)
+        local_available = max(0, candidate.local_balance - candidate.local_chan_reserve_sat)
         rebalance_amount_int = get_rebalance_amount(candidate)
         rebalance_amount = "{:,}".format(rebalance_amount_int)
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
@@ -234,8 +236,8 @@ def list_candidates(lnd, candidates):
         print("Channel Point:    " + candidate.channel_point)
         print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))
         print("Capacity:         {:,}".format(candidate.capacity))
-        print("Remote balance:   {:,}".format(candidate.remote_balance))
-        print("Local balance:    {:,}".format(candidate.local_balance))
+        print("Remote available: {:,}".format(remote_available))
+        print("Local available:  {:,}".format(local_available))
         print("Amount for 50-50: " + rebalance_amount)
         print(get_capacity_and_ratio_bar(candidate))
         print("")
