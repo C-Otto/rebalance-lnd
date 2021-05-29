@@ -14,7 +14,7 @@ You need to have admin rights to control this node.
 By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
-You need to install Python 3. The gRPC dependencies can be installed by running:
+You need to install Python 3. You also need to install the gRPC dependencies which can be done by running:
 
 ```
 $ pip install -r requirements.txt
@@ -22,7 +22,15 @@ $ pip install -r requirements.txt
 
 If this fails, make sure you're running Python 3.
 
+To test if your installation works, you can run `rebalance.py` without any arguments.
+Depending on your system, you can do this in one of the following ways:
+ - `python3 rebalance.py`
+ - `./rebalance.py`
+ - `python rebalance.py`
+
 ## Usage
+
+See below for an explanation.
 
 ### Command line arguments
 ```
@@ -126,14 +134,17 @@ By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can
 This number is shown as "Amount for 50-50".
 
 The last line shows a graphical representation of the channel. 
-The total width is determined by the channel's capacity, where a channel with maximum capacity (16,777,215 satoshis)
-occupies the full width of your terminal.
+The total width is determined by the channel's capacity, where a channel with maximum (non-wumbo) capacity
+(16,777,215 satoshis) occupies the full width of your terminal.
 The bar (`=`) indicates the funds on the local side of the channel.
 
 The number next to the channel ID (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
 To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
+Use `--from` (or `-f`) to specify a channel that too many funds on your _local_ side (ratio > 0.5).
+Likewise, use `--to` (or `-t`) to specify a channel that has too many funds on the _remote_ side (ratio < 0.5). 
+
 It is possible to use both `-t` and `-f`, but at least one of these arguments must be given.
 You can also specify the amount to send (using `-a`).
 You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
@@ -144,7 +155,7 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 
 `rebalance.py -t 23 -a 1613478`
 
-If you do not specify the amount, the rebalance amount is determined automatically.
+If you do not specify the amount, the script automatically determines the rebalance amount.
 As an alternative to specifying the amount you may also set a percentage of the rebalance amount using `-p`.
 For example, the following command tries to send 20% of the amount required to rebalance the channel:
 
@@ -207,7 +218,18 @@ to a 0.1% fee), even if the inbound channel is configured with a higher fee rate
 Contributions are highly welcome!
 Feel free to submit issues and pull requests on https://github.com/C-Otto/rebalance-lnd/
 
-Please also consider opening a channel with one of our nodes, or sending tips via keysend:
+You can also send donations via keysend.
+For example, to send 500 satoshi to C-Otto with a message "Thank you for rebalance-lnd":
+```
+lncli sendpayment --amt=500 --data 7629168=5468616e6b20796f7520666f7220726562616c616e63652d6c6e64 --keysend --dest=03f51df0183b2083d678d867d7441ba7e8dbf1bfdd23729d702b81a8b128e3e876
+```
+
+You can also specify an arbitrary message:
+```
+lncli sendpayment --amt=500 --data 7629168=$(echo -n "your message here" | xxd -pu -c 10000) --keysend --dest=03f51df0183b2083d678d867d7441ba7e8dbf1bfdd23729d702b81a8b128e3e876
+```
+
+Please also consider opening a channel with one of our nodes:
 
 * C-Otto: `027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71@157.90.112.145:9735`
 * wamde: `0269b91661812bae52280a68eec2b89d38bf26b33966441ad70aa365e120a125ff@82.36.141.97:9735`
