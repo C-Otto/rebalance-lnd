@@ -221,12 +221,12 @@ Feel free to submit issues and pull requests on https://github.com/C-Otto/rebala
 You can also send donations via keysend.
 For example, to send 500 satoshi to C-Otto with a message "Thank you for rebalance-lnd":
 ```
-lncli sendpayment --amt=500 --data 7629168=5468616e6b20796f7520666f7220726562616c616e63652d6c6e64 --keysend --dest=03f51df0183b2083d678d867d7441ba7e8dbf1bfdd23729d702b81a8b128e3e876
+lncli sendpayment --amt=500 --data 7629168=5468616e6b20796f7520666f7220726562616c616e63652d6c6e64 --keysend --dest=027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71
 ```
 
 You can also specify an arbitrary message:
 ```
-lncli sendpayment --amt=500 --data 7629168=$(echo -n "your message here" | xxd -pu -c 10000) --keysend --dest=03f51df0183b2083d678d867d7441ba7e8dbf1bfdd23729d702b81a8b128e3e876
+lncli sendpayment --amt=500 --data 7629168=$(echo -n "your message here" | xxd -pu -c 10000) --keysend --dest=027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71
 ```
 
 Please also consider opening a channel with one of our nodes:
