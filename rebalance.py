@@ -247,18 +247,18 @@ def get_rebalance_amount(channel):
     return abs(int(math.ceil(float(get_remote_surplus(channel)) / 2)))
 
 
+def get_rebalance_candidates(lnd, pred, reverse):
+    active = filter(lambda c: c.active, lnd.get_channels())
+    filtered = filter(pred, active)
+    candidates = filter(lambda c: get_rebalance_amount(c) > 0, filtered)
+    return sorted(candidates, key=get_remote_surplus, reverse=reverse)
+
 def get_incoming_rebalance_candidates(lnd, channel_ratio):
-    active = list(filter(lambda c: c.active, lnd.get_channels()))
-    low_local = list(filter(lambda c: get_local_ratio(c) < channel_ratio, active))
-    low_local = list(filter(lambda c: get_rebalance_amount(c) > 0, low_local))
-    return sorted(low_local, key=get_remote_surplus, reverse=False)
+    return get_rebalance_candidates(lnd, lambda c: get_local_ratio(c) < channel_ratio, False)
 
 
 def get_outgoing_rebalance_candidates(lnd, channel_ratio):
-    active = list(filter(lambda c: c.active, lnd.get_channels()))
-    high_local = list(filter(lambda c: get_local_ratio(c) > 1 - channel_ratio, active))
-    high_local = list(filter(lambda c: get_rebalance_amount(c) > 0, high_local))
-    return sorted(high_local, key=get_remote_surplus, reverse=True)
+    return get_rebalance_candidates(lnd, lambda c: get_local_ratio(c) > 1 - channel_ratio, True)
 
 
 def get_local_ratio(channel):
@@ -281,9 +281,9 @@ def get_capacity_and_ratio_bar(candidate):
     result = "|"
     ratio = get_local_ratio(candidate)
     length = int(round(ratio * bar_width))
-    for x in range(0, length):
+    for _ in range(0, length):
         result += "="
-    for x in range(length, bar_width):
+    for _ in range(length, bar_width):
         result += " "
     return result + "|"
 
