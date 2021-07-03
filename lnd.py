@@ -4,6 +4,7 @@ from os.path import expanduser
 import codecs
 import grpc
 import sys
+from functools import cache
 
 from grpc_generated import router_pb2_grpc as lnrouterrpc, router_pb2 as lnrouter, rpc_pb2_grpc as lnrpc, rpc_pb2 as ln
 
@@ -26,9 +27,6 @@ class Lnd:
         grpc_channel = grpc.secure_channel(server, combined_credentials, channel_options)
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
-        self.graph = None
-        self.info = None
-        self.channels = None
 
     @staticmethod
     def get_credentials(lnd_dir):
@@ -39,18 +37,16 @@ class Lnd:
         combined_credentials = grpc.composite_channel_credentials(ssl_credentials, auth_credentials)
         return combined_credentials
 
+    @cache
     def get_info(self):
-        if self.info is None:
-            self.info = self.stub.GetInfo(ln.GetInfoRequest())
-        return self.info
+        return self.stub.GetInfo(ln.GetInfoRequest())
 
     def get_node_alias(self, pub_key):
         return self.stub.GetNodeInfo(ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)).node.alias
 
+    @cache
     def get_graph(self):
-        if self.graph is None:
-            self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
-        return self.graph
+        return self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
 
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
@@ -72,13 +68,11 @@ class Lnd:
         )
         return self.stub.DecodePayReq(request)
 
+    @cache
     def get_channels(self):
-        if self.channels is None:
-            request = ln.ListChannelsRequest(
-                active_only=False,
-            )
-            self.channels = self.stub.ListChannels(request).channels
-        return self.channels
+        return self.stub.ListChannels(ln.ListChannelsRequest(
+            active_only=False,
+        )).channels
 
     def get_route(self, pub_key, amount, ignored_pairs, ignored_nodes, first_hop_channel_id, fee_limit_sat):
         if fee_limit_sat:
