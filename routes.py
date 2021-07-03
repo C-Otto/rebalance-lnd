@@ -1,15 +1,9 @@
 import base64
 import sys
 
+from utils import debug
+
 MAX_ROUTES_TO_REQUEST = 100
-
-
-def debug(message):
-    sys.stderr.write(message + "\n")
-
-
-def debugnobreak(message):
-    sys.stderr.write(message)
 
 
 class Routes:

@@ -3,16 +3,11 @@ import os
 from os.path import expanduser
 import codecs
 import grpc
-import sys
 from functools import cache
 
 from grpc_generated import router_pb2_grpc as lnrouterrpc, router_pb2 as lnrouter, rpc_pb2_grpc as lnrpc, rpc_pb2 as ln
 
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
-
-
-def debug(message):
-    sys.stderr.write(message + "\n")
 
 
 class Lnd:

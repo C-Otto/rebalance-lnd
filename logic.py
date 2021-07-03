@@ -2,18 +2,11 @@ import sys
 import math
 
 from routes import Routes
+from utils import debug, debugnobreak
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1000
 DEFAULT_FEE_RATE_MSAT = 0.001
 MAX_FEE_RATE = 1000
-
-
-def debug(message):
-    sys.stderr.write(message + "\n")
-
-
-def debugnobreak(message):
-    sys.stderr.write(message)
 
 
 class Logic:
