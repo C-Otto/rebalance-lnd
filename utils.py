@@ -2,7 +2,7 @@ import sys
 
 
 def debug(message):
-    sys.stderr.write(message + "\n")
+    sys.stderr.write(f"{message}\n")
 
 
 def debugnobreak(message):

@@ -112,10 +112,8 @@ def get_amount(arguments, first_hop_channel, last_hop_channel):
         remote_surplus = get_remote_surplus(last_hop_channel)
         if remote_surplus < 0:
             print(
-                "Error: last hop needs to SEND {:,} sat to be balanced, you want it to RECEIVE funds. "
-                "Specify amount manually if this was intended.".format(
-                    abs(remote_surplus)
-                )
+                f"Error: last hop needs to SEND {abs(remote_surplus):,} sat to be balanced, you want it to RECEIVE funds. "
+                "Specify amount manually if this was intended."
             )
             return 0
     else:
@@ -123,8 +121,8 @@ def get_amount(arguments, first_hop_channel, last_hop_channel):
         remote_surplus = get_remote_surplus(first_hop_channel)
         if remote_surplus > 0:
             print(
-                "Error: first hop needs to RECEIVE {:,} sat to be balanced, you want it to SEND funds. "
-                "Specify amount manually if this was intended.".format(remote_surplus)
+                f"Error: first hop needs to RECEIVE {remote_surplus:,} sat to be balanced, you want it to SEND funds. "
+                "Specify amount manually if this was intended."
             )
             return 0
 
@@ -297,21 +295,21 @@ def list_candidates(lnd, candidates):
             0, candidate.local_balance - candidate.local_chan_reserve_sat
         )
         rebalance_amount_int = get_rebalance_amount(candidate)
-        rebalance_amount = "{:,}".format(rebalance_amount_int)
+        rebalance_amount = f"{rebalance_amount_int:,}"
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
-            rebalance_amount += " (max per transaction: {:,})".format(
-                MAX_SATOSHIS_PER_TRANSACTION
+            rebalance_amount += (
+                " (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
 
-        print("(%2d) Channel ID:  " % index + str(candidate.chan_id))
-        print("Alias:            " + lnd.get_node_alias(candidate.remote_pubkey))
-        print("Pubkey:           " + candidate.remote_pubkey)
-        print("Channel Point:    " + candidate.channel_point)
-        print("Local ratio:      {:.3f}".format(get_local_ratio(candidate)))
-        print("Capacity:         {:,}".format(candidate.capacity))
-        print("Remote available: {:,}".format(remote_available))
-        print("Local available:  {:,}".format(local_available))
-        print("Amount for 50-50: " + rebalance_amount)
+        print(f"({index:2}) Channel ID:  {str(candidate.chan_id)}")
+        print(f"Alias:            {lnd.get_node_alias(candidate.remote_pubkey)}")
+        print(f"Pubkey:           {candidate.remote_pubkey}")
+        print(f"Channel Point:    {candidate.channel_point}")
+        print(f"Local ratio:      {get_local_ratio(candidate):.3f}")
+        print(f"Capacity:         {candidate.capacity:,}")
+        print(f"Remote available: {remote_available:,}")
+        print(f"Local available:  {local_available:,}")
+        print(f"Amount for 50-50: {rebalance_amount}")
         print(get_capacity_and_ratio_bar(candidate))
         print("")
 
@@ -365,7 +363,7 @@ def get_capacity_and_ratio_bar(candidate):
         result += "="
     for _ in range(length, bar_width):
         result += " "
-    return result + "|"
+    return f"{result}|"
 
 
 def get_columns():

@@ -31,10 +31,10 @@ class Lnd:
 
     @staticmethod
     def get_credentials(lnd_dir):
-        with open(lnd_dir + "/tls.cert", "rb") as f:
+        with open(f"{lnd_dir}/tls.cert", "rb") as f:
             tls_certificate = f.read()
         ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
-        with open(lnd_dir + "/data/chain/bitcoin/mainnet/admin.macaroon", "rb") as f:
+        with open(f"{lnd_dir}/data/chain/bitcoin/mainnet/admin.macaroon", "rb") as f:
             macaroon = codecs.encode(f.read(), "hex")
         auth_credentials = grpc.metadata_call_credentials(
             lambda _, callback: callback([("macaroon", macaroon)], None)

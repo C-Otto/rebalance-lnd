@@ -134,10 +134,7 @@ class Routes:
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
-            debug(
-                "ignoring channel %s (from %s to %s)"
-                % (chan_id, from_pubkey, to_pubkey)
-            )
+            debug(f"ignoring channel {chan_id} (from {from_pubkey} to {to_pubkey})")
         pair = {
             "from": base64.b16decode(from_pubkey, True),
             "to": base64.b16decode(to_pubkey, True),
@@ -145,5 +142,5 @@ class Routes:
         self.ignored_pairs.append(pair)
 
     def ignore_node(self, pub_key):
-        debug("ignoring node %s" % pub_key)
+        debug(f"ignoring node {pub_key}")
         self.ignored_nodes.append(base64.b16decode(pub_key, True))

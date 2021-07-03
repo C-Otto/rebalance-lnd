@@ -39,25 +39,17 @@ class Logic:
         fee_limit_msat = self.get_fee_limit_msat()
         if self.last_hop_channel:
             debug(
-                (
-                    "Sending {:,} satoshis to rebalance to channel with ID %d (%s)"
-                    % (
-                        self.last_hop_channel.chan_id,
-                        self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey),
-                    )
-                ).format(self.amount)
+                f"Sending {self.amount:,} satoshis to rebalance to channel with ID "
+                f"{self.last_hop_channel.chan_id} ({self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)})"
             )
         else:
-            debug("Sending {:,} satoshis.".format(self.amount))
+            debug(f"Sending {self.amount:,} satoshis.")
         if self.channel_ratio != 0.5:
-            debug("Channel ratio used is %d%%" % int(self.channel_ratio * 100))
+            debug(f"Channel ratio used is {int(self.channel_ratio * 100)}%")
         if self.first_hop_channel:
             debug(
-                "Forced first channel has ID %d (%s)"
-                % (
-                    self.first_hop_channel.chan_id,
-                    self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey),
-                )
+                f"Forced first channel has ID {self.first_hop_channel.chan_id} "
+                f"({self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)})"
             )
 
         payment_request = self.generate_invoice()
@@ -96,16 +88,16 @@ class Logic:
             fee_rate = policy.fee_rate_milli_msat
             if fee_rate > MAX_FEE_RATE:
                 debug(
-                    "Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
-                    % (MAX_FEE_RATE, fee_rate)
+                    f"Calculating using capped fee rate {MAX_FEE_RATE} "
+                    f"for inbound channel (original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
             fee_limit_msat = self.econ_fee_factor * self.compute_fee(
                 self.amount, fee_rate, policy
             )
             debug(
-                "Setting fee limit to %s (due to --econ-fee, factor %s)"
-                % (int(fee_limit_msat), self.econ_fee_factor)
+                f"Setting fee limit to {int(fee_limit_msat)} "
+                f"(due to --econ-fee, factor {self.econ_fee_factor})"
             )
 
         return fee_limit_msat
@@ -116,7 +108,7 @@ class Logic:
 
         tried_routes.append(route)
         debug("")
-        debug("Trying route #%d" % len(tried_routes))
+        debug(f"Trying route #{len(tried_routes)}")
         debug(Routes.print_route(route))
 
         response = self.lnd.send_payment(payment_request, route)
@@ -128,11 +120,11 @@ class Logic:
             debug("")
             debug("")
             debug(
-                "Decreased inbound liquidity on %s by %d sats"
-                % (last_hop_alias, route.hops[-1].amt_to_forward)
+                f"Decreased inbound liquidity on {last_hop_alias} by "
+                f"{int(route.hops[-1].amt_to_forward)} sats"
             )
-            debug("Increased inbound liquidity on %s" % first_hop_alias)
-            debug("Fee: %d sats" % route.total_fees)
+            debug(f"Increased inbound liquidity on {first_hop_alias}")
+            debug(f"Fee: {route.total_fees} sats")
             debug("")
             debug("Successful route:")
             debug(Routes.print_route(route))
@@ -159,7 +151,7 @@ class Logic:
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
             debug(repr(response))
-            debug("Unknown error code %s" % repr(code))
+            debug(f"Unknown error code {repr(code)}")
 
     @staticmethod
     def get_failure_source_pubkey(response, route):
@@ -206,7 +198,7 @@ class Logic:
         channel_id = first_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
         if channel is None:
-            debug("Unable to get channel information for hop %s" % repr(first_hop))
+            debug(f"Unable to get channel information for hop {repr(first_hop)}")
             return True
 
         remote = channel.remote_balance + total_amount
@@ -220,7 +212,7 @@ class Logic:
         channel_id = last_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
         if channel is None:
-            debug("Unable to get channel information for hop %s" % repr(last_hop))
+            debug(f"Unable to get channel information for hop {repr(last_hop)}")
             return True
 
         amount = last_hop.amt_to_forward
@@ -244,8 +236,8 @@ class Logic:
         high_fees = route.total_fees_msat > limit
         if high_fees:
             debugnobreak(
-                "High fees (%s sat over limit of %s), "
-                % (int((route.total_fees_msat - limit) / 1000), int(limit / 1000))
+                f"High fees ({int((route.total_fees_msat - limit) / 1000)} "
+                f"sat over limit of {int(limit / 1000)}), "
             )
         return high_fees
 
@@ -269,22 +261,13 @@ class Logic:
             difference = rebalance_fee + missed_fee - expected_fee
             if fee_rate_last_hop != original_fee_rate_last_hop:
                 debug(
-                    "Calculating using capped fee rate %s for inbound channel (original fee rate %s)"
-                    % (MAX_FEE_RATE, original_fee_rate_last_hop)
+                    f"Calculating using capped fee rate {MAX_FEE_RATE} for inbound channel "
+                    f"(original fee rate {original_fee_rate_last_hop})"
                 )
             debugnobreak(
-                "High fees ("
-                "%s expected future fee income for inbound channel (factor %s), "
-                "have to pay %s now, "
-                "missing out on %s future fees for outbound channel, "
-                "difference %s), "
-                % (
-                    math.floor(expected_fee),
-                    self.econ_fee_factor,
-                    int(rebalance_fee),
-                    math.ceil(missed_fee),
-                    math.ceil(difference),
-                )
+                f"High fees ({math.floor(expected_fee)} expected future fee income for inbound channel "
+                f"(factor {self.econ_fee_factor}), have to pay {int(rebalance_fee)} now, missing out on "
+                f"{math.ceil(missed_fee)} future fees for outbound channel, difference {math.ceil(difference)}), "
             )
         return high_fees
 
@@ -295,9 +278,9 @@ class Logic:
 
     def generate_invoice(self):
         if self.last_hop_channel:
-            memo = "Rebalance of channel with ID %d" % self.last_hop_channel.chan_id
+            memo = f"Rebalance of channel with ID {self.last_hop_channel.chan_id}"
         else:
-            memo = "Rebalance of channel with ID %d" % self.first_hop_channel.chan_id
+            memo = f"Rebalance of channel with ID {self.first_hop_channel.chan_id}"
         return self.lnd.generate_invoice(memo, self.amount)
 
     def get_channel_for_channel_id(self, channel_id):
@@ -308,7 +291,7 @@ class Logic:
                 if not hasattr(channel, "remote_balance"):
                     channel.remote_balance = 0
                 return channel
-        debug("Unable to find channel with id %d!" % channel_id)
+        debug(f"Unable to find channel with id {channel_id}!")
 
     def initialize_ignored_channels(self, routes):
         if self.first_hop_channel:
