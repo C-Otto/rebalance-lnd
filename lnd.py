@@ -1,56 +1,61 @@
 import base64
-import os
-from os.path import expanduser
 import codecs
-import grpc
-import sys
+import os
+from functools import cache
+from os.path import expanduser
 
-from grpc_generated import router_pb2_grpc as lnrouterrpc, router_pb2 as lnrouter, rpc_pb2_grpc as lnrpc, rpc_pb2 as ln
+import grpc
+
+from grpc_generated import router_pb2 as lnrouter
+from grpc_generated import router_pb2_grpc as lnrouterrpc
+from grpc_generated import rpc_pb2 as ln
+from grpc_generated import rpc_pb2_grpc as lnrpc
 
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
 
-def debug(message):
-    sys.stderr.write(message + "\n")
-
-
 class Lnd:
     def __init__(self, lnd_dir, server):
-        os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
+        os.environ["GRPC_SSL_CIPHER_SUITES"] = "HIGH+ECDSA"
         lnd_dir = expanduser(lnd_dir)
         combined_credentials = self.get_credentials(lnd_dir)
         channel_options = [
-            ('grpc.max_message_length', MESSAGE_SIZE_MB),
-            ('grpc.max_receive_message_length', MESSAGE_SIZE_MB)
+            ("grpc.max_message_length", MESSAGE_SIZE_MB),
+            ("grpc.max_receive_message_length", MESSAGE_SIZE_MB),
         ]
-        grpc_channel = grpc.secure_channel(server, combined_credentials, channel_options)
+        grpc_channel = grpc.secure_channel(
+            server, combined_credentials, channel_options
+        )
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
-        self.graph = None
-        self.info = None
-        self.channels = None
 
     @staticmethod
     def get_credentials(lnd_dir):
-        tls_certificate = open(lnd_dir + '/tls.cert', 'rb').read()
+        with open(f"{lnd_dir}/tls.cert", "rb") as f:
+            tls_certificate = f.read()
         ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
-        macaroon = codecs.encode(open(lnd_dir + '/data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
-        auth_credentials = grpc.metadata_call_credentials(lambda _, callback: callback([('macaroon', macaroon)], None))
-        combined_credentials = grpc.composite_channel_credentials(ssl_credentials, auth_credentials)
+        with open(f"{lnd_dir}/data/chain/bitcoin/mainnet/admin.macaroon", "rb") as f:
+            macaroon = codecs.encode(f.read(), "hex")
+        auth_credentials = grpc.metadata_call_credentials(
+            lambda _, callback: callback([("macaroon", macaroon)], None)
+        )
+        combined_credentials = grpc.composite_channel_credentials(
+            ssl_credentials, auth_credentials
+        )
         return combined_credentials
 
+    @cache
     def get_info(self):
-        if self.info is None:
-            self.info = self.stub.GetInfo(ln.GetInfoRequest())
-        return self.info
+        return self.stub.GetInfo(ln.GetInfoRequest())
 
     def get_node_alias(self, pub_key):
-        return self.stub.GetNodeInfo(ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)).node.alias
+        return self.stub.GetNodeInfo(
+            ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)
+        ).node.alias
 
+    @cache
     def get_graph(self):
-        if self.graph is None:
-            self.graph = self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
-        return self.graph
+        return self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
 
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
@@ -72,15 +77,23 @@ class Lnd:
         )
         return self.stub.DecodePayReq(request)
 
+    @cache
     def get_channels(self):
-        if self.channels is None:
-            request = ln.ListChannelsRequest(
+        return self.stub.ListChannels(
+            ln.ListChannelsRequest(
                 active_only=False,
             )
-            self.channels = self.stub.ListChannels(request).channels
-        return self.channels
+        ).channels
 
-    def get_route(self, pub_key, amount, ignored_pairs, ignored_nodes, first_hop_channel_id, fee_limit_sat):
+    def get_route(
+        self,
+        pub_key,
+        amount,
+        ignored_pairs,
+        ignored_nodes,
+        first_hop_channel_id,
+        fee_limit_sat,
+    ):
         if fee_limit_sat:
             fee_limit = {"fixed": int(fee_limit_sat)}
         else:

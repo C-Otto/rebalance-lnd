@@ -1,20 +1,19 @@
 import base64
-import sys
+
+from utils import debug
 
 MAX_ROUTES_TO_REQUEST = 100
 
 
-def debug(message):
-    sys.stderr.write(message + "\n")
-
-
-def debugnobreak(message):
-    sys.stderr.write(message)
-
-
 class Routes:
     def __init__(
-            self, lnd, payment_request, first_hop_channel, last_hop_channel, fee_limit_msat, min_fee_msat_last_hop
+        self,
+        lnd,
+        payment_request,
+        first_hop_channel,
+        last_hop_channel,
+        fee_limit_msat,
+        min_fee_msat_last_hop,
     ):
         self.lnd = lnd
         self.payment_request = payment_request
@@ -58,8 +57,14 @@ class Routes:
             first_hop_channel_id = self.first_hop_channel.chan_id
         else:
             first_hop_channel_id = None
-        routes = self.lnd.get_route(last_hop_pubkey, amount, self.ignored_pairs,
-                                    self.ignored_nodes, first_hop_channel_id, self.fee_limit_msat)
+        routes = self.lnd.get_route(
+            last_hop_pubkey,
+            amount,
+            self.ignored_pairs,
+            self.ignored_nodes,
+            first_hop_channel_id,
+            self.fee_limit_msat,
+        )
         if routes is None:
             self.num_requested_routes = MAX_ROUTES_TO_REQUEST
         else:
@@ -90,7 +95,9 @@ class Routes:
         ignore_next = False
         for hop in route.hops:
             if ignore_next:
-                self.ignore_edge_from_to(hop.chan_id, failure_source_pubkey, hop.pub_key)
+                self.ignore_edge_from_to(
+                    hop.chan_id, failure_source_pubkey, hop.pub_key
+                )
                 return
             if hop.pub_key == failure_source_pubkey:
                 ignore_next = True
@@ -127,10 +134,13 @@ class Routes:
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
-            debug("ignoring channel %s (from %s to %s)" % (chan_id, from_pubkey, to_pubkey))
-        pair = {"from": base64.b16decode(from_pubkey, True), "to": base64.b16decode(to_pubkey, True)}
+            debug(f"ignoring channel {chan_id} (from {from_pubkey} to {to_pubkey})")
+        pair = {
+            "from": base64.b16decode(from_pubkey, True),
+            "to": base64.b16decode(to_pubkey, True),
+        }
         self.ignored_pairs.append(pair)
 
     def ignore_node(self, pub_key):
-        debug("ignoring node %s" % pub_key)
+        debug(f"ignoring node {pub_key}")
         self.ignored_nodes.append(base64.b16decode(pub_key, True))
