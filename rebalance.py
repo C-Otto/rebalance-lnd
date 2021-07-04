@@ -298,7 +298,7 @@ def list_candidates(lnd, candidates):
         rebalance_amount = f"{rebalance_amount_int:,}"
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount += (
-                " (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
+                f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
 
         print(f"({index:2}) Channel ID:  {str(candidate.chan_id)}")
