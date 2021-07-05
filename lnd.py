@@ -1,7 +1,7 @@
 import base64
 import codecs
 import os
-from functools import cache
+from functools import lru_cache
 from os.path import expanduser
 
 import grpc
@@ -44,7 +44,7 @@ class Lnd:
         )
         return combined_credentials
 
-    @cache
+    @lru_cache(maxsize=None)
     def get_info(self):
         return self.stub.GetInfo(ln.GetInfoRequest())
 
@@ -53,7 +53,7 @@ class Lnd:
             ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)
         ).node.alias
 
-    @cache
+    @lru_cache(maxsize=None)
     def get_graph(self):
         return self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
 
@@ -77,7 +77,7 @@ class Lnd:
         )
         return self.stub.DecodePayReq(request)
 
-    @cache
+    @lru_cache(maxsize=None)
     def get_channels(self):
         return self.stub.ListChannels(
             ln.ListChannelsRequest(
