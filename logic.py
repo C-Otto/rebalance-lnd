@@ -87,10 +87,11 @@ class Logic:
         if self.last_hop_channel:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
+            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
             if fee_rate > MAX_FEE_RATE:
                 self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} "
-                    f"for inbound channel (original fee rate {fee_rate})"
+                    f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
             fee_limit_msat = self.fee_factor * self.compute_fee(
@@ -242,9 +243,10 @@ class Logic:
             difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
             self.output.print_line("")
             if fee_rate_last_hop != original_fee_rate_last_hop:
+                last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
                 self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} for inbound channel "
-                    f"(original fee rate {original_fee_rate_last_hop})"
+                    f"(with {last_hop_alias}, original fee rate {original_fee_rate_last_hop})"
                 )
             self.output.print_line("Skipping route due to high fees:")
             self.output.print_route(route)
