@@ -114,7 +114,7 @@ class Logic:
         self.output.print_without_linebreak(f"Trying route #{len(tried_routes)}")
         fee_msat = route.total_fees_msat
         ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
-        self.output.print_line(f" (fee {fee_msat} mSAT, {ppm}ppm)")
+        self.output.print_line(f" (fee {fee_msat:,} mSAT, {ppm:,}ppm)")
         self.output.print_route(route)
 
         response = self.lnd.send_payment(payment_request, route)
@@ -129,7 +129,7 @@ class Logic:
             )
             self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
             ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
-            self.output.print_line(f"Fee: {route.total_fees} sats ({route.total_fees_msat} mSAT, {ppm}ppm)")
+            self.output.print_line(f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {ppm:,}ppm)")
             self.output.print_line("")
             self.output.print_line("Successful route:")
             self.output.print_route(route)
