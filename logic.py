@@ -5,7 +5,7 @@ from utils import debug, debugnobreak
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1000
 DEFAULT_FEE_RATE_MSAT = 0.001
-MAX_FEE_RATE = 1000
+MAX_FEE_RATE = 2000
 
 
 class Logic:
