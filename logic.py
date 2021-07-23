@@ -18,9 +18,7 @@ class Logic:
         last_hop_channel,
         amount,
         excluded,
-        max_fee_factor,
-        econ_fee,
-        econ_fee_factor,
+        fee_factor,
         output: Output
     ):
         self.lnd = lnd
@@ -29,12 +27,10 @@ class Logic:
         self.amount = amount
         if excluded:
             self.excluded = excluded
-        self.max_fee_factor = max_fee_factor
-        self.econ_fee = econ_fee
-        self.econ_fee_factor = econ_fee_factor
+        self.fee_factor = fee_factor
         self.output = output
-        if not self.econ_fee_factor:
-            self.econ_fee_factor = 1.0
+        if not self.fee_factor:
+            self.fee_factor = 1.0
 
     def rebalance(self):
         fee_limit_msat = self.get_fee_limit_msat()
@@ -53,9 +49,9 @@ class Logic:
 
         payment_request = self.generate_invoice()
         min_ppm_last_hop = None
-        if self.econ_fee and self.first_hop_channel:
+        if self.first_hop_channel:
             policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
-            min_ppm_last_hop = self.econ_fee_factor * policy_first_hop.fee_rate_milli_msat
+            min_ppm_last_hop = self.fee_factor * policy_first_hop.fee_rate_milli_msat
         routes = Routes(
             self.lnd,
             payment_request,
@@ -80,7 +76,7 @@ class Logic:
 
     def get_fee_limit_msat(self):
         fee_limit_msat = None
-        if self.last_hop_channel and self.econ_fee:
+        if self.last_hop_channel:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
             if fee_rate > MAX_FEE_RATE:
@@ -89,12 +85,12 @@ class Logic:
                     f"for inbound channel (original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
-            fee_limit_msat = self.econ_fee_factor * self.compute_fee(
+            fee_limit_msat = self.fee_factor * self.compute_fee(
                 self.amount, fee_rate, policy
             )
             self.output.print_line(
                 f"Setting fee limit to {int(fee_limit_msat)} "
-                f"(due to --econ-fee, factor {self.econ_fee_factor})"
+                f"(factor {self.fee_factor})"
             )
 
         return fee_limit_msat
@@ -223,22 +219,6 @@ class Logic:
         return first_hop.chan_id == last_hop.chan_id
 
     def fees_too_high(self, route):
-        if self.econ_fee:
-            return self.fees_too_high_econ_fee(route)
-        hops_with_fees = len(route.hops) - 1
-        lnd_fees = hops_with_fees * (
-            DEFAULT_BASE_FEE_SAT_MSAT + (self.amount * DEFAULT_FEE_RATE_MSAT)
-        )
-        limit = self.max_fee_factor * lnd_fees
-        high_fees = route.total_fees_msat > limit
-        if high_fees:
-            self.output.print_without_linebreak(
-                f"High fees ({int((route.total_fees_msat - limit) / 1000)} "
-                f"sat over limit of {int(limit / 1000)}), "
-            )
-        return high_fees
-
-    def fees_too_high_econ_fee(self, route):
         policy_first_hop = self.lnd.get_policy_to(route.hops[0].chan_id)
         amount = route.total_amt
         missed_fee = self.compute_fee(
@@ -249,7 +229,7 @@ class Logic:
         original_fee_rate_last_hop = fee_rate_last_hop
         if fee_rate_last_hop > MAX_FEE_RATE:
             fee_rate_last_hop = MAX_FEE_RATE
-        expected_fee = self.econ_fee_factor * self.compute_fee(
+        expected_fee = self.fee_factor * self.compute_fee(
             amount, fee_rate_last_hop, policy_last_hop
         )
         rebalance_fee = route.total_fees
@@ -263,7 +243,7 @@ class Logic:
                 )
             self.output.print_without_linebreak(
                 f"High fees ({math.floor(expected_fee)} expected future fee income for inbound channel "
-                f"(factor {self.econ_fee_factor}), have to pay {int(rebalance_fee)} now, missing out on "
+                f"(factor {self.fee_factor}), have to pay {int(rebalance_fee)} now, missing out on "
                 f"{math.ceil(missed_fee)} future fees for outbound channel, difference {math.ceil(difference)}), "
             )
         return high_fees
@@ -309,8 +289,7 @@ class Logic:
             routes.ignore_edge_from_to(
                 chan_id, from_pub_key, to_pub_key, show_message=False
             )
-            if self.econ_fee:
-                self.ignore_first_hops_with_fee_rate_higher_than_last_hop(routes)
+            self.ignore_first_hops_with_fee_rate_higher_than_last_hop(routes)
         if self.last_hop_channel and fee_limit_msat:
             # ignore first hops with high fee rate configured by our node (causing high missed future fees)
             max_fee_rate_first_hop = math.ceil(fee_limit_msat * 1_000 / self.amount)

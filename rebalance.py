@@ -74,9 +74,7 @@ def main():
         print("Amount is 0, nothing to do")
         sys.exit(0)
 
-    max_fee_factor = arguments.max_fee_factor
-    econ_fee = arguments.econ_fee
-    econ_fee_factor = arguments.econ_fee_factor
+    fee_factor = arguments.fee_factor
     excluded = arguments.exclude
     return Logic(
         lnd,
@@ -84,9 +82,7 @@ def main():
         last_hop_channel,
         amount,
         excluded,
-        max_fee_factor,
-        econ_fee,
-        econ_fee_factor,
+        fee_factor,
         Output(lnd)
     ).rebalance()
 
@@ -214,26 +210,12 @@ def get_argument_parser():
         help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
         "out of excluded channels)",
     )
-    fee_group = rebalance_group.add_mutually_exclusive_group()
-    fee_group.add_argument(
-        "--max-fee-factor",
-        type=float,
-        default=10,
-        help="(default: 10) Reject routes that cost more than x times the lnd default "
-        "(base: 1 sat, rate: 1 millionth sat) per hop on average",
-    )
-    fee_group.add_argument(
-        "--econ-fee",
-        default=False,
-        action="store_true",
-        help="(default: disabled) Economy Fee Mode, see README.md",
-    )
     rebalance_group.add_argument(
-        "--econ-fee-factor",
+        "--fee-factor",
         default=1.0,
         type=float,
-        help="(default: 1.0) When using --econ-fee, compare the costs against the expected "
-        "income, scaled by this factor. As an example, with --econ-fee-factor 1.5, "
+        help="(default: 1.0) Compare the costs against the expected "
+        "income, scaled by this factor. As an example, with --fee-factor 1.5, "
         "routes that cost at most 150%% of the expected earnings are tried. Use values "
         "smaller than 1.0 to restrict routes to only consider those earning "
         "more/costing less.",

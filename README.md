@@ -37,8 +37,7 @@ See below for an explanation.
 usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
                     [-o | -i] [-f CHANNEL] [-t CHANNEL]
                     [-a AMOUNT] [-e EXCLUDE]
-                    [--max-fee-factor MAX_FEE_FACTOR | --econ-fee]
-                    [--econ-fee-factor ECON_FEE_FACTOR]
+                    [--fee-factor FEE_FACTOR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -76,15 +75,10 @@ rebalance:
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel
                         (no funds will be taken out of excluded channels)
-  --max-fee-factor MAX_FEE_FACTOR
-                        (default: 10) Reject routes that cost more than x
-                        times the lnd default (base: 1 sat, rate: 1 millionth
-                        sat) per hop on average
-  --econ-fee            (default: disabled) Economy Fee Mode, see README.md
-  --econ-fee-factor ECON_FEE_FACTOR
-                        (default: 1.0) When using --econ-fee, compare the
+  --fee-factor FEE_FACTOR
+                        (default: 1.0) Compare the
                         costs against the expected income, scaled by this
-                        factor. As an example, with --econ-fee-factor 1.5,
+                        factor. As an example, with --fee-factor 1.5,
                         routes that cost at most 150% of the expected earnings
                         are tried. Use values smaller than 1.0 to restrict
                         routes to only consider those earning more/costing
@@ -148,15 +142,7 @@ The maximum amount you can send in one transaction currently is limited (by the 
 ### Fees
 
 In order for the network to route your rebalance transaction, you have to pay fees.
-To protect yourself from "greedy" peers, certain routes are rejected by default by using `--max-fee-factor` with a
-default value of 10:
-> Reject routes that cost more than 10 times the lnd default (base: 1 sat, rate: 1 millionth sat) per hop on average.
-
-Note that it may be necessary to pay higher fees, i.e. you'd need to set a higher `--max-fee-factor`.
-
-#### Economy Fee Mode
-As an alternative to `--max-fee-factor`, you can also enable the Economy Fee Mode using `--econ-fee`.
-If this mode is enabled, three different fees are taken into account:
+Three different fees are taken into account:
 
 1. The actual fee you'd have to pay for the rebalance transaction
 2. The fee you'd earn if, instead of sending the funds due to your own rebalance transaction, your node is paid to forward the amount through the outbound (`--from`) channel
@@ -180,19 +166,19 @@ These fees are the possible future income (3).
 
 ### Factor
 
-The value set with `--econ-fee-factor` is used to scale the future income used in the computation outlined above.
+The value set with `--fee-factor` is used to scale the future income used in the computation outlined above.
 
-As such, if you set `--econ-fee-factor` to a value higher than 1.0, routes that cost more than the future income are
-considered. As an example, with `--econ-fee --econ-fee-factor 1.5` you can include routes that cost up to 150% of the
+As such, if you set `--fee-factor` to a value higher than 1.0, routes that cost more than the future income are
+considered. As an example, with `--fee-factor 1.5` you can include routes that cost up to 150% of the
 future income.
 
 You can also use values smaller than 1.0 to restrict which routes are considered, i.e. routes that are cheaper. 
 
 #### Warning
 To determine the future income, the fee set as part of the channel policy is used in the computation.
-As such, if you set a too high fee rate, with `--econ-fee` you'd allow more expensive rebalance
-transactions. Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
-To protect you from making mistakes, `--econ-fee` uses a fee rate of at most 2,000 sat per 1M sat (which corresponds
+As such, if you set a too high fee rate, you'd allow more expensive rebalance transactions.
+Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
+To protect you from making mistakes, this script uses a fee rate of at most 2,000 sat per 1M sat (which corresponds
 to a 0.2% fee), even if the inbound channel is configured with a higher fee rate.
 
 ## Contributing
