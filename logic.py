@@ -33,20 +33,28 @@ class Logic:
             self.fee_factor = 1.0
 
     def rebalance(self):
-        fee_limit_msat = self.get_fee_limit_msat()
-        if self.last_hop_channel:
-            self.output.print_line(
-                f"Sending {self.amount:,} satoshis to rebalance to channel with ID "
-                f"{self.last_hop_channel.chan_id} ({self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)})"
-            )
-        else:
-            self.output.print_line(f"Sending {self.amount:,} satoshis.")
+        first_hop_alias = ""
+        last_hop_alias = ""
+        first_channel_id = 0
         if self.first_hop_channel:
+            first_hop_alias = self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)
+            first_channel_id = self.first_hop_channel.chan_id
+        if self.last_hop_channel:
+            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
+        if self.first_hop_channel and self.last_hop_channel:
             self.output.print_line(
-                f"Forced first channel has ID {self.first_hop_channel.chan_id} "
-                f"({self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)})"
+                f"Sending {self.amount:,} satoshis from channel {first_channel_id} with {first_hop_alias} "
+                f"back through {last_hop_alias}."
+            )
+            self.output.print_line(f"Sending {self.amount:,} satoshis.")
+        elif self.last_hop_channel:
+            self.output.print_line(f"Sending {self.amount:,} satoshis back through {last_hop_alias}.")
+        else:
+            self.output.print_line(
+                f"Sending {self.amount:,} satoshis from channel {first_channel_id} with {first_hop_alias}."
             )
 
+        fee_limit_msat = self.get_fee_limit_msat()
         payment_request = self.generate_invoice()
         min_ppm_last_hop = None
         if self.first_hop_channel:
@@ -88,10 +96,11 @@ class Logic:
             fee_limit_msat = self.fee_factor * self.compute_fee(
                 self.amount, fee_rate, policy
             )
-            self.output.print_line(
-                f"Setting fee limit to {int(fee_limit_msat)} "
-                f"(factor {self.fee_factor})"
-            )
+            self.output.print_without_linebreak(f"Setting fee limit to {int(fee_limit_msat)}")
+            if self.fee_factor != 1.0:
+                self.output.print_line(f" (factor {self.fee_factor}).")
+            else:
+                self.output.print_line(".")
 
         return fee_limit_msat
 
