@@ -34,7 +34,7 @@ See below for an explanation.
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-r RATIO] [-l]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
                     [-o | -i] [-f CHANNEL] [-t CHANNEL]
                     [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
                     [--max-fee-factor MAX_FEE_FACTOR | --econ-fee]
@@ -44,11 +44,6 @@ optional arguments:
   -h, --help            show this help message and exit
   --lnddir LNDDIR       (default ~/.lnd) lnd directory
   --grpc GRPC           (default localhost:10009) lnd gRPC endpoint
-  -r RATIO, --ratio RATIO
-                        (default: 50) ratio for channel imbalance between 1
-                        and 50, eg. 45 to only show channels (-l) with less
-                        than 45% of the funds on the local (-i) or remote (-o)
-                        side
 
 list candidates:
   Show the unbalanced channels.
@@ -56,9 +51,9 @@ list candidates:
   -l, --list-candidates
                         list candidate channels for rebalance
   -o, --outgoing        lists channels with less than x% of the funds on the
-                        remote side (see --ratio)
+                        remote side
   -i, --incoming        (default) lists channels with less than x% of the
-                        funds on the local side (see --ratio)
+                        funds on the local side
 
 rebalance:
   Rebalance a channel. You need to specify at least the 'from' channel (-f)
@@ -109,10 +104,6 @@ the local side of the channel.
 
 You can also see the list of channels where less than 50% of the total funds
 are on the remote side of the channel by running `rebalance.py -l -o`.
-
-Use `-r/--ratio` to configure the sensitivity ratio (default is 50 for 50%).
-As an example, `rebalance.py -l -o -r 10` only shows channels where less than
-10% of the total funds are on the remote side of the channel.
 
 As an example the following indicates a channel with around 17.7% of the funds
 on the local side:

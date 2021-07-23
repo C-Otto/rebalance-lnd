@@ -17,7 +17,6 @@ class Logic:
         first_hop_channel,
         last_hop_channel,
         amount,
-        channel_ratio,
         excluded,
         max_fee_factor,
         econ_fee,
@@ -28,7 +27,6 @@ class Logic:
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.amount = amount
-        self.channel_ratio = channel_ratio
         if excluded:
             self.excluded = excluded
         self.max_fee_factor = max_fee_factor
@@ -47,8 +45,6 @@ class Logic:
             )
         else:
             self.output.print_line(f"Sending {self.amount:,} satoshis.")
-        if self.channel_ratio != 0.5:
-            self.output.print_line(f"Channel ratio used is {int(self.channel_ratio * 100)}%")
         if self.first_hop_channel:
             self.output.print_line(
                 f"Forced first channel has ID {self.first_hop_channel.chan_id} "
@@ -205,7 +201,7 @@ class Logic:
         remote = channel.remote_balance + total_amount
         local = channel.local_balance - total_amount
         ratio = float(local) / (remote + local)
-        return ratio < self.channel_ratio
+        return ratio < 0.5
 
     def high_local_ratio_after_receiving(self, last_hop):
         if self.last_hop_channel:
@@ -220,7 +216,7 @@ class Logic:
         remote = channel.remote_balance - amount
         local = channel.local_balance + amount
         ratio = float(local) / (remote + local)
-        return ratio > self.channel_ratio
+        return ratio > 0.5
 
     @staticmethod
     def first_hop_and_last_hop_use_same_channel(first_hop, last_hop):
@@ -351,7 +347,7 @@ class Logic:
             remote = channel.remote_balance - self.amount
             local = channel.local_balance + self.amount
             ratio = float(local) / (remote + local)
-            if ratio > self.channel_ratio:
+            if ratio > 0.5:
                 to_pub_key = self.lnd.get_own_pubkey()
                 routes.ignore_edge_from_to(
                     channel_id, channel.remote_pubkey, to_pub_key, show_message=False

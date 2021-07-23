@@ -21,11 +21,6 @@ def main():
     first_hop_channel_id = vars(arguments)["from"]
     to_channel = arguments.to
 
-    if arguments.ratio < 1 or arguments.ratio > 50:
-        print("--ratio must be between 1 and 50")
-        sys.exit(1)
-    channel_ratio = float(arguments.ratio) / 100
-
     if arguments.incoming is not None and not arguments.list_candidates:
         print(
             "--outgoing and --incoming only work in conjunction with --list-candidates"
@@ -35,9 +30,9 @@ def main():
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
         if incoming:
-            list_incoming_candidates(lnd, channel_ratio)
+            list_incoming_candidates(lnd)
         else:
-            list_outgoing_candidates(lnd, channel_ratio)
+            list_outgoing_candidates(lnd)
         sys.exit(0)
 
     if to_channel is None and first_hop_channel_id is None:
@@ -55,11 +50,11 @@ def main():
     if to_channel and 0 < to_channel < 10000:
         # here we are in the "channel index" case
         index = int(to_channel) - 1
-        last_hop_channel = get_incoming_rebalance_candidates(lnd, channel_ratio)[index]
+        last_hop_channel = get_incoming_rebalance_candidates(lnd)[index]
     elif to_channel == -1:
         # here is the random case
         last_hop_channel = random.choice(
-            get_incoming_rebalance_candidates(lnd, channel_ratio)
+            get_incoming_rebalance_candidates(lnd)
         )
     else:
         # else the channel argument should be the channel ID
@@ -69,12 +64,12 @@ def main():
     if first_hop_channel_id and 0 < first_hop_channel_id < 10000:
         # here we are in the "channel" index case
         index = int(first_hop_channel_id) - 1
-        candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
+        candidates = get_outgoing_rebalance_candidates(lnd)
         first_hop_channel = candidates[index]
     elif first_hop_channel_id == -1:
         # here is the random case
         first_hop_channel = random.choice(
-            get_incoming_rebalance_candidates(lnd, channel_ratio)
+            get_incoming_rebalance_candidates(lnd)
         )
     else:
         # else the channel argument should be the channel ID
@@ -95,7 +90,6 @@ def main():
         first_hop_channel,
         last_hop_channel,
         amount,
-        channel_ratio,
         excluded,
         max_fee_factor,
         econ_fee,
@@ -160,15 +154,6 @@ def get_argument_parser():
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
     )
-    parser.add_argument(
-        "-r",
-        "--ratio",
-        type=int,
-        default=50,
-        help="(default: 50) ratio for channel imbalance between 1 and 50, "
-        "eg. 45 to only show channels (-l) with less than 45%% of the "
-        "funds on the local (-i) or remote (-o) side",
-    )
     list_group = parser.add_argument_group(
         "list candidates", "Show the unbalanced channels."
     )
@@ -186,7 +171,7 @@ def get_argument_parser():
         action="store_const",
         const=False,
         dest="incoming",
-        help="lists channels with less than x%% of the funds on the remote side (see --ratio)",
+        help="lists channels with less than x%% of the funds on the remote side",
     )
     direction_group.add_argument(
         "-i",
@@ -194,8 +179,7 @@ def get_argument_parser():
         action="store_const",
         const=True,
         dest="incoming",
-        help="(default) lists channels with less than x%% of the funds on the local side "
-        "(see --ratio)",
+        help="(default) lists channels with less than x%% of the funds on the local side",
     )
 
     rebalance_group = parser.add_argument_group(
@@ -275,13 +259,13 @@ def get_argument_parser():
     return parser
 
 
-def list_incoming_candidates(lnd, channel_ratio):
-    candidates = get_incoming_rebalance_candidates(lnd, channel_ratio)
+def list_incoming_candidates(lnd):
+    candidates = get_incoming_rebalance_candidates(lnd)
     list_candidates(lnd, candidates)
 
 
-def list_outgoing_candidates(lnd, channel_ratio):
-    candidates = get_outgoing_rebalance_candidates(lnd, channel_ratio)
+def list_outgoing_candidates(lnd):
+    candidates = get_outgoing_rebalance_candidates(lnd)
     list_candidates(lnd, candidates)
 
 
@@ -330,15 +314,15 @@ def get_rebalance_candidates(lnd, pred, reverse):
     return sorted(candidates, key=get_remote_surplus, reverse=reverse)
 
 
-def get_incoming_rebalance_candidates(lnd, channel_ratio):
+def get_incoming_rebalance_candidates(lnd):
     return get_rebalance_candidates(
-        lnd, lambda c: get_local_ratio(c) < channel_ratio, False
+        lnd, lambda c: get_local_ratio(c) < 0.5, False
     )
 
 
-def get_outgoing_rebalance_candidates(lnd, channel_ratio):
+def get_outgoing_rebalance_candidates(lnd):
     return get_rebalance_candidates(
-        lnd, lambda c: get_local_ratio(c) > 1 - channel_ratio, True
+        lnd, lambda c: get_local_ratio(c) > 0.5, True
     )
 
 
