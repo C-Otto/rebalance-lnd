@@ -110,8 +110,6 @@ class Logic:
             last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
             first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
             self.output.print_line("")
-            self.output.print_line("")
-            self.output.print_line("")
             self.output.print_line(
                 f"Increased outbound liquidity on {last_hop_alias} by "
                 f"{int(route.hops[-1].amt_to_forward)} sats"
