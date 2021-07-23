@@ -124,7 +124,7 @@ class Logic:
                 f"Increased outbound liquidity on {last_hop_alias} by "
                 f"{int(route.hops[-1].amt_to_forward)} sats"
             )
-            self.output.print_line(f"Decreased outbound liquidity on {first_hop_alias}")
+            self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
             ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
             self.output.print_line(f"Fee: {route.total_fees} sats ({route.total_fees_msat} mSAT, {ppm}ppm)")
             self.output.print_line("")
