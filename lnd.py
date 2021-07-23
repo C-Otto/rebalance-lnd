@@ -93,10 +93,10 @@ class Lnd:
         ignored_pairs,
         ignored_nodes,
         first_hop_channel_id,
-        fee_limit_sat,
+        fee_limit_msat,
     ):
-        if fee_limit_sat:
-            fee_limit = {"fixed": int(fee_limit_sat)}
+        if fee_limit_msat:
+            fee_limit = {"fixed_msat": int(fee_limit_msat)}
         else:
             fee_limit = None
         if pub_key:

@@ -95,9 +95,9 @@ class Logic:
                 )
                 fee_rate = MAX_FEE_RATE
             fee_limit_msat = self.fee_factor * self.compute_fee(
-                self.amount, fee_rate, policy
+                self.amount * 1_000, fee_rate, policy
             )
-            self.output.print_without_linebreak(f"Setting fee limit to {int(fee_limit_msat)}")
+            self.output.print_without_linebreak(f"Setting fee limit to {int(fee_limit_msat):,} mSAT")
             if self.fee_factor != 1.0:
                 self.output.print_line(f" (factor {self.fee_factor}).")
             else:
