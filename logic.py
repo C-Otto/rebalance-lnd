@@ -138,16 +138,16 @@ class Logic:
         code = response.failure.code
         failure_source_pubkey = Logic.get_failure_source_pubkey(response, route)
         if code == 15:
-            self.output.print_without_linebreak("Temporary channel failure, ")
+            self.output.print_line("Temporary channel failure")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 18:
-            self.output.print_without_linebreak("Unknown next peer, ")
+            self.output.print_line("Unknown next peer")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 12:
-            self.output.print_without_linebreak("Fee insufficient, ")
+            self.output.print_line("Fee insufficient")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 14:
-            self.output.print_without_linebreak("Channel disabled, ")
+            self.output.print_line("Channel disabled")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
             self.output.print_line(repr(response))

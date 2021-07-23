@@ -100,7 +100,7 @@ def main():
         max_fee_factor,
         econ_fee,
         econ_fee_factor,
-        Output()
+        Output(lnd)
     ).rebalance()
 
 
