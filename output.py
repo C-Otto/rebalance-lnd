@@ -7,11 +7,11 @@ class Output:
 
     @staticmethod
     def print_line(message):
-        sys.stderr.write(f"{message}\n")
+        sys.stdout.write(f"{message}\n")
 
     @staticmethod
     def print_without_linebreak(message):
-        sys.stderr.write(message)
+        sys.stdout.write(message)
 
     def print_route(self, route):
         route_str = "\n".join(self.get_channel_representation(h.chan_id, h.pub_key) for h in route.hops)
