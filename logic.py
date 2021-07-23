@@ -186,10 +186,7 @@ class Logic:
                 last_hop.chan_id, hop_before_last_hop.pub_key, last_hop.pub_key
             )
             return True
-        if self.fees_too_high(route):
-            routes.ignore_high_fee_hops(route)
-            return True
-        return False
+        return self.fees_too_high(route, routes)
 
     def low_local_ratio_after_sending(self, first_hop, total_amount):
         if self.first_hop_channel:
@@ -225,34 +222,43 @@ class Logic:
     def first_hop_and_last_hop_use_same_channel(first_hop, last_hop):
         return first_hop.chan_id == last_hop.chan_id
 
-    def fees_too_high(self, route):
+    def fees_too_high(self, route, routes):
         policy_first_hop = self.lnd.get_policy_to(route.hops[0].chan_id)
-        amount = route.total_amt
-        missed_fee = self.compute_fee(
-            amount, policy_first_hop.fee_rate_milli_msat, policy_first_hop
+        amount_msat = route.total_amt_msat
+        missed_fee_msat = self.compute_fee(
+            amount_msat, policy_first_hop.fee_rate_milli_msat, policy_first_hop
         )
         policy_last_hop = self.lnd.get_policy_to(route.hops[-1].chan_id)
         fee_rate_last_hop = policy_last_hop.fee_rate_milli_msat
         original_fee_rate_last_hop = fee_rate_last_hop
         if fee_rate_last_hop > MAX_FEE_RATE:
             fee_rate_last_hop = MAX_FEE_RATE
-        expected_fee = self.fee_factor * self.compute_fee(
-            amount, fee_rate_last_hop, policy_last_hop
+        expected_income_msat = self.fee_factor * self.compute_fee(
+            amount_msat, fee_rate_last_hop, policy_last_hop
         )
-        rebalance_fee = route.total_fees
-        high_fees = rebalance_fee + missed_fee > expected_fee
+        rebalance_fee_msat = route.total_fees_msat
+        high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
-            difference = rebalance_fee + missed_fee - expected_fee
+            difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
+            self.output.print_line("")
             if fee_rate_last_hop != original_fee_rate_last_hop:
                 self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} for inbound channel "
                     f"(original fee rate {original_fee_rate_last_hop})"
                 )
+            self.output.print_line("Skipping route due to high fees:")
+            self.output.print_route(route)
             self.output.print_without_linebreak(
-                f"High fees ({math.floor(expected_fee)} expected future fee income for inbound channel "
-                f"(factor {self.fee_factor}), have to pay {int(rebalance_fee)} now, missing out on "
-                f"{math.ceil(missed_fee)} future fees for outbound channel, difference {math.ceil(difference)}), "
+                f"+ {math.floor(expected_income_msat):7} mSAT: expected future fee income for inbound channel"
             )
+            if self.fee_factor != 1.0:
+                self.output.print_line(f" (factor {self.fee_factor})")
+            else:
+                self.output.print_line("")
+            self.output.print_line(f"- {int(rebalance_fee_msat):7} mSAT: rebalance transaction fees")
+            self.output.print_line(f"- {math.ceil(missed_fee_msat):7} mSAT: missing out on future fees for outbound channel")
+            self.output.print_line(f"= {math.ceil(difference_msat):7} mSAT")
+            routes.ignore_high_fee_hops(route)
         return high_fees
 
     @staticmethod
