@@ -48,6 +48,7 @@ class Lnd:
     def get_info(self):
         return self.stub.GetInfo(ln.GetInfoRequest())
 
+    @lru_cache(maxsize=None)
     def get_node_alias(self, pub_key):
         return self.stub.GetNodeInfo(
             ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)
