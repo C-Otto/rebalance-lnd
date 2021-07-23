@@ -1,11 +1,15 @@
 import base64
 
-from utils import debug
-
 MAX_ROUTES_TO_REQUEST = 100
 
 
 class Routes:
+    num_requested_routes = 0
+    all_routes = []
+    returned_routes = []
+    ignored_pairs = []
+    ignored_nodes = []
+
     def __init__(
         self,
         lnd,
@@ -13,19 +17,16 @@ class Routes:
         first_hop_channel,
         last_hop_channel,
         fee_limit_msat,
-            min_ppm_last_hop,
+        min_ppm_last_hop,
+        output
     ):
         self.lnd = lnd
         self.payment_request = payment_request
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
-        self.all_routes = []
-        self.returned_routes = []
-        self.ignored_pairs = []
-        self.ignored_nodes = []
-        self.num_requested_routes = 0
         self.fee_limit_msat = fee_limit_msat
         self.min_ppm_last_hop = min_ppm_last_hop
+        self.output = output
 
     def has_next(self):
         self.update_routes()
@@ -77,11 +78,6 @@ class Routes:
             return
         if route not in self.all_routes:
             self.all_routes.append(route)
-
-    @staticmethod
-    def print_route(route):
-        route_str = " -> ".join(str(h.chan_id) for h in route.hops)
-        return route_str
 
     def get_amount(self):
         return self.payment_request.num_satoshis
@@ -136,7 +132,7 @@ class Routes:
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         if show_message:
-            debug(f"ignoring channel {chan_id} (from {from_pubkey} to {to_pubkey})")
+            self.output.print_line(f"ignoring channel {chan_id} (from {from_pubkey} to {to_pubkey})")
         pair = {
             "from": base64.b16decode(from_pubkey, True),
             "to": base64.b16decode(to_pubkey, True),
@@ -144,5 +140,5 @@ class Routes:
         self.ignored_pairs.append(pair)
 
     def ignore_node(self, pub_key):
-        debug(f"ignoring node {pub_key}")
+        self.output.print_line(f"ignoring node {pub_key}")
         self.ignored_nodes.append(base64.b16decode(pub_key, True))

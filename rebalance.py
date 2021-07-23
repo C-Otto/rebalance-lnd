@@ -9,6 +9,7 @@ import sys
 
 from lnd import Lnd
 from logic import Logic
+from output import Output
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -99,6 +100,7 @@ def main():
         max_fee_factor,
         econ_fee,
         econ_fee_factor,
+        Output()
     ).rebalance()
 
 

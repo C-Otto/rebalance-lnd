@@ -1,7 +1,7 @@
 import math
 
+from output import Output
 from routes import Routes
-from utils import debug, debugnobreak
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1000
 DEFAULT_FEE_RATE_MSAT = 0.001
@@ -9,6 +9,8 @@ MAX_FEE_RATE = 2000
 
 
 class Logic:
+    excluded = []
+
     def __init__(
         self,
         lnd,
@@ -20,34 +22,35 @@ class Logic:
         max_fee_factor,
         econ_fee,
         econ_fee_factor,
+        output: Output
     ):
         self.lnd = lnd
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.amount = amount
         self.channel_ratio = channel_ratio
-        self.excluded = []
         if excluded:
             self.excluded = excluded
         self.max_fee_factor = max_fee_factor
         self.econ_fee = econ_fee
         self.econ_fee_factor = econ_fee_factor
+        self.output = output
         if not self.econ_fee_factor:
             self.econ_fee_factor = 1.0
 
     def rebalance(self):
         fee_limit_msat = self.get_fee_limit_msat()
         if self.last_hop_channel:
-            debug(
+            self.output.print_line(
                 f"Sending {self.amount:,} satoshis to rebalance to channel with ID "
                 f"{self.last_hop_channel.chan_id} ({self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)})"
             )
         else:
-            debug(f"Sending {self.amount:,} satoshis.")
+            self.output.print_line(f"Sending {self.amount:,} satoshis.")
         if self.channel_ratio != 0.5:
-            debug(f"Channel ratio used is {int(self.channel_ratio * 100)}%")
+            self.output.print_line(f"Channel ratio used is {int(self.channel_ratio * 100)}%")
         if self.first_hop_channel:
-            debug(
+            self.output.print_line(
                 f"Forced first channel has ID {self.first_hop_channel.chan_id} "
                 f"({self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)})"
             )
@@ -64,6 +67,7 @@ class Logic:
             self.last_hop_channel,
             fee_limit_msat,
             min_ppm_last_hop,
+            self.output
         )
 
         self.initialize_ignored_channels(routes, fee_limit_msat)
@@ -75,7 +79,7 @@ class Logic:
             success = self.try_route(payment_request, route, routes, tried_routes)
             if success:
                 return True
-        debug("Could not find any suitable route")
+        self.output.print_line("Could not find any suitable route")
         return False
 
     def get_fee_limit_msat(self):
@@ -84,7 +88,7 @@ class Logic:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
             if fee_rate > MAX_FEE_RATE:
-                debug(
+                self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} "
                     f"for inbound channel (original fee rate {fee_rate})"
                 )
@@ -92,7 +96,7 @@ class Logic:
             fee_limit_msat = self.econ_fee_factor * self.compute_fee(
                 self.amount, fee_rate, policy
             )
-            debug(
+            self.output.print_line(
                 f"Setting fee limit to {int(fee_limit_msat)} "
                 f"(due to --econ-fee, factor {self.econ_fee_factor})"
             )
@@ -104,51 +108,50 @@ class Logic:
             return False
 
         tried_routes.append(route)
-        debug("")
-        debug(f"Trying route #{len(tried_routes)}")
-        debug(Routes.print_route(route))
+        self.output.print_line("")
+        self.output.print_line(f"Trying route #{len(tried_routes)}")
+        self.output.print_route(route)
 
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
             last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
             first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
-            debug("")
-            debug("")
-            debug("")
-            debug(
+            self.output.print_line("")
+            self.output.print_line("")
+            self.output.print_line("")
+            self.output.print_line(
                 f"Decreased inbound liquidity on {last_hop_alias} by "
                 f"{int(route.hops[-1].amt_to_forward)} sats"
             )
-            debug(f"Increased inbound liquidity on {first_hop_alias}")
-            debug(f"Fee: {route.total_fees} sats")
-            debug("")
-            debug("Successful route:")
-            debug(Routes.print_route(route))
+            self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
+            self.output.print_line(f"Fee: {route.total_fees} sats")
+            self.output.print_line("")
+            self.output.print_line("Successful route:")
+            self.output.print_route(route)
             return True
         else:
             self.handle_error(response, route, routes)
             return False
 
-    @staticmethod
-    def handle_error(response, route, routes):
+    def handle_error(self, response, route, routes):
         code = response.failure.code
         failure_source_pubkey = Logic.get_failure_source_pubkey(response, route)
         if code == 15:
-            debugnobreak("Temporary channel failure, ")
+            self.output.print_without_linebreak("Temporary channel failure, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 18:
-            debugnobreak("Unknown next peer, ")
+            self.output.print_without_linebreak("Unknown next peer, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 12:
-            debugnobreak("Fee insufficient, ")
+            self.output.print_without_linebreak("Fee insufficient, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 14:
-            debugnobreak("Channel disabled, ")
+            self.output.print_without_linebreak("Channel disabled, ")
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
-            debug(repr(response))
-            debug(f"Unknown error code {repr(code)}")
+            self.output.print_line(repr(response))
+            self.output.print_line(f"Unknown error code {repr(code)}")
 
     @staticmethod
     def get_failure_source_pubkey(response, route):
@@ -164,18 +167,18 @@ class Logic:
         first_hop = route.hops[0]
         last_hop = route.hops[-1]
         if self.low_local_ratio_after_sending(first_hop, route.total_amt):
-            debugnobreak("Outbound channel would have low local ratio after sending, ")
+            self.output.print_without_linebreak("Outbound channel would have low local ratio after sending, ")
             routes.ignore_first_hop(self.get_channel_for_channel_id(first_hop.chan_id))
             return True
         if self.first_hop_and_last_hop_use_same_channel(first_hop, last_hop):
-            debugnobreak("Outbound and inbound channel are identical, ")
+            self.output.print_without_linebreak("Outbound and inbound channel are identical, ")
             hop_before_last_hop = route.hops[-2]
             routes.ignore_edge_from_to(
                 last_hop.chan_id, hop_before_last_hop.pub_key, last_hop.pub_key
             )
             return True
         if self.high_local_ratio_after_receiving(last_hop):
-            debugnobreak(
+            self.output.print_without_linebreak(
                 "Inbound channel would have high local ratio after receiving, "
             )
             hop_before_last_hop = route.hops[-2]
@@ -195,7 +198,7 @@ class Logic:
         channel_id = first_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
         if channel is None:
-            debug(f"Unable to get channel information for hop {repr(first_hop)}")
+            self.output.print_line(f"Unable to get channel information for hop {repr(first_hop)}")
             return True
 
         remote = channel.remote_balance + total_amount
@@ -209,7 +212,7 @@ class Logic:
         channel_id = last_hop.chan_id
         channel = self.get_channel_for_channel_id(channel_id)
         if channel is None:
-            debug(f"Unable to get channel information for hop {repr(last_hop)}")
+            self.output.print_line(f"Unable to get channel information for hop {repr(last_hop)}")
             return True
 
         amount = last_hop.amt_to_forward
@@ -232,7 +235,7 @@ class Logic:
         limit = self.max_fee_factor * lnd_fees
         high_fees = route.total_fees_msat > limit
         if high_fees:
-            debugnobreak(
+            self.output.print_without_linebreak(
                 f"High fees ({int((route.total_fees_msat - limit) / 1000)} "
                 f"sat over limit of {int(limit / 1000)}), "
             )
@@ -257,11 +260,11 @@ class Logic:
         if high_fees:
             difference = rebalance_fee + missed_fee - expected_fee
             if fee_rate_last_hop != original_fee_rate_last_hop:
-                debug(
+                self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} for inbound channel "
                     f"(original fee rate {original_fee_rate_last_hop})"
                 )
-            debugnobreak(
+            self.output.print_without_linebreak(
                 f"High fees ({math.floor(expected_fee)} expected future fee income for inbound channel "
                 f"(factor {self.econ_fee_factor}), have to pay {int(rebalance_fee)} now, missing out on "
                 f"{math.ceil(missed_fee)} future fees for outbound channel, difference {math.ceil(difference)}), "
@@ -288,7 +291,7 @@ class Logic:
                 if not hasattr(channel, "remote_balance"):
                     channel.remote_balance = 0
                 return channel
-        debug(f"Unable to find channel with id {channel_id}!")
+        self.output.print_line(f"Unable to find channel with id {channel_id}!")
 
     def initialize_ignored_channels(self, routes, fee_limit_msat):
         if self.first_hop_channel:
@@ -323,7 +326,7 @@ class Logic:
             if self.low_local_ratio_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
             if channel.chan_id in self.excluded:
-                debugnobreak("Channel is excluded, ")
+                self.output.print_without_linebreak("Channel is excluded, ")
                 routes.ignore_first_hop(channel)
 
     def ignore_first_hops_with_fee_rate_higher_than_last_hop(self, routes):
