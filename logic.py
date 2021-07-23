@@ -111,7 +111,10 @@ class Logic:
 
         tried_routes.append(route)
         self.output.print_line("")
-        self.output.print_line(f"Trying route #{len(tried_routes)}")
+        self.output.print_without_linebreak(f"Trying route #{len(tried_routes)}")
+        fee_msat = route.total_fees_msat
+        ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
+        self.output.print_line(f" (fee {fee_msat} mSAT, {ppm}ppm)")
         self.output.print_route(route)
 
         response = self.lnd.send_payment(payment_request, route)
