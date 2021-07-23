@@ -36,7 +36,7 @@ See below for an explanation.
 ```
 usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
                     [-o | -i] [-f CHANNEL] [-t CHANNEL]
-                    [-a AMOUNT | -p PERCENTAGE] [-e EXCLUDE]
+                    [-a AMOUNT] [-e EXCLUDE]
                     [--max-fee-factor MAX_FEE_FACTOR | --econ-fee]
                     [--econ-fee-factor ECON_FEE_FACTOR]
 
@@ -50,9 +50,9 @@ list candidates:
 
   -l, --list-candidates
                         list candidate channels for rebalance
-  -o, --outgoing        lists channels with less than x% of the funds on the
+  -o, --outgoing        lists channels with less than 50% of the funds on the
                         remote side
-  -i, --incoming        (default) lists channels with less than x% of the
+  -i, --incoming        (default) lists channels with less than 50% of the
                         funds on the local side
 
 rebalance:
@@ -73,11 +73,6 @@ rebalance:
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
                         will be used (up to the maximum of 4,294,967 satoshis)
-  -p PERCENTAGE, --percentage PERCENTAGE
-                        Set the amount to send to a percentage of the amount
-                        required to rebalance. As an example, if this is set
-                        to 50, the amount will half of the default. See
-                        --amount.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel
                         (no funds will be taken out of excluded channels)
@@ -147,10 +142,6 @@ It is also possible to indicate the `--to/-t` channel by the number shown next t
 `rebalance.py -t 23 -a 1613478`
 
 If you do not specify the amount, the script automatically determines the rebalance amount.
-As an alternative to specifying the amount you may also set a percentage of the rebalance amount using `-p`.
-For example, the following command tries to send 20% of the amount required to rebalance the channel:
-
-`rebalance.py -t 23 -p 20`
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 

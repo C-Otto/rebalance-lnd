@@ -39,13 +39,6 @@ def main():
         argument_parser.print_help()
         sys.exit(1)
 
-    percentage = arguments.percentage
-    if percentage:
-        if percentage < 1 or percentage > 100:
-            print("--percentage must be between 1 and 100")
-            argument_parser.print_help()
-            sys.exit(1)
-
     # the 'to' argument might be an index, or a channel ID, or random
     if to_channel and 0 < to_channel < 10000:
         # here we are in the "channel index" case
@@ -121,9 +114,6 @@ def get_amount(arguments, first_hop_channel, last_hop_channel):
             )
             return 0
 
-    if arguments.percentage:
-        amount = int(round(amount * arguments.percentage / 100))
-
     if last_hop_channel and first_hop_channel:
         rebalance_amount_from_channel = get_rebalance_amount(first_hop_channel)
         amount = min(amount, rebalance_amount_from_channel)
@@ -171,7 +161,7 @@ def get_argument_parser():
         action="store_const",
         const=False,
         dest="incoming",
-        help="lists channels with less than x%% of the funds on the remote side",
+        help="lists channels with less than 50%% of the funds on the remote side",
     )
     direction_group.add_argument(
         "-i",
@@ -179,7 +169,7 @@ def get_argument_parser():
         action="store_const",
         const=True,
         dest="incoming",
-        help="(default) lists channels with less than x%% of the funds on the local side",
+        help="(default) lists channels with less than 50%% of the funds on the local side",
     )
 
     rebalance_group = parser.add_argument_group(
@@ -215,14 +205,6 @@ def get_argument_parser():
         help="Amount of the rebalance, in satoshis. If not specified, "
         "the amount computed for a perfect rebalance will be used"
         " (up to the maximum of 4,294,967 satoshis)",
-    )
-    amount_group.add_argument(
-        "-p",
-        "--percentage",
-        type=int,
-        help="Set the amount to send to a percentage of the amount required to rebalance. "
-        "As an example, if this is set to 50, the amount will half of the default. "
-        "See --amount.",
     )
     rebalance_group.add_argument(
         "-e",
