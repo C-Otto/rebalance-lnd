@@ -23,7 +23,3 @@ class Output:
             alias_from = self.lnd.get_node_alias(pubkey_from)
             return f"{chan_id} ({alias_from} to {alias_to})"
         return f"{chan_id} to {alias_to}"
-
-    def get_node_representation(self, pubkey):
-        alias = self.lnd.get_node_alias(pubkey)
-        return f"{pubkey} ({alias})"

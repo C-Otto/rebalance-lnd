@@ -139,7 +139,3 @@ class Routes:
             "to": base64.b16decode(to_pubkey, True),
         }
         self.ignored_pairs.append(pair)
-
-    def ignore_node(self, pubkey):
-        self.output.print_line(f"Ignoring {self.output.get_node_representation(pubkey)}")
-        self.ignored_nodes.append(base64.b16decode(pubkey, True))
