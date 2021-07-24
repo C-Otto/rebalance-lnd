@@ -69,7 +69,7 @@ class Logic:
             min_fee_last_hop,
         )
 
-        self.initialize_ignored_channels(routes)
+        self.initialize_ignored_channels(routes, fee_limit_msat)
 
         tried_routes = []
         while routes.has_next():
@@ -293,8 +293,9 @@ class Logic:
                 return channel
         debug(f"Unable to find channel with id {channel_id}!")
 
-    def initialize_ignored_channels(self, routes):
+    def initialize_ignored_channels(self, routes, fee_limit_msat):
         if self.first_hop_channel:
+            # avoid me - X - me via the same channel/peer
             chan_id = self.first_hop_channel.chan_id
             from_pub_key = self.first_hop_channel.remote_pubkey
             to_pub_key = self.lnd.get_own_pubkey()
@@ -304,6 +305,7 @@ class Logic:
             if not self.last_hop_channel:
                 self.ignore_last_hops_with_high_ratio(routes)
         if self.last_hop_channel:
+            # avoid me - X - me via the same channel/peer
             chan_id = self.last_hop_channel.chan_id
             from_pub_key = self.lnd.get_own_pubkey()
             to_pub_key = self.last_hop_channel.remote_pubkey
@@ -312,6 +314,14 @@ class Logic:
             )
             if self.econ_fee:
                 self.ignore_first_hops_with_fee_rate_higher_than_last_hop(routes)
+        if self.last_hop_channel and fee_limit_msat:
+            # ignore first hops with high fee rate configured by our node (causing high missed future fees)
+            max_fee_rate_first_hop = math.ceil(fee_limit_msat * 1_000 / self.amount)
+            for channel in self.lnd.get_channels():
+                policy = self.lnd.get_policy_to(channel.chan_id)
+                fee_rate = policy.fee_rate_milli_msat
+                if fee_rate > max_fee_rate_first_hop and self.first_hop_channel != channel:
+                    routes.ignore_first_hop(channel, show_message=False)
         for channel in self.lnd.get_channels():
             if self.low_local_ratio_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
