@@ -1,5 +1,7 @@
 import sys
 
+from yachalk import chalk
+
 
 class Output:
     def __init__(self, lnd):
@@ -22,11 +24,13 @@ class Output:
         self.print_line(route_str)
 
     def get_channel_representation(self, chan_id, pubkey_to, pubkey_from=None):
-        alias_to = self.lnd.get_node_alias(pubkey_to)
+        channel_id_formatted = chalk.gray(chan_id)
         if pubkey_from:
-            alias_from = self.lnd.get_node_alias(pubkey_from)
-            return f"{chan_id} ({alias_from} to {alias_to})"
-        return f"{chan_id} to {alias_to:32}"
+            alias_to_formatted = chalk.bold(self.lnd.get_node_alias(pubkey_to))
+            alias_from = chalk.bold(self.lnd.get_node_alias(pubkey_from))
+            return f"{channel_id_formatted} ({alias_from} to {alias_to_formatted})"
+        alias_to_formatted = chalk.bold(f"{self.lnd.get_node_alias(pubkey_to):32}")
+        return f"{channel_id_formatted} to {alias_to_formatted}"
 
     @staticmethod
     def get_fee_information(next_hop, route):
@@ -35,4 +39,6 @@ class Output:
             return ""
         hop = hops[hops.index(next_hop) - 1]
         ppm = int(hop.fee_msat * 1_000_000 / hop.amt_to_forward_msat)
-        return f"(fee {hop.fee_msat:7,} mSAT, {ppm:5,}ppm)"
+        fee_formatted = "fee " + chalk.cyan(f"{hop.fee_msat:7,} mSAT")
+        ppm_formatted = chalk.bold(f"{ppm:5,}ppm")
+        return f"({fee_formatted}, {ppm_formatted})"

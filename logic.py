@@ -1,5 +1,7 @@
 import math
 
+from yachalk import chalk
+
 from output import Output
 from routes import Routes
 
@@ -33,25 +35,26 @@ class Logic:
             self.fee_factor = 1.0
 
     def rebalance(self):
-        first_hop_alias = ""
-        last_hop_alias = ""
+        first_hop_alias_formatted = ""
+        last_hop_alias_formatted = ""
         first_channel_id = 0
         if self.first_hop_channel:
-            first_hop_alias = self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)
-            first_channel_id = self.first_hop_channel.chan_id
+            first_hop_alias_formatted = chalk.bold(self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey))
+            first_channel_id = chalk.gray(self.first_hop_channel.chan_id)
         if self.last_hop_channel:
-            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
+            last_hop_alias_formatted = chalk.bold(self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey))
+        amount_formatted = chalk.yellow(f"{self.amount:,}")
         if self.first_hop_channel and self.last_hop_channel:
             self.output.print_line(
-                f"Sending {self.amount:,} satoshis from channel {first_channel_id} with {first_hop_alias} "
-                f"back through {last_hop_alias}."
+                f"Sending {amount_formatted} satoshis from channel {first_channel_id} with {first_hop_alias_formatted} "
+                f"back through {last_hop_alias_formatted}."
             )
-            self.output.print_line(f"Sending {self.amount:,} satoshis.")
+            self.output.print_line(f"Sending {amount_formatted} satoshis.")
         elif self.last_hop_channel:
-            self.output.print_line(f"Sending {self.amount:,} satoshis back through {last_hop_alias}.")
+            self.output.print_line(f"Sending {amount_formatted} satoshis back through {last_hop_alias_formatted}.")
         else:
             self.output.print_line(
-                f"Sending {self.amount:,} satoshis from channel {first_channel_id} with {first_hop_alias}."
+                f"Sending {self.amount:,} satoshis from channel {first_channel_id} with {first_hop_alias_formatted}."
             )
 
         fee_limit_msat = self.get_fee_limit_msat()
@@ -97,7 +100,8 @@ class Logic:
             fee_limit_msat = self.fee_factor * self.compute_fee(
                 self.amount * 1_000, fee_rate, policy
             )
-            self.output.print_without_linebreak(f"Setting fee limit to {int(fee_limit_msat):,} mSAT")
+            fee_limit_formatted = chalk.cyan(f"{int(fee_limit_msat):,} mSAT")
+            self.output.print_without_linebreak(f"Setting fee limit to {fee_limit_formatted}")
             if self.fee_factor != 1.0:
                 self.output.print_line(f" (factor {self.fee_factor}).")
             else:
@@ -114,21 +118,26 @@ class Logic:
         self.output.print_without_linebreak(f"Trying route #{len(tried_routes)}")
         fee_msat = route.total_fees_msat
         route_ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
-        self.output.print_line(f" (fee {fee_msat:,} mSAT, {route_ppm:,}ppm)")
+        fee_formatted = chalk.cyan(f"{fee_msat:,} mSAT")
+        ppm_formatted = chalk.bold(f"{route_ppm:,}ppm")
+        self.output.print_line(f" (fee {fee_formatted}, {ppm_formatted})")
         self.output.print_route(route)
 
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
-            last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
-            first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
+            last_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[-2].pub_key))
+            first_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[0].pub_key))
             self.output.print_line("")
+            sats_formatted = chalk.cyan(f"{int(route.hops[-1].amt_to_forward):,} sats")
             self.output.print_line(
                 f"Increased outbound liquidity on {last_hop_alias} by "
-                f"{int(route.hops[-1].amt_to_forward):,} sats"
+                f"{sats_formatted}"
             )
             self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
-            self.output.print_line(f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {route_ppm:,}ppm)")
+            fees_formatted = chalk.cyan(f"{route.total_fees_msat:,} mSAT")
+            ppm_formatted = chalk.bold(f"{route_ppm:,}ppm")
+            self.output.print_line(f"Fee: {route.total_fees:,} sats ({fees_formatted}, {ppm_formatted})")
             self.output.print_line("")
             self.output.print_line("Successful route:")
             self.output.print_route(route)
@@ -141,20 +150,20 @@ class Logic:
         code = response.failure.code
         failure_source_pubkey = Logic.get_failure_source_pubkey(response, route)
         if code == 15:
-            self.output.print_line("Temporary channel failure")
+            self.output.print_line(chalk.yellow("Temporary channel failure"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 18:
-            self.output.print_line("Unknown next peer")
+            self.output.print_line(chalk.yellow("Unknown next peer"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 12:
-            self.output.print_line("Fee insufficient")
+            self.output.print_line(chalk.yellow("Fee insufficient"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 14:
-            self.output.print_line("Channel disabled")
+            self.output.print_line(chalk.yellow("Channel disabled"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
-            self.output.print_line(repr(response))
-            self.output.print_line(f"Unknown error code {repr(code)}")
+            self.output.print_line(chalk.red(repr(response)))
+            self.output.print_line(chalk.red(f"Unknown error code {repr(code)}"))
 
     @staticmethod
     def get_failure_source_pubkey(response, route):
@@ -243,8 +252,8 @@ class Logic:
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
             difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
-            first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
-            last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
+            first_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[0].pub_key))
+            last_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[-2].pub_key))
             self.output.print_line("")
             if fee_rate_last_hop != original_fee_rate_last_hop:
                 self.output.print_line(
@@ -252,23 +261,29 @@ class Logic:
                     f"(with {last_hop_alias}, original fee rate {original_fee_rate_last_hop})"
                 )
             route_ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
+            route_fee_formatted = chalk.cyan(f"{rebalance_fee_msat:,} mSAT")
+            route_ppm_formatted = chalk.bold(f"{route_ppm:,}ppm")
             self.output.print_line(
                 f"Skipping route due to high fees "
-                f"(fee {rebalance_fee_msat:,} mSAT, {route_ppm:,}ppm)"
+                f"(fee {route_fee_formatted}, {route_ppm_formatted})"
             )
             self.output.print_route(route)
+            future_income_formatted = chalk.green(f"{math.floor(expected_income_msat):7,} mSAT")
             self.output.print_without_linebreak(
-                f"  {math.floor(expected_income_msat):7,} mSAT: "
+                f"  {future_income_formatted}: "
                 f"expected future fee income for inbound channel (with {last_hop_alias})"
             )
             if self.fee_factor != 1.0:
                 self.output.print_line(f" (factor {self.fee_factor})")
             else:
                 self.output.print_line("")
-            self.output.print_line(f"- {int(rebalance_fee_msat):7,} mSAT: rebalance transaction fees")
-            self.output.print_line(f"- {math.ceil(missed_fee_msat):7,} mSAT: "
+            transaction_fees_formatted = chalk.cyan(f"{int(rebalance_fee_msat):7,} mSAT")
+            missed_fee_formatted = chalk.cyan(f"{math.ceil(missed_fee_msat):7,} mSAT")
+            difference_formatted = chalk.red(f"{math.ceil(difference_msat):7,} mSAT")
+            self.output.print_line(f"- {transaction_fees_formatted}: rebalance transaction fees")
+            self.output.print_line(f"- {missed_fee_formatted}: "
                                    f"missing out on future fees for outbound channel (with {first_hop_alias})")
-            self.output.print_line(f"= {math.ceil(difference_msat):7,} mSAT")
+            self.output.print_line(f"= {difference_formatted}")
             routes.ignore_high_fee_hops(route)
         return high_fees
 
