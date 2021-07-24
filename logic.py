@@ -113,8 +113,8 @@ class Logic:
         self.output.print_line("")
         self.output.print_without_linebreak(f"Trying route #{len(tried_routes)}")
         fee_msat = route.total_fees_msat
-        ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
-        self.output.print_line(f" (fee {fee_msat:,} mSAT, {ppm:,}ppm)")
+        route_ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
+        self.output.print_line(f" (fee {fee_msat:,} mSAT, {route_ppm:,}ppm)")
         self.output.print_route(route)
 
         response = self.lnd.send_payment(payment_request, route)
@@ -128,8 +128,7 @@ class Logic:
                 f"{int(route.hops[-1].amt_to_forward):,} sats"
             )
             self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
-            ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
-            self.output.print_line(f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {ppm:,}ppm)")
+            self.output.print_line(f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {route_ppm:,}ppm)")
             self.output.print_line("")
             self.output.print_line("Successful route:")
             self.output.print_route(route)
@@ -252,20 +251,24 @@ class Logic:
                     f"Calculating using capped fee rate {MAX_FEE_RATE} for inbound channel "
                     f"(with {last_hop_alias}, original fee rate {original_fee_rate_last_hop})"
                 )
-            self.output.print_line("Skipping route due to high fees:")
+            route_ppm = int(route.total_fees_msat * 1_000_000 / route.total_amt_msat)
+            self.output.print_line(
+                f"Skipping route due to high fees "
+                f"(fee {rebalance_fee_msat:,} mSAT, {route_ppm:,}ppm)"
+            )
             self.output.print_route(route)
             self.output.print_without_linebreak(
-                f"+ {math.floor(expected_income_msat):7} mSAT: "
+                f"+ {math.floor(expected_income_msat):7,} mSAT: "
                 f"expected future fee income for inbound channel (with {last_hop_alias})"
             )
             if self.fee_factor != 1.0:
                 self.output.print_line(f" (factor {self.fee_factor})")
             else:
                 self.output.print_line("")
-            self.output.print_line(f"- {int(rebalance_fee_msat):7} mSAT: rebalance transaction fees")
-            self.output.print_line(f"- {math.ceil(missed_fee_msat):7} mSAT: "
+            self.output.print_line(f"- {int(rebalance_fee_msat):7,} mSAT: rebalance transaction fees")
+            self.output.print_line(f"- {math.ceil(missed_fee_msat):7,} mSAT: "
                                    f"missing out on future fees for outbound channel (with {first_hop_alias})")
-            self.output.print_line(f"= {math.ceil(difference_msat):7} mSAT")
+            self.output.print_line(f"= {math.ceil(difference_msat):7,} mSAT")
             routes.ignore_high_fee_hops(route)
         return high_fees
 
