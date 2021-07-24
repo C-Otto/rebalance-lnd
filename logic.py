@@ -101,7 +101,9 @@ class Logic:
                 self.amount * 1_000, fee_rate, policy
             )
             fee_limit_formatted = chalk.cyan(f"{int(fee_limit_msat):,} mSAT")
-            self.output.print_without_linebreak(f"Setting fee limit to {fee_limit_formatted}")
+            ppm_limit = int(fee_limit_msat / self.amount * 1_000)
+            ppm_limit_formatted = chalk.bold(f"{ppm_limit}ppm")
+            self.output.print_without_linebreak(f"Setting fee limit to {fee_limit_formatted} ({ppm_limit_formatted})")
             if self.fee_factor != 1.0:
                 self.output.print_line(f" (factor {self.fee_factor}).")
             else:
