@@ -130,13 +130,18 @@ class Logic:
         if is_successful:
             last_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[-2].pub_key))
             first_hop_alias = chalk.bold(self.lnd.get_node_alias(route.hops[0].pub_key))
+            first_hop_ppm = self.lnd.get_policy_to(route.hops[0].chan_id).fee_rate_milli_msat
+            last_hop_ppm = self.lnd.get_policy_to(route.hops[-1].chan_id).fee_rate_milli_msat
+            first_hop_ppm_formatted = chalk.bold(f"{first_hop_ppm}ppm")
+            last_hop_ppm_formatted = chalk.bold(f"{last_hop_ppm}ppm")
             self.output.print_line("")
             sats_formatted = chalk.cyan(f"{int(route.hops[-1].amt_to_forward):,} sats")
             self.output.print_line(
-                f"Increased outbound liquidity on {last_hop_alias} by "
+                f"Increased outbound liquidity on {last_hop_alias} ({last_hop_ppm_formatted}) by "
                 f"{sats_formatted}"
             )
-            self.output.print_line(f"Increased inbound liquidity on {first_hop_alias}")
+            self.output.print_line(f"Increased inbound liquidity on {first_hop_alias} "
+                                   f"({first_hop_ppm_formatted} configured for outbound)")
             fees_formatted = chalk.cyan(f"{route.total_fees_msat:,} mSAT")
             ppm_formatted = chalk.bold(f"{route_ppm:,}ppm")
             self.output.print_line(f"Fee: {route.total_fees:,} sats ({fees_formatted}, {ppm_formatted})")
