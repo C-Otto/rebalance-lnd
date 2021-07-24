@@ -45,6 +45,7 @@ def main():
         argument_parser.print_help()
         sys.exit(1)
 
+    first_hop_channel = None
     if first_hop_channel_id == -1:
         # pick a random channel as first hop
         first_hop_channel = random.choice(
