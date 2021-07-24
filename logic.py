@@ -270,7 +270,7 @@ class Logic:
                 f"(fee {route_fee_formatted}, {route_ppm_formatted})"
             )
             self.output.print_route(route)
-            future_income_formatted = chalk.green(f"{math.floor(expected_income_msat):7,} mSAT")
+            future_income_formatted = chalk.green(f"{math.floor(expected_income_msat):8,} mSAT")
             self.output.print_without_linebreak(
                 f"  {future_income_formatted}: "
                 f"expected future fee income for inbound channel (with {last_hop_alias})"
@@ -279,9 +279,9 @@ class Logic:
                 self.output.print_line(f" (factor {self.fee_factor})")
             else:
                 self.output.print_line("")
-            transaction_fees_formatted = chalk.cyan(f"{int(rebalance_fee_msat):7,} mSAT")
-            missed_fee_formatted = chalk.cyan(f"{math.ceil(missed_fee_msat):7,} mSAT")
-            difference_formatted = chalk.red(f"{math.ceil(difference_msat):7,} mSAT")
+            transaction_fees_formatted = chalk.cyan(f"{int(rebalance_fee_msat):8,} mSAT")
+            missed_fee_formatted = chalk.cyan(f"{math.ceil(missed_fee_msat):8,} mSAT")
+            difference_formatted = chalk.red(f"{math.ceil(difference_msat):8,} mSAT")
             self.output.print_line(f"- {transaction_fees_formatted}: rebalance transaction fees")
             self.output.print_line(f"- {missed_fee_formatted}: "
                                    f"missing out on future fees for outbound channel (with {first_hop_alias})")

@@ -39,6 +39,6 @@ class Output:
             return ""
         hop = hops[hops.index(next_hop) - 1]
         ppm = int(hop.fee_msat * 1_000_000 / hop.amt_to_forward_msat)
-        fee_formatted = "fee " + chalk.cyan(f"{hop.fee_msat:7,} mSAT")
+        fee_formatted = "fee " + chalk.cyan(f"{hop.fee_msat:8,} mSAT")
         ppm_formatted = chalk.bold(f"{ppm:5,}ppm")
         return f"({fee_formatted}, {ppm_formatted})"
