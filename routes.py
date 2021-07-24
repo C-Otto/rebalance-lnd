@@ -128,7 +128,9 @@ class Routes:
                 max_fee_hop = hop
 
         if max_fee_hop:
-            ignore.append(max_fee_hop)
+            hops = list(route.hops)
+            hop_to_ignore = hops[hops.index(max_fee_hop) + 1]
+            ignore.append(hop_to_ignore)
         for hop in ignore:
             self.ignore_hop_on_route(hop, route)
 
