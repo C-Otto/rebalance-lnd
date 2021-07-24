@@ -100,6 +100,7 @@ class Logic:
             fee_limit_msat = self.fee_factor * self.compute_fee(
                 self.amount * 1_000, fee_rate, policy
             )
+            fee_limit_msat = max(1_000, fee_limit_msat)
             fee_limit_formatted = chalk.cyan(f"{int(fee_limit_msat):,} mSAT")
             ppm_limit = int(fee_limit_msat / self.amount * 1_000)
             ppm_limit_formatted = chalk.bold(f"{ppm_limit}ppm")
