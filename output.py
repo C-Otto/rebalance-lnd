@@ -6,8 +6,8 @@ class Output:
         self.lnd = lnd
 
     @staticmethod
-    def print_line(message):
-        sys.stdout.write(f"{message}\n")
+    def print_line(message, end='\n'):
+        sys.stdout.write(f"{message}{end}")
 
     @staticmethod
     def print_without_linebreak(message):

@@ -27,6 +27,12 @@ def main():
         )
         sys.exit(1)
 
+    # get graph once to avoid weird delays in output
+    output = Output(lnd)
+    output.print_line("Requesting graph from lnd...", end='\r')
+    lnd.get_graph()
+    output.print_line("Requesting graph from lnd... done.")
+
     if arguments.list_candidates:
         incoming = arguments.incoming is None or arguments.incoming
         if incoming:
@@ -70,7 +76,7 @@ def main():
         amount,
         excluded,
         fee_factor,
-        Output(lnd)
+        output
     ).rebalance()
 
 
