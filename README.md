@@ -134,8 +134,8 @@ By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can
 This number is shown as "Amount for 50-50".
 
 The last line shows a graphical representation of the channel. 
-The total width is determined by the channel's capacity, where a channel with maximum (non-wumbo) capacity
-(16,777,215 satoshis) occupies the full width of your terminal.
+The total width is determined by the channel's capacity, where your largest channel (maximum capacity) occupies the full
+width of your terminal.
 The bar (`=`) indicates the funds on the local side of the channel.
 
 The number next to the channel ID (23 in the example) can be used to directly reference this channel.

@@ -10,7 +10,6 @@ import sys
 from lnd import Lnd
 from logic import Logic
 
-MAX_CHANNEL_CAPACITY = 16777215
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 
@@ -286,6 +285,10 @@ def list_outgoing_candidates(lnd, channel_ratio):
 
 def list_candidates(lnd, candidates):
     index = 0
+    max_channel_capacity = 0
+    for channel in lnd.get_channels():
+        if channel.capacity > max_channel_capacity:
+            max_channel_capacity = channel.capacity
     for candidate in candidates:
         index += 1
         remote_available = max(
@@ -310,7 +313,7 @@ def list_candidates(lnd, candidates):
         print(f"Remote available: {remote_available:,}")
         print(f"Local available:  {local_available:,}")
         print(f"Amount for 50-50: {rebalance_amount}")
-        print(get_capacity_and_ratio_bar(candidate))
+        print(get_capacity_and_ratio_bar(candidate, max_channel_capacity))
         print("")
 
 
@@ -347,12 +350,12 @@ def get_remote_surplus(channel):
     return channel.remote_balance - channel.local_balance
 
 
-def get_capacity_and_ratio_bar(candidate):
+def get_capacity_and_ratio_bar(candidate, max_channel_capacity):
     columns = get_columns()
     columns_scaled_to_capacity = int(
-        round(columns * float(candidate.capacity) / MAX_CHANNEL_CAPACITY)
+        round(columns * float(candidate.capacity) / max_channel_capacity)
     )
-    if candidate.capacity >= MAX_CHANNEL_CAPACITY:
+    if candidate.capacity >= max_channel_capacity:
         columns_scaled_to_capacity = columns
 
     bar_width = columns_scaled_to_capacity - 2
