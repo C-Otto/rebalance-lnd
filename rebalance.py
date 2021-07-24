@@ -244,6 +244,7 @@ def list_candidates(lnd, candidates):
         print(f"Pubkey:           {candidate.remote_pubkey}")
         print(f"Channel Point:    {candidate.channel_point}")
         print(f"Local ratio:      {get_local_ratio(candidate):.3f}")
+        print(f"Local fee rate:   {get_local_fee_rate(candidate, lnd):,}ppm")
         print(f"Capacity:         {candidate.capacity:,}")
         print(f"Remote available: {remote_available:,}")
         print(f"Local available:  {local_available:,}")
@@ -279,6 +280,10 @@ def get_local_ratio(channel):
     remote = channel.remote_balance
     local = channel.local_balance
     return float(local) / (remote + local)
+
+
+def get_local_fee_rate(channel, lnd):
+    return lnd.get_policy_to(channel.chan_id).fee_rate_milli_msat
 
 
 def get_remote_surplus(channel):

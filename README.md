@@ -101,6 +101,7 @@ Alias:            The Best Node Ever
 Pubkey:           012345[...]abcdef
 Channel Point:    abc0123[...]abc:0
 Local ratio:      0.176
+Local fee ratio:  123ppm
 Capacity:         5,000,000
 Remote balance:   4,110,320
 Local balance:    883,364
