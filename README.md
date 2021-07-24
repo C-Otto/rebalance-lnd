@@ -60,13 +60,11 @@ rebalance:
 
   -f CHANNEL, --from CHANNEL
                         Channel ID of the outgoing channel (funds will be
-                        taken from this channel). You may also use the index
-                        as shown in the incoming candidate list (-l -o), or -1
+                        taken from this channel). You may also use -1
                         to choose a random candidate.
   -t CHANNEL, --to CHANNEL
                         Channel ID of the incoming channel (funds will be sent
-                        to this channel). You may also use the index as shown
-                        in the incoming candidate list (-l -i), or -1 to
+                        to this channel). You may also use -1 to
                         choose a random candidate.
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not
@@ -98,7 +96,7 @@ As an example the following indicates a channel with around 17.7% of the funds
 on the local side:
 
 ```
-(23) Channel ID:  123[...]456
+Channel ID:  123[...]456
 Alias:            The Best Node Ever
 Pubkey:           012345[...]abcdef
 Channel Point:    abc0123[...]abc:0
@@ -114,11 +112,9 @@ By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can
 This number is shown as "Amount for 50-50".
 
 The last line shows a graphical representation of the channel. 
-The total width is determined by the channel's capacity, where your largest channel (maximum capacity) occupies the full
+The total width is determined by the channel's capacity, where your largest channel (maximum capacity) #occupies the full
 width of your terminal.
 The bar (`=`) indicates the funds on the local side of the channel.
-
-The number next to the channel ID (23 in the example) can be used to directly reference this channel.
 
 ### Rebalancing a channel
 To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
@@ -130,10 +126,6 @@ You can also specify the amount to send (using `-a`).
 You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
 
 `rebalance.py -t 123[...]456 -a 1613478`
-
-It is also possible to indicate the `--to/-t` channel by the number shown next to the channel ID (23 in the example).
-
-`rebalance.py -t 23 -a 1613478`
 
 If you do not specify the amount, the script automatically determines the rebalance amount.
 

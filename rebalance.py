@@ -39,34 +39,21 @@ def main():
         argument_parser.print_help()
         sys.exit(1)
 
-    # the 'to' argument might be an index, or a channel ID, or random
-    if to_channel and 0 < to_channel < 10000:
-        # here we are in the "channel index" case
-        index = int(to_channel) - 1
-        last_hop_channel = get_incoming_rebalance_candidates(lnd)[index]
-    elif to_channel == -1:
-        # here is the random case
-        last_hop_channel = random.choice(
-            get_incoming_rebalance_candidates(lnd)
-        )
-    else:
-        # else the channel argument should be the channel ID
-        last_hop_channel = get_channel_for_channel_id(lnd, to_channel)
-
-    # the 'from' argument might be an index, or a channel ID, or random
-    if first_hop_channel_id and 0 < first_hop_channel_id < 10000:
-        # here we are in the "channel" index case
-        index = int(first_hop_channel_id) - 1
-        candidates = get_outgoing_rebalance_candidates(lnd)
-        first_hop_channel = candidates[index]
-    elif first_hop_channel_id == -1:
-        # here is the random case
+    if first_hop_channel_id == -1:
+        # pick a random channel as first hop
         first_hop_channel = random.choice(
             get_incoming_rebalance_candidates(lnd)
         )
     else:
-        # else the channel argument should be the channel ID
         first_hop_channel = get_channel_for_channel_id(lnd, first_hop_channel_id)
+
+    if to_channel == -1:
+        # pick a random channel as last hop
+        last_hop_channel = random.choice(
+            get_incoming_rebalance_candidates(lnd)
+        )
+    else:
+        last_hop_channel = get_channel_for_channel_id(lnd, to_channel)
 
     amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
@@ -180,8 +167,7 @@ def get_argument_parser():
         type=int,
         help="Channel ID of the outgoing channel "
         "(funds will be taken from this channel). "
-        "You may also use the index as shown in the incoming candidate list (-l -o), "
-        "or -1 to choose a random candidate.",
+        "You may also use -1 to choose a random candidate.",
     )
     rebalance_group.add_argument(
         "-t",
@@ -190,8 +176,7 @@ def get_argument_parser():
         type=int,
         help="Channel ID of the incoming channel "
         "(funds will be sent to this channel). "
-        "You may also use the index as shown in the incoming candidate list (-l -i), "
-        "or -1 to choose a random candidate.",
+        "You may also use -1 to choose a random candidate.",
     )
     amount_group = rebalance_group.add_mutually_exclusive_group()
     amount_group.add_argument(
@@ -254,7 +239,7 @@ def list_candidates(lnd, candidates):
                 f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
 
-        print(f"({index:2}) Channel ID:  {str(candidate.chan_id)}")
+        print(f"Channel ID:       {str(candidate.chan_id)}")
         print(f"Alias:            {lnd.get_node_alias(candidate.remote_pubkey)}")
         print(f"Pubkey:           {candidate.remote_pubkey}")
         print(f"Channel Point:    {candidate.channel_point}")
