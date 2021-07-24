@@ -258,7 +258,7 @@ class Logic:
             )
             self.output.print_route(route)
             self.output.print_without_linebreak(
-                f"+ {math.floor(expected_income_msat):7,} mSAT: "
+                f"  {math.floor(expected_income_msat):7,} mSAT: "
                 f"expected future fee income for inbound channel (with {last_hop_alias})"
             )
             if self.fee_factor != 1.0:
