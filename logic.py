@@ -53,20 +53,17 @@ class Logic:
             )
 
         payment_request = self.generate_invoice()
-        min_fee_last_hop = None
+        min_ppm_last_hop = None
         if self.econ_fee and self.first_hop_channel:
             policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
-            fee_rate = policy_first_hop.fee_rate_milli_msat
-            min_fee_last_hop = self.econ_fee_factor * self.compute_fee(
-                self.amount, fee_rate, policy_first_hop
-            )
+            min_ppm_last_hop = self.econ_fee_factor * policy_first_hop.fee_rate_milli_msat
         routes = Routes(
             self.lnd,
             payment_request,
             self.first_hop_channel,
             self.last_hop_channel,
             fee_limit_msat,
-            min_fee_last_hop,
+            min_ppm_last_hop,
         )
 
         self.initialize_ignored_channels(routes, fee_limit_msat)
