@@ -79,7 +79,7 @@ def format_amount(amount):
 
 
 def format_chan_id(chan_id):
-    return chalk.gray(chan_id)
+    return chalk.bg_black(chalk.gray(chan_id))
 
 
 def format_warning(warning):

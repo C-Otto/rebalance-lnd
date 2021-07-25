@@ -9,7 +9,7 @@ import sys
 
 from lnd import Lnd
 from logic import Logic
-from output import Output
+from output import Output, format_alias, format_ppm, format_amount, format_chan_id
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -246,15 +246,15 @@ def list_candidates(lnd, candidates):
                 f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
 
-        print(f"Channel ID:       {str(candidate.chan_id)}")
-        print(f"Alias:            {lnd.get_node_alias(candidate.remote_pubkey)}")
+        print(f"Channel ID:       {format_chan_id(candidate.chan_id)}")
+        print(f"Alias:            {format_alias(lnd.get_node_alias(candidate.remote_pubkey))}")
         print(f"Pubkey:           {candidate.remote_pubkey}")
         print(f"Channel Point:    {candidate.channel_point}")
         print(f"Local ratio:      {get_local_ratio(candidate):.3f}")
-        print(f"Local fee rate:   {get_local_fee_rate(candidate, lnd):,}ppm")
+        print(f"Local fee rate:   {format_ppm(get_local_fee_rate(candidate, lnd))}")
         print(f"Capacity:         {candidate.capacity:,}")
         print(f"Remote available: {remote_available:,}")
-        print(f"Local available:  {local_available:,}")
+        print(f"Local available:  {format_amount(local_available)}")
         print(f"Amount for 50-50: {rebalance_amount}")
         print(get_capacity_and_ratio_bar(candidate, max_channel_capacity))
         print("")
