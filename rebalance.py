@@ -7,10 +7,9 @@ import platform
 import random
 import sys
 
-import output
 from lnd import Lnd
 from logic import Logic
-from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string
+from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, print_bar
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -46,7 +45,6 @@ def main():
         argument_parser.print_help()
         sys.exit(1)
 
-    first_hop_channel = None
     if first_hop_channel_id == -1:
         # pick a random channel as first hop
         first_hop_channel = random.choice(
@@ -91,8 +89,8 @@ def get_amount(arguments, first_hop_channel, last_hop_channel):
         remote_surplus = get_remote_surplus(last_hop_channel)
         if remote_surplus < 0:
             print(
-                f"Error: last hop needs to SEND {abs(remote_surplus):,} sat to be balanced, you want it to RECEIVE funds. "
-                "Specify amount manually if this was intended."
+                f"Error: last hop needs to SEND {abs(remote_surplus):,} sat to be balanced, "
+                f"you want it to RECEIVE funds. Specify amount manually if this was intended."
             )
             return 0
     else:
@@ -309,7 +307,7 @@ def get_capacity_and_ratio_bar(candidate, max_channel_capacity):
     bar_width = columns_scaled_to_capacity - 2
     ratio = get_local_ratio(candidate)
     length = int(round(ratio * bar_width))
-    return output.print_bar(bar_width, length)
+    return print_bar(bar_width, length)
 
 
 def get_columns():

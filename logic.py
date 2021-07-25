@@ -1,7 +1,7 @@
 import math
 
-from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, format_fee_sat, \
-    format_warning, format_error, format_earning, format_fee_msat_red
+from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, \
+    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red
 from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1000
