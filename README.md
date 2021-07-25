@@ -115,7 +115,7 @@ This number is shown as "Amount for 50-50".
 The last line shows a graphical representation of the channel. 
 The total width is determined by the channel's capacity, where your largest channel (maximum capacity) #occupies the full
 width of your terminal.
-The bar (`=`) indicates the funds on the local side of the channel.
+The bar (`█`) indicates the funds on the local side of the channel.
 
 ### Rebalancing a channel
 To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
