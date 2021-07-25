@@ -69,6 +69,7 @@ def main():
 
     fee_factor = arguments.fee_factor
     fee_limit_sat = arguments.fee_limit
+    fee_ppm_limit = arguments.fee_ppm_limit
     excluded = arguments.exclude
     return Logic(
         lnd,
@@ -78,6 +79,7 @@ def main():
         excluded,
         fee_factor,
         fee_limit_sat,
+        fee_ppm_limit,
         output
     ).rebalance()
 
@@ -218,6 +220,12 @@ def get_argument_parser():
         "--fee-limit",
         type=int,
         help="If set, only consider rebalance transactions that cost up to the given number of satoshis."
+    )
+    fee_group.add_argument(
+        "--fee-ppm-limit",
+        type=int,
+        help="If set, only consider rebalance transactions that cost up to the given number of satoshis per "
+             "1M satoshis sent."
     )
     return parser
 

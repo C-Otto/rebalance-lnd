@@ -21,6 +21,7 @@ class Logic:
         excluded,
         fee_factor,
         fee_limit_sat,
+        fee_ppm_limit,
         output: Output
     ):
         self.lnd = lnd
@@ -31,6 +32,7 @@ class Logic:
             self.excluded = excluded
         self.fee_factor = fee_factor
         self.fee_limit_sat = fee_limit_sat
+        self.fee_ppm_limit = fee_ppm_limit
         self.output = output
         if not self.fee_factor:
             self.fee_factor = 1.0
@@ -87,6 +89,8 @@ class Logic:
     def get_fee_limit_msat(self):
         if self.fee_limit_sat:
             fee_limit_msat = self.fee_limit_sat * 1_000
+        elif self.fee_ppm_limit:
+            fee_limit_msat = self.fee_ppm_limit * self.amount / 1_000
         elif self.last_hop_channel:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat

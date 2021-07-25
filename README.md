@@ -34,7 +34,7 @@ See below for an explanation.
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -65,6 +65,8 @@ rebalance:
                         more/costing less.
   --fee-limit FEE_LIMIT
                         If set, only consider rebalance transactions that cost up to the given number of satoshis.
+  --fee-ppm-limit FEE_PPM_LIMIT
+                        If set, only consider rebalance transactions that cost up to the given number of satoshis per 1M satoshis sent.
 ```
 
 ### List of channels
@@ -156,6 +158,17 @@ You can also use values smaller than 1.0 to restrict which routes are considered
 As an alternative to `--fee-factor` (which is the default, with a value of 1), you can also specify an absolute fee
 limit using `--fee-limit`. If you decide to do so, only routes that cost up to the given number (in satoshis) are
 considered.
+
+Note that the script rejects routes/channels that are deemed uneconomical (as explained above).
+
+### Fee Rate (ppm) Limit
+
+You can use `--fee-ppm-limit` as another alternative to specify a fee limit.
+In this case the amount sent as part of the rebalance is considered, so that the fee is at most
+
+```
+amount * fee-ppm-limit / 1_000_000
+```
 
 Note that the script rejects routes/channels that are deemed uneconomical (as explained above).
 
