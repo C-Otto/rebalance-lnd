@@ -72,7 +72,7 @@ def main():
         first_hop_channel = candidates[index]
     elif first_hop_channel_id == -1:
         # here is the random case
-        last_hop_channel = random.choice(
+        first_hop_channel = random.choice(
             get_incoming_rebalance_candidates(lnd, channel_ratio)
         )
     else:
