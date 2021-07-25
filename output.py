@@ -32,11 +32,11 @@ class Output:
         alias_to_formatted = format_alias(f"{self.lnd.get_node_alias(pubkey_to):32}")
         return f"{channel_id_formatted} to {alias_to_formatted}"
 
-    @staticmethod
-    def get_fee_information(next_hop, route):
+    def get_fee_information(self, next_hop, route):
         hops = list(route.hops)
         if hops[0] == next_hop:
-            return ""
+            ppm = self.lnd.get_policy_to(next_hop.chan_id).fee_rate_milli_msat
+            return f"(free, we usually charge {format_ppm(ppm)})"
         hop = hops[hops.index(next_hop) - 1]
         ppm = int(hop.fee_msat * 1_000_000 / hop.amt_to_forward_msat)
         fee_formatted = "fee " + chalk.cyan(f"{hop.fee_msat:8,} mSAT")
