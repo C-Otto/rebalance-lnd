@@ -78,6 +78,10 @@ def format_amount(amount):
     return chalk.yellow(f"{amount:,}")
 
 
+def format_amount_green(amount):
+    return chalk.green(f"{amount:,}")
+
+
 def format_boring_string(string):
     return chalk.bg_black(chalk.gray(string))
 

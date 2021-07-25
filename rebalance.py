@@ -10,7 +10,7 @@ import sys
 import output
 from lnd import Lnd
 from logic import Logic
-from output import Output, format_alias, format_ppm, format_amount, format_boring_string
+from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -254,8 +254,8 @@ def list_candidates(lnd, candidates):
         print(f"Local ratio:      {get_local_ratio(candidate):.3f}")
         print(f"Local fee rate:   {format_ppm(get_local_fee_rate(candidate, lnd))}")
         print(f"Capacity:         {candidate.capacity:,}")
-        print(f"Remote available: {remote_available:,}")
-        print(f"Local available:  {format_amount(local_available)}")
+        print(f"Remote available: {format_amount(remote_available)}")
+        print(f"Local available:  {format_amount_green(local_available)}")
         print(f"Amount for 50-50: {rebalance_amount}")
         print(get_capacity_and_ratio_bar(candidate, max_channel_capacity))
         print("")
