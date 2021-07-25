@@ -50,19 +50,19 @@ def format_alias(alias):
 
 def format_ppm(ppm, min_length=None):
     if min_length:
-        return chalk.bold(f"{ppm:,min_length}ppm")
+        return chalk.bold(f"{ppm:{min_length},}ppm")
     return chalk.bold(f"{ppm:,}ppm")
 
 
 def format_fee_msat(fee_msat, min_length=None):
     if min_length:
-        return chalk.cyan(f"{fee_msat:,min_length} mSAT")
+        return chalk.cyan(f"{fee_msat:{min_length},} mSAT")
     return chalk.cyan(f"{fee_msat:,} mSAT")
 
 
 def format_fee_msat_red(fee_msat, min_length=None):
     if min_length:
-        return chalk.red(f"{fee_msat:,min_length} mSAT")
+        return chalk.red(f"{fee_msat:{min_length},} mSAT")
     return chalk.red(f"{fee_msat:,} mSAT")
 
 
@@ -72,7 +72,7 @@ def format_fee_sat(fee_sat):
 
 def format_earning(msat, min_width=None):
     if min_width:
-        return chalk.green(f"{msat:min_width,} mSAT")
+        return chalk.green(f"{msat:{min_width},} mSAT")
     return chalk.green(f"{msat:,} mSAT")
 
 
