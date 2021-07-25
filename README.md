@@ -28,6 +28,12 @@ Depending on your system, you can do this in one of the following ways:
  - `./rebalance.py`
  - `python rebalance.py`
 
+## Updating
+
+If you already have a version of `rebalance-lnd` checked out via `git`, you can just use `git pull` to update to the
+latest version. You may also delete everything and start over with a fresh installation, as the script does not store
+any data that needs to be kept.
+
 ## Usage
 
 See below for an explanation.
