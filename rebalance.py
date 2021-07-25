@@ -188,8 +188,7 @@ def get_argument_parser():
         "(funds will be sent to this channel). "
         "You may also use -1 to choose a random candidate.",
     )
-    amount_group = rebalance_group.add_mutually_exclusive_group()
-    amount_group.add_argument(
+    rebalance_group.add_argument(
         "-a",
         "--amount",
         type=int,
