@@ -48,7 +48,6 @@ class Logic:
                 f"Sending {amount_formatted} satoshis from channel {first_channel_id} with {first_hop_alias_formatted} "
                 f"back through {last_hop_alias_formatted}."
             )
-            self.output.print_line(f"Sending {amount_formatted} satoshis.")
         elif self.last_hop_channel:
             self.output.print_line(f"Sending {amount_formatted} satoshis back through {last_hop_alias_formatted}.")
         else:
