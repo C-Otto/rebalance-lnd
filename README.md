@@ -40,7 +40,7 @@ See below for an explanation.
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [--min-amount MIN_AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -64,6 +64,8 @@ rebalance:
                         Channel ID of the incoming channel (funds will be sent to this channel). You may also use -1 to choose a random candidate.
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not specified, the amount computed for a perfect rebalance will be used (up to the maximum of 4,294,967 satoshis)
+  --min-amount MIN_AMOUNT
+                        (Default: 10,000) If the given or computed rebalance amount is below this limit, nothing is done.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel (no funds will be taken out of excluded channels)
   --fee-factor FEE_FACTOR
@@ -121,6 +123,8 @@ You specify the channel(s) using the channel ID, as shown in the output of `reba
 `rebalance.py -t 123[...]456 -a 1613478`
 
 If you do not specify the amount, the script automatically determines the rebalance amount.
+Note that, by default, nothing is done if the amount (either given or computed) is below 10,000 satoshis.
+You can change this number using `--min-amount`.
 
 The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
 

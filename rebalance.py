@@ -64,7 +64,13 @@ def main():
     amount = get_amount(arguments, first_hop_channel, last_hop_channel)
 
     if amount == 0:
-        print("Amount is 0, nothing to do")
+        print(f"Amount is {format_amount(0)} sat, nothing to do")
+        sys.exit(0)
+
+    min_amount = arguments.min_amount
+    if amount < min_amount:
+        print(f"Amount {format_amount(amount)} sat is below limit of {format_amount(min_amount)} sat, "
+              f"nothing to do (see --min-amount)")
         sys.exit(0)
 
     fee_factor = arguments.fee_factor
@@ -195,6 +201,12 @@ def get_argument_parser():
         help="Amount of the rebalance, in satoshis. If not specified, "
         "the amount computed for a perfect rebalance will be used"
         " (up to the maximum of 4,294,967 satoshis)",
+    )
+    rebalance_group.add_argument(
+        "--min-amount",
+        default=10000,
+        type=int,
+        help="(Default: 10,000) If the given or computed rebalance amount is below this limit, nothing is done.",
     )
     rebalance_group.add_argument(
         "-e",
