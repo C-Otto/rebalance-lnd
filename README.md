@@ -34,10 +34,7 @@ See below for an explanation.
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
-                    [-o | -i] [-f CHANNEL] [-t CHANNEL]
-                    [-a AMOUNT] [-e EXCLUDE]
-                    [--fee-factor FEE_FACTOR]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -49,38 +46,25 @@ list candidates:
 
   -l, --list-candidates
                         list candidate channels for rebalance
-  -o, --outgoing        lists channels with less than 50% of the funds on the
-                        remote side
-  -i, --incoming        (default) lists channels with less than 50% of the
-                        funds on the local side
+  -o, --outgoing        lists channels with less than 50% of the funds on the remote side
+  -i, --incoming        (default) lists channels with less than 50% of the funds on the local side
 
 rebalance:
-  Rebalance a channel. You need to specify at least the 'from' channel (-f)
-  or the 'to' channel (-t).
+  Rebalance a channel. You need to specify at least the 'from' channel (-f) or the 'to' channel (-t).
 
   -f CHANNEL, --from CHANNEL
-                        Channel ID of the outgoing channel (funds will be
-                        taken from this channel). You may also use -1
-                        to choose a random candidate.
+                        Channel ID of the outgoing channel (funds will be taken from this channel). You may also use -1 to choose a random candidate.
   -t CHANNEL, --to CHANNEL
-                        Channel ID of the incoming channel (funds will be sent
-                        to this channel). You may also use -1 to
-                        choose a random candidate.
+                        Channel ID of the incoming channel (funds will be sent to this channel). You may also use -1 to choose a random candidate.
   -a AMOUNT, --amount AMOUNT
-                        Amount of the rebalance, in satoshis. If not
-                        specified, the amount computed for a perfect rebalance
-                        will be used (up to the maximum of 4,294,967 satoshis)
+                        Amount of the rebalance, in satoshis. If not specified, the amount computed for a perfect rebalance will be used (up to the maximum of 4,294,967 satoshis)
   -e EXCLUDE, --exclude EXCLUDE
-                        Exclude the given channel ID as the outgoing channel
-                        (no funds will be taken out of excluded channels)
+                        Exclude the given channel ID as the outgoing channel (no funds will be taken out of excluded channels)
   --fee-factor FEE_FACTOR
-                        (default: 1.0) Compare the
-                        costs against the expected income, scaled by this
-                        factor. As an example, with --fee-factor 1.5,
-                        routes that cost at most 150% of the expected earnings
-                        are tried. Use values smaller than 1.0 to restrict
-                        routes to only consider those earning more/costing
-                        less.  
+                        (default: 1.0) Compare the costs against the expected income, scaled by this factor. As an example, with --fee-factor 1.5, routes that cost at most 150% of the expected earnings are tried. Use values smaller than 1.0 to restrict routes to only consider those earning
+                        more/costing less.
+  --fee-limit FEE_LIMIT
+                        If set, only consider rebalance transactions that cost up to the given number of satoshis.
 ```
 
 ### List of channels
@@ -165,7 +149,15 @@ As such, if you set `--fee-factor` to a value higher than 1.0, routes that cost 
 considered. As an example, with `--fee-factor 1.5` you can include routes that cost up to 150% of the
 future income.
 
-You can also use values smaller than 1.0 to restrict which routes are considered, i.e. routes that are cheaper. 
+You can also use values smaller than 1.0 to restrict which routes are considered, i.e. routes that are cheaper.
+
+### Fee Limit
+
+As an alternative to `--fee-factor` (which is the default, with a value of 1), you can also specify an absolute fee
+limit using `--fee-limit`. If you decide to do so, only routes that cost up to the given number (in satoshis) are
+considered.
+
+Note that the script rejects routes/channels that are deemed uneconomical (as explained above).
 
 #### Warning
 To determine the future income, the fee set as part of the channel policy is used in the computation.
@@ -180,7 +172,7 @@ Contributions are highly welcome!
 Feel free to submit issues and pull requests on https://github.com/C-Otto/rebalance-lnd/
 
 You can also send donations via keysend.
-For example, to send 500 satoshi to C-Otto with a message "Thank you for rebalance-lnd":
+For example, to send 500 satoshis to C-Otto with a message "Thank you for rebalance-lnd":
 ```
 lncli sendpayment --amt=500 --data 7629168=5468616e6b20796f7520666f7220726562616c616e63652d6c6e64 --keysend --dest=027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71
 ```

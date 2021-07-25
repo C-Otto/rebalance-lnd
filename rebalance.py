@@ -68,6 +68,7 @@ def main():
         sys.exit(0)
 
     fee_factor = arguments.fee_factor
+    fee_limit_sat = arguments.fee_limit
     excluded = arguments.exclude
     return Logic(
         lnd,
@@ -76,6 +77,7 @@ def main():
         amount,
         excluded,
         fee_factor,
+        fee_limit_sat,
         output
     ).rebalance()
 
@@ -201,7 +203,8 @@ def get_argument_parser():
         help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
         "out of excluded channels)",
     )
-    rebalance_group.add_argument(
+    fee_group = rebalance_group.add_mutually_exclusive_group()
+    fee_group.add_argument(
         "--fee-factor",
         default=1.0,
         type=float,
@@ -210,6 +213,11 @@ def get_argument_parser():
         "routes that cost at most 150%% of the expected earnings are tried. Use values "
         "smaller than 1.0 to restrict routes to only consider those earning "
         "more/costing less.",
+    )
+    fee_group.add_argument(
+        "--fee-limit",
+        type=int,
+        help="If set, only consider rebalance transactions that cost up to the given number of satoshis."
     )
     return parser
 

@@ -20,6 +20,7 @@ class Logic:
         amount,
         excluded,
         fee_factor,
+        fee_limit_sat,
         output: Output
     ):
         self.lnd = lnd
@@ -29,6 +30,7 @@ class Logic:
         if excluded:
             self.excluded = excluded
         self.fee_factor = fee_factor
+        self.fee_limit_sat = fee_limit_sat
         self.output = output
         if not self.fee_factor:
             self.fee_factor = 1.0
@@ -83,8 +85,9 @@ class Logic:
         return False
 
     def get_fee_limit_msat(self):
-        fee_limit_msat = None
-        if self.last_hop_channel:
+        if self.fee_limit_sat:
+            fee_limit_msat = self.fee_limit_sat * 1_000
+        elif self.last_hop_channel:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
             last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
@@ -98,14 +101,18 @@ class Logic:
                 self.amount * 1_000, fee_rate, policy
             )
             fee_limit_msat = max(1_000, fee_limit_msat)
-            fee_limit_formatted = format_fee_msat(int(fee_limit_msat))
-            ppm_limit = int(fee_limit_msat / self.amount * 1_000)
-            ppm_limit_formatted = format_ppm(ppm_limit)
-            self.output.print_without_linebreak(f"Setting fee limit to {fee_limit_formatted} ({ppm_limit_formatted})")
-            if self.fee_factor != 1.0:
-                self.output.print_line(f" (factor {self.fee_factor}).")
-            else:
-                self.output.print_line(".")
+        else:
+            return None
+
+        ppm_limit = int(fee_limit_msat / self.amount * 1_000)
+
+        fee_limit_formatted = format_fee_msat(int(fee_limit_msat))
+        ppm_limit_formatted = format_ppm(ppm_limit)
+        self.output.print_without_linebreak(f"Setting fee limit to {fee_limit_formatted} ({ppm_limit_formatted})")
+        if self.fee_factor != 1.0:
+            self.output.print_line(f" (factor {self.fee_factor}).")
+        else:
+            self.output.print_line(".")
 
         return fee_limit_msat
 
