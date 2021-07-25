@@ -138,11 +138,13 @@ class Routes:
             self.ignore_hop_on_route(hop, route)
 
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
-        if show_message:
-            self.output.print_line(
-                f"Ignoring {self.output.get_channel_representation(chan_id, to_pubkey, from_pubkey)}")
         pair = {
             "from": base64.b16decode(from_pubkey, True),
             "to": base64.b16decode(to_pubkey, True),
         }
+        if pair in self.ignored_pairs:
+            return
+        if show_message:
+            self.output.print_line(
+                f"Ignoring {self.output.get_channel_representation(chan_id, to_pubkey, from_pubkey)}")
         self.ignored_pairs.append(pair)
