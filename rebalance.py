@@ -7,6 +7,7 @@ import platform
 import random
 import sys
 
+import output
 from lnd import Lnd
 from logic import Logic
 from output import Output, format_alias, format_ppm, format_amount, format_chan_id
@@ -306,14 +307,9 @@ def get_capacity_and_ratio_bar(candidate, max_channel_capacity):
         columns_scaled_to_capacity = columns
 
     bar_width = columns_scaled_to_capacity - 2
-    result = "|"
     ratio = get_local_ratio(candidate)
     length = int(round(ratio * bar_width))
-    for _ in range(0, length):
-        result += "="
-    for _ in range(length, bar_width):
-        result += " "
-    return f"{result}|"
+    return output.print_bar(bar_width, length)
 
 
 def get_columns():

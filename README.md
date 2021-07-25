@@ -106,7 +106,7 @@ Capacity:         5,000,000
 Remote balance:   4,110,320
 Local balance:    883,364
 Amount for 50-50: 1,613,478
-|=====                       |
+[█████░░░░░░░░░░░░░░░░░░░░░░░]
 ```
 
 By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can be achieved.

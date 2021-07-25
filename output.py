@@ -89,3 +89,12 @@ def format_warning(warning):
 def format_error(error):
     return chalk.red(error)
 
+
+def print_bar(width, length):
+    result = chalk.bold("[")
+    for _ in range(0, length):
+        result += chalk.bold("█")
+    for _ in range(length, width):
+        result += "░"
+    result += chalk.bold("]")
+    return result
