@@ -204,7 +204,7 @@ def get_argument_parser():
     )
     rebalance_group.add_argument(
         "--min-amount",
-        default=10000,
+        default=10_000,
         type=int,
         help="(Default: 10,000) If the given or computed rebalance amount is below this limit, nothing is done.",
     )

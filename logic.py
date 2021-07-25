@@ -4,9 +4,9 @@ from output import Output, format_alias, format_fee_msat, format_ppm, format_amo
     format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red
 from routes import Routes
 
-DEFAULT_BASE_FEE_SAT_MSAT = 1000
+DEFAULT_BASE_FEE_SAT_MSAT = 1_000
 DEFAULT_FEE_RATE_MSAT = 0.001
-MAX_FEE_RATE = 2000
+MAX_FEE_RATE = 2_000
 
 
 class Logic:
@@ -101,9 +101,7 @@ class Logic:
                     f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
-            fee_limit_msat = self.fee_factor * self.compute_fee(
-                self.amount * 1_000, fee_rate, policy
-            )
+            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, fee_rate, policy) * 1_000
             fee_limit_msat = max(1_000, fee_limit_msat)
         else:
             return None
@@ -305,8 +303,8 @@ class Logic:
 
     @staticmethod
     def compute_fee(amount, fee_rate, policy):
-        expected_fee_msat = amount / 1000000 * fee_rate + policy.fee_base_msat / 1000
-        return expected_fee_msat
+        expected_fee = amount / 1_000_000 * fee_rate + policy.fee_base_msat / 1_000
+        return expected_fee
 
     def generate_invoice(self):
         if self.last_hop_channel:
