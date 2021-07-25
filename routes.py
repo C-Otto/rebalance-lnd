@@ -17,7 +17,6 @@ class Routes:
         first_hop_channel,
         last_hop_channel,
         fee_limit_msat,
-        min_ppm_last_hop,
         output
     ):
         self.lnd = lnd
@@ -25,7 +24,6 @@ class Routes:
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.fee_limit_msat = fee_limit_msat
-        self.min_ppm_last_hop = min_ppm_last_hop
         self.output = output
 
     def has_next(self):
@@ -108,12 +106,6 @@ class Routes:
 
     def ignore_high_fee_hops(self, route):
         ignore = []
-        if self.min_ppm_last_hop:
-            last_hop = route.hops[-1]
-            policy = self.lnd.get_policy_to(last_hop.chan_id)
-            ppm_last_hop = policy.fee_rate_milli_msat
-            if ppm_last_hop < self.min_ppm_last_hop:
-                ignore.append(last_hop)
         max_fee_msat = 0
         max_fee_hop = None
         for hop in route.hops:

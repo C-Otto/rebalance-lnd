@@ -67,11 +67,10 @@ class Logic:
             self.first_hop_channel,
             self.last_hop_channel,
             fee_limit_msat,
-            min_ppm_last_hop,
             self.output
         )
 
-        self.initialize_ignored_channels(routes, fee_limit_msat)
+        self.initialize_ignored_channels(routes, fee_limit_msat, min_ppm_last_hop)
 
         tried_routes = []
         while routes.has_next():
@@ -315,8 +314,11 @@ class Logic:
                 return channel
         self.output.print_line(f"Unable to find channel with id {channel_id}!")
 
-    def initialize_ignored_channels(self, routes, fee_limit_msat):
+    def initialize_ignored_channels(self, routes, fee_limit_msat, min_ppm_last_hop):
         if self.first_hop_channel:
+            if min_ppm_last_hop:
+                self.ignore_low_ppm_channels(min_ppm_last_hop, routes)
+
             # avoid me - X - me via the same channel/peer
             chan_id = self.first_hop_channel.chan_id
             from_pub_key = self.first_hop_channel.remote_pubkey
@@ -349,6 +351,16 @@ class Logic:
             if channel.chan_id in self.excluded:
                 self.output.print_without_linebreak("Channel is excluded, ")
                 routes.ignore_first_hop(channel)
+
+    def ignore_low_ppm_channels(self, min_ppm_last_hop, routes):
+        for channel in self.lnd.get_channels():
+            channel_id = channel.chan_id
+            policy = self.lnd.get_policy_to(channel_id)
+            ppm = policy.fee_rate_milli_msat
+            if ppm < min_ppm_last_hop:
+                routes.ignore_edge_from_to(
+                    channel_id, channel.remote_pubkey, self.lnd.get_own_pubkey(), show_message=False
+                )
 
     def ignore_first_hops_with_fee_rate_higher_than_last_hop(self, routes):
         policy_last_hop = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
