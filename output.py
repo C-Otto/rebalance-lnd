@@ -78,8 +78,8 @@ def format_amount(amount):
     return chalk.yellow(f"{amount:,}")
 
 
-def format_chan_id(chan_id):
-    return chalk.bg_black(chalk.gray(chan_id))
+def format_boring_string(string):
+    return chalk.bg_black(chalk.gray(string))
 
 
 def format_warning(warning):

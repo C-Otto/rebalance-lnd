@@ -1,6 +1,6 @@
 import math
 
-from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_chan_id, format_fee_sat, \
+from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, format_fee_sat, \
     format_warning, format_error, format_earning, format_fee_msat_red
 from routes import Routes
 
@@ -39,7 +39,7 @@ class Logic:
         first_channel_id = 0
         if self.first_hop_channel:
             first_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey))
-            first_channel_id = format_chan_id(self.first_hop_channel.chan_id)
+            first_channel_id = format_boring_string(self.first_hop_channel.chan_id)
         if self.last_hop_channel:
             last_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey))
         amount_formatted = format_amount(self.amount)
