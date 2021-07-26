@@ -171,7 +171,6 @@ class Logic:
             routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 12:
             self.output.print_line(format_warning("Fee insufficient"))
-            routes.ignore_edge_on_route(failure_source_pubkey, route)
         elif code == 14:
             self.output.print_line(format_warning("Channel disabled"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
