@@ -34,6 +34,12 @@ If you already have a version of `rebalance-lnd` checked out via `git`, you can 
 latest version. You may also delete everything and start over with a fresh installation, as the script does not store
 any data that needs to be kept.
 
+Don't forget to update the python dependencies by running:
+
+```
+$ pip install -r requirements.txt
+```
+
 ## Usage
 
 See below for an explanation.
