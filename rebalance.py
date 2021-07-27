@@ -183,11 +183,6 @@ class Rebalance:
             self.show_channel(channel)
             sys.exit(0)
 
-        # get graph once to avoid weird delays in output
-        self.output.print_line("Requesting graph from lnd...", end='\r')
-        self.lnd.get_graph()
-        self.output.print_line("Requesting graph from lnd... done.")
-
         if self.arguments.list_candidates:
             incoming = self.arguments.incoming is None or self.arguments.incoming
             if incoming:

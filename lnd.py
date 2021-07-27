@@ -54,15 +54,8 @@ class Lnd:
             ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)
         ).node.alias
 
-    @lru_cache(maxsize=None)
-    def get_graph(self):
-        return self.stub.DescribeGraph(ln.ChannelGraphRequest(include_unannounced=True))
-
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
-
-    def get_edges(self):
-        return self.get_graph().edges
 
     def generate_invoice(self, memo, amount):
         invoice_request = ln.Invoice(
@@ -127,8 +120,9 @@ class Lnd:
         except:
             return None
 
+    @lru_cache(maxsize=None)
     def get_edge(self, channel_id):
-        return next(edge for edge in self.get_edges() if edge.channel_id == channel_id)
+        return self.stub.GetChanInfo(ln.ChanInfoRequest(chan_id=channel_id))
 
     def get_policy_to(self, channel_id):
         edge = self.get_edge(channel_id)
