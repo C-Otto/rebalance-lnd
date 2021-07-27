@@ -118,8 +118,7 @@ class Routes:
         if max_fee_hop:
             hops = list(route.hops)
             first_hop = hops[0]
-            first_hop_policy = self.lnd.get_policy_to(first_hop.chan_id)
-            first_hop_fee_rate = first_hop_policy.fee_rate_milli_msat
+            first_hop_fee_rate = self.lnd.get_ppm_to(first_hop.chan_id)
             missed_fee_first_hop_msat = first_hop.amt_to_forward_msat / 1_000_000 * first_hop_fee_rate
             if missed_fee_first_hop_msat > max_fee_msat and not self.first_hop_channel:
                 ignore.append(first_hop)

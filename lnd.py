@@ -79,12 +79,20 @@ class Lnd:
         return self.stub.DecodePayReq(request)
 
     @lru_cache(maxsize=None)
-    def get_channels(self):
+    def get_channels(self, active_only=False):
         return self.stub.ListChannels(
             ln.ListChannelsRequest(
-                active_only=False,
+                active_only=active_only,
             )
         ).channels
+
+    @lru_cache(maxsize=None)
+    def get_max_channel_capacity(self):
+        max_channel_capacity = 0
+        for channel in self.get_channels(active_only=False):
+            if channel.capacity > max_channel_capacity:
+                max_channel_capacity = channel.capacity
+        return max_channel_capacity
 
     def get_route(
         self,
@@ -128,6 +136,9 @@ class Lnd:
                 else:
                     result = edge.node2_policy
                 return result
+
+    def get_ppm_to(self, channel_id):
+        return self.get_policy_to(channel_id).fee_rate_milli_msat
 
     def send_payment(self, payment_request, route):
         last_hop = route.hops[-1]

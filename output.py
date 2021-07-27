@@ -35,7 +35,7 @@ class Output:
     def get_fee_information(self, next_hop, route):
         hops = list(route.hops)
         if hops[0] == next_hop:
-            ppm = self.lnd.get_policy_to(next_hop.chan_id).fee_rate_milli_msat
+            ppm = self.lnd.get_ppm_to(next_hop.chan_id)
             return f"(free, we usually charge {format_ppm(ppm)})"
         hop = hops[hops.index(next_hop) - 1]
         ppm = int(hop.fee_msat * 1_000_000 / hop.amt_to_forward_msat)
