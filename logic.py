@@ -90,7 +90,7 @@ class Logic:
         if self.fee_limit_sat:
             fee_limit_msat = self.fee_limit_sat * 1_000
         elif self.fee_ppm_limit:
-            fee_limit_msat = self.fee_ppm_limit * self.amount / 1_000
+            fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
         elif self.last_hop_channel:
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
             fee_rate = policy.fee_rate_milli_msat
