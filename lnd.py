@@ -127,18 +127,28 @@ class Lnd:
         except:
             return None
 
+    def get_edge(self, channel_id):
+        return next(edge for edge in self.get_edges() if edge.channel_id == channel_id)
+
     def get_policy_to(self, channel_id):
+        edge = self.get_edge(channel_id)
         # node1_policy contains the fee base and rate for payments from node1 to node2
-        for edge in self.get_edges():
-            if edge.channel_id == channel_id:
-                if edge.node1_pub == self.get_own_pubkey():
-                    result = edge.node1_policy
-                else:
-                    result = edge.node2_policy
-                return result
+        if edge.node1_pub == self.get_own_pubkey():
+            return edge.node1_policy
+        return edge.node2_policy
+
+    def get_policy_from(self, channel_id):
+        edge = self.get_edge(channel_id)
+        # node1_policy contains the fee base and rate for payments from node1 to node2
+        if edge.node1_pub == self.get_own_pubkey():
+            return edge.node2_policy
+        return edge.node1_policy
 
     def get_ppm_to(self, channel_id):
         return self.get_policy_to(channel_id).fee_rate_milli_msat
+
+    def get_ppm_from(self, channel_id):
+        return self.get_policy_from(channel_id).fee_rate_milli_msat
 
     def send_payment(self, payment_request, route):
         last_hop = route.hops[-1]
