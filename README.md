@@ -1,11 +1,23 @@
 # rebalance-lnd
 
-Using this script you can easily rebalance individual channels of your lnd node.
+Using this script you can easily rebalance individual channels of your `lnd` node by
+sending funds out one channel, through the lightning network, back to yourself.
+
+This script helps you move funds between your channels so that you can increase the outbound liquidity in one channel,
+while decreasing the outbound liquidity in another channel.
+This way you can, for example, make sure that all of your channels have enough outbound liquidity to send/route
+transactions.
+
+Because you are both the sender and the receiver of the corresponding transactions, you only have to pay for routing
+fees.
+Aside from paid fees, your total liquidity does not change.
 
 ## Installation
 
-This script needs an active lnd 0.9.0+ (https://github.com/lightningnetwork/lnd) instance running.
-If you compile lnd yourself, you need to include the `routerrpc` build tag.
+### lnd
+
+This script needs an active `lnd` (tested with v0.13.0, https://github.com/lightningnetwork/lnd) instance running.
+If you compile `lnd` yourself, you need to include the `routerrpc` build tag:
 
 Example:
 `make tags="autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc"`
@@ -14,13 +26,15 @@ You need to have admin rights to control this node.
 By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
+### Python Dependencies
+
 You need to install Python 3. You also need to install the gRPC dependencies which can be done by running:
 
 ```
 $ pip install -r requirements.txt
 ```
 
-If this fails, make sure you're running Python 3.
+If this fails, make sure you are running Python 3.
 
 To test if your installation works, you can run `rebalance.py` without any arguments.
 Depending on your system, you can do this in one of the following ways:
@@ -34,15 +48,187 @@ If you already have a version of `rebalance-lnd` checked out via `git`, you can 
 latest version. You may also delete everything and start over with a fresh installation, as the script does not store
 any data that needs to be kept.
 
-Don't forget to update the python dependencies by running:
+Do not forget to update the Python dependencies as described above.
+
+# Usage
+
+### List of channels
+Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which
+can be rebalanced.
+This list only contains channels where less than 50% of the total funds are on
+the local side of the channel.
+
+You can also see the list of channels where less than 50% of the total funds
+are on the remote side of the channel by running `rebalance.py -l -o`.
+
+As an example the following indicates a channel with around 17.7% of the funds
+on the local side:
 
 ```
-$ pip install -r requirements.txt
+Channel ID:       11111111
+Alias:            The Best Node Ever
+Pubkey:           012345[...]abcdef
+Channel Point:    abc0123[...]abc:0
+Local ratio:      0.176
+Local fee ratio:  123ppm
+Capacity:         5,000,000
+Remote balance:   4,110,320
+Local balance:    883,364
+Amount for 50-50: 1,613,478
+[█████░░░░░░░░░░░░░░░░░░░░░░░]
 ```
 
-## Usage
+By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can be achieved.
+This number is shown as "Amount for 50-50".
 
-See below for an explanation.
+The last line shows a graphical representation of the channel. 
+The total width is determined by the channel's capacity, where your largest channel (maximum capacity) occupies the full
+width of your terminal.
+The bar (`█`) indicates the funds on the local side of the channel, i.e. your outbound liquidity.
+
+## Rebalancing a channel
+### Basic Scenario
+In this scenario you already know what you want to do, possibly because you identified a channel with high
+outbound liquidity.
+
+Let us assume you want to move some funds from this channel to another channel with low outbound
+liquidity:
+
+- move 100,000 satoshis around
+- take those funds (plus fees) out of channel `11111111`
+- move those funds back into channel `22222222`
+
+You can achieve this by running:
+
+```
+rebalance.py --amount 100000 --from 11111111 --to 22222222
+```
+
+The script now tries to find a route through the lightning network that starts with channel `11111111` and ends with
+channel `22222222`. If successful, you take 100,000 satoshis (plus fees) out of channel `11111111` (which means that you
+decrease your outbound liquidity and increase your inbound liquidity). In return, you get 100,000 satoshis back through
+channel `22222222` (which means that you increase your outbound liquidity and decrease your inbound liquidity).
+
+### Automatically determined amount
+
+If you do not specify the amount, i.e. you invoke `rebalance.py --from 11111111 --to 22222222`, the script
+automatically determines the amount.
+For this two main constraints are taken into consideration:
+
+After the rebalance transaction is finished, 
+
+ - the destination channel (`22222222`) should have (up to) 50% outbound liquidity
+ - the source channel (`11111111`) should have (at least) 50% outbound liquidity
+
+If the source channel has enough surplus outbound liquidity, the script constructs a transaction that ensures
+50% outbound liquidity in the destination channel.
+However, if the source channel does not have enough outbound liquidity, the amount is determined so that (after the
+rebalance transaction is performed) the source channel has 50% outbound liquidity and the destination channel has more
+outbound liquidity than before (but not necessarily 50%).
+
+### Only specifying one channel 
+
+Instead of specifying both `--from` and `--to`, you can also just pick one of those options.
+The script then considers all of your other channels as possible "partners", still taking into account the constraints
+described above.
+
+As an example, if you run `rebalance.py --amount 100000 --to 22222222`, the script tries to find source channels
+that, after sending 100,000 satoshis (plus fees), have at least 50% outbound liquidity.
+In other words, the script does not send funds from already "empty" channels.
+Likewise, when only specifying `--from`, the script does not send funds to "full" channels.
+
+If you also let the script determine the amount, e.g. you run `rebalance.py --to 22222222`, the script first
+computes the amount that is necessary to reach 50% outbound liquidity in channel `22222222`, and then tries to find
+source channels for the computed amount.
+
+### Safety Checks and Limitations
+
+Note that, by default, nothing is done if the amount (either given or computed) is smaller than 10,000 satoshis.
+You can change this number using `--min-amount`.
+
+The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
+
+Furthermore, a rebalance transaction is only sent if it is economically viable as described below.
+This way, by default, you only send rebalance transactions that improve your node's situation, for example by providing
+outbound liquidity to channels where you charge a lot, and taking those funds out of channels where you charge less.
+
+To protect you from making mistakes, in the fee computation (described below) the fee rate of the destination channel
+is capped at 2,000ppm (which corresponds to a 0.2% fee), even if the channel is configured with a higher fee rate.
+
+## Fees
+
+In order for the network to route your rebalance transaction, you have to pay fees.
+In addition to the fees charged by the nodes routing your transaction, two other values are taken into account:
+
+1. The fee you would earn if, instead of sending the funds out of the source channel as part of the rebalance transaction, your node is paid to forward the amount
+2. The fee you would earn if, after the rebalance transaction is done, your node forwards the amount through the destination channel
+
+The first bullet point describes opportunity/implicit costs.
+If you take lots of funds out of the source channel, you cannot use those funds to earn routing fees via that channel.
+As such, taking funds out of a channel where you configured a high fee rate can be considered costly.
+
+The second bullet points describes future earnings.
+If you send funds to the destination channel and increase your outbound liquidity in that channel, you might earn fees
+for routing those funds.
+As such, increasing the outbound liquidity of the destination is a good idea, assuming the fee rate configured for the
+destination channel is higher than the fee rate you configured for the source channel.
+However, keep in mind that you will only earn those fees if your node actually forwards the funds via the channel!
+
+The rebalance transaction is not performed if the transaction fees plus the implicit costs (1) are higher than the
+possible future earnings (2).
+
+### Example
+You have lots of funds in channel `11111111` and nothing in channel `22222222`.
+You would like to send funds through channel `11111111` (source channel) through the lightning network, and finally
+back into channel `22222222`.
+This incurs a transaction fee you would have to pay for the transaction.
+
+Furthermore, if in the future there is demand for your node to route funds
+through channel `11111111`, you cannot do that as much (because you decreased your outbound liquidity in the channel).
+The associated fees are the implicit cost (1).
+
+Finally, you send funds into channel `22222222` in the hope that later on someone requests your node to forward funds
+from your own node through channel `22222222` towards the peer at the other end, so that you can earn fees for this.
+These fees are the possible future income (2).
+
+### Fee Factor
+
+The value set with `--fee-factor` is used to scale the future income used in the computation outlined above.
+As such, you can fool the script into believing that the fee rate configured for the destination channel is
+higher (fee factor > 1) or lower (fee factor < 1) than it actually is.
+
+As such, if you set `--fee-factor` to a value higher than 1, more routes are considered.
+As an example, with `--fee-factor 1.5` you can include routes that cost up to 150% of the future income.
+
+With values smaller than 1 only cheaper routes are considered.
+
+### Fee Limit
+
+As an alternative to `--fee-factor` (which is the default, with a value of 1), you can also specify an absolute fee
+limit using `--fee-limit`. If you decide to do so, only routes that cost up to the given number (in satoshis) are
+considered.
+
+Note that the script rejects routes/channels that are deemed uneconomical based on the configured fee rates
+(i.e. with `--fee-factor` set to 1) (as explained above).
+
+### Fee Rate (ppm) Limit
+
+You can use `--fee-ppm-limit` as another alternative to specify a fee limit.
+In this case the amount sent as part of the rebalance is considered, so that the fee is at most
+
+```
+amount * fee-ppm-limit / 1_000_000
+```
+
+Note that the script rejects routes/channels that are deemed uneconomical based on the configured fee rates
+(i.e. with `--fee-factor` set to 1) (as explained above).
+
+### Warning
+
+To determine the future income, the fee rate you configured for the destination channel is used in the computation.
+As such, if you set an unrealistic fee rate that will not lead to forward transactions, you would allow more expensive
+rebalance transactions without earning anything in return.
+Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
 
 ### Command line arguments
 ```
@@ -82,118 +268,6 @@ rebalance:
   --fee-ppm-limit FEE_PPM_LIMIT
                         If set, only consider rebalance transactions that cost up to the given number of satoshis per 1M satoshis sent.
 ```
-
-### List of channels
-Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which
-can be rebalanced.
-This list only contains channels where less than 50% of the total funds are on
-the local side of the channel.
-
-You can also see the list of channels where less than 50% of the total funds
-are on the remote side of the channel by running `rebalance.py -l -o`.
-
-As an example the following indicates a channel with around 17.7% of the funds
-on the local side:
-
-```
-Channel ID:  123[...]456
-Alias:            The Best Node Ever
-Pubkey:           012345[...]abcdef
-Channel Point:    abc0123[...]abc:0
-Local ratio:      0.176
-Local fee ratio:  123ppm
-Capacity:         5,000,000
-Remote balance:   4,110,320
-Local balance:    883,364
-Amount for 50-50: 1,613,478
-[█████░░░░░░░░░░░░░░░░░░░░░░░]
-```
-
-By sending 1,613,478 satoshis to yourself using this channel, a ratio of 50% can be achieved.
-This number is shown as "Amount for 50-50".
-
-The last line shows a graphical representation of the channel. 
-The total width is determined by the channel's capacity, where your largest channel (maximum capacity) #occupies the full
-width of your terminal.
-The bar (`█`) indicates the funds on the local side of the channel.
-
-### Rebalancing a channel
-To actually rebalance a channel, run the script and specify the channel to send funds to (`-t`) or from (`-f`).
-Use `--from` (or `-f`) to specify a channel that too many funds on your _local_ side (ratio > 0.5).
-Likewise, use `--to` (or `-t`) to specify a channel that has too many funds on the _remote_ side (ratio < 0.5). 
-
-It is possible to use both `-t` and `-f`, but at least one of these arguments must be given.
-You can also specify the amount to send (using `-a`).
-You specify the channel(s) using the channel ID, as shown in the output of `rebalance.py`.
-
-`rebalance.py -t 123[...]456 -a 1613478`
-
-If you do not specify the amount, the script automatically determines the rebalance amount.
-Note that, by default, nothing is done if the amount (either given or computed) is below 10,000 satoshis.
-You can change this number using `--min-amount`.
-
-The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
-
-### Fees
-
-In order for the network to route your rebalance transaction, you have to pay fees.
-Three different fees are taken into account:
-
-1. The actual fee you'd have to pay for the rebalance transaction
-2. The fee you'd earn if, instead of sending the funds due to your own rebalance transaction, your node is paid to forward the amount through the outbound (`--from`) channel
-3. The fee you'd earn if, after the rebalance transaction is done, your node forwards the amount back again through the inbound (`--to`) channel
-
-The rebalance transaction is not performed if the direct costs (1) plus the implicit costs (2) are higher than the
-possible future income (3).
-
-#### Example
-You have lots of funds in channel A and nothing in channel B. You would like to send half of the funds through
-channel A (outbound channel) through the lightning network, and finally back into channel B. This incurs a transaction
-fee you'd have to pay for the transaction. This is the direct cost (1).
-
-Furthermore, if in the future there is demand for your node to route funds
-through channel A, you cannot do that as much (because you reduced outbound liquidity in the channel).
-The associated fees are the implicit cost (2).
-
-Finally, you rebalance channel B in the hope that later on someone requests your node to forward funds from your own node
-through channel B towards the peer at the other end, so that you can earn fees for this.
-These fees are the possible future income (3).
-
-### Factor
-
-The value set with `--fee-factor` is used to scale the future income used in the computation outlined above.
-
-As such, if you set `--fee-factor` to a value higher than 1.0, routes that cost more than the future income are
-considered. As an example, with `--fee-factor 1.5` you can include routes that cost up to 150% of the
-future income.
-
-You can also use values smaller than 1.0 to restrict which routes are considered, i.e. routes that are cheaper.
-
-### Fee Limit
-
-As an alternative to `--fee-factor` (which is the default, with a value of 1), you can also specify an absolute fee
-limit using `--fee-limit`. If you decide to do so, only routes that cost up to the given number (in satoshis) are
-considered.
-
-Note that the script rejects routes/channels that are deemed uneconomical (as explained above).
-
-### Fee Rate (ppm) Limit
-
-You can use `--fee-ppm-limit` as another alternative to specify a fee limit.
-In this case the amount sent as part of the rebalance is considered, so that the fee is at most
-
-```
-amount * fee-ppm-limit / 1_000_000
-```
-
-Note that the script rejects routes/channels that are deemed uneconomical (as explained above).
-
-#### Warning
-To determine the future income, the fee set as part of the channel policy is used in the computation.
-As such, if you set a too high fee rate, you'd allow more expensive rebalance transactions.
-Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
-To protect you from making mistakes, this script uses a fee rate of at most 2,000 sat per 1M sat (which corresponds
-to a 0.2% fee), even if the inbound channel is configured with a higher fee rate.
 
 ## Contributing
 
