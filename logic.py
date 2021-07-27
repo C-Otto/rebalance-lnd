@@ -185,6 +185,9 @@ class Logic:
         elif code == 14:
             self.output.print_line(format_warning("Channel disabled"))
             routes.ignore_edge_on_route(failure_source_pubkey, route)
+        elif code == 13:
+            self.output.print_line(format_warning("Incorrect CLTV expiry"))
+            routes.ignore_edge_on_route(failure_source_pubkey, route)
         else:
             self.output.print_line(format_error(f"Unknown error code {repr(code)}:"))
             self.output.print_line(format_error(repr(response)))
