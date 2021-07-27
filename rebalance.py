@@ -22,12 +22,25 @@ class Rebalance:
         self.output = Output(self.lnd)
         self.min_amount = arguments.min_amount
         self.arguments = arguments
-        self.first_hop_channel_id = vars(arguments)["from"]
-        self.last_hop_channel_id = arguments.to
+        self.first_hop_channel_id = self.parse_channel_id(vars(arguments)["from"])
+        self.last_hop_channel_id = self.parse_channel_id(arguments.to)
         self.first_hop_channel = None
         self.last_hop_channel = None
         self.min_local = arguments.min_local
         self.min_remote = arguments.min_remote
+
+    @staticmethod
+    def parse_channel_id(id_string):
+        if not id_string:
+            return None
+        arr = None
+        if ":" in id_string:
+            arr = id_string.rstrip().split(":")
+        elif "x" in id_string:
+            arr = id_string.rstrip().split("x")
+        if arr:
+            return (int(arr[0]) << 40) + (int(arr[1]) << 16) + int(arr[2])
+        return int(id_string)
 
     def get_sort_key(self, channel):
         rebalance_amount = self.get_rebalance_amount(channel)
@@ -327,19 +340,19 @@ def get_argument_parser():
         "-f",
         "--from",
         metavar="CHANNEL",
-        type=int,
-        help="Channel ID of the outgoing channel "
-        "(funds will be taken from this channel). "
-        "You may also use -1 to choose a random candidate.",
+        type=str,
+        help="Channel ID of the outgoing channel (funds will be taken from this channel). "
+             "You may also specify the ID using the colon notation (12345:12:1), or the x notation (12345x12x1). "
+             "You may also use -1 to choose a random candidate.",
     )
     rebalance_group.add_argument(
         "-t",
         "--to",
         metavar="CHANNEL",
-        type=int,
-        help="Channel ID of the incoming channel "
-        "(funds will be sent to this channel). "
-        "You may also use -1 to choose a random candidate.",
+        type=str,
+        help="Channel ID of the incoming channel (funds will be sent to this channel). "
+             "You may also specify the ID using the colon notation (12345:12:1), or the x notation (12345x12x1). "
+             "You may also use -1 to choose a random candidate.",
     )
     amount_group = rebalance_group.add_mutually_exclusive_group()
     amount_group.add_argument(
