@@ -272,6 +272,9 @@ class Logic:
         rebalance_fee_msat = route.total_fees_msat
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
+            if self.reckless:
+                self.output.print_line(output.format_error("Not ignoring route despite high fees"))
+                return False
             difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
             first_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[0].pub_key))
             last_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[-2].pub_key))
