@@ -27,6 +27,10 @@ def main():
         )
         sys.exit(1)
 
+    if not arguments.list_candidates and to_channel is None and first_hop_channel_id is None:
+        argument_parser.print_help()
+        sys.exit(1)
+
     # get graph once to avoid weird delays in output
     output = Output(lnd)
     output.print_line("Requesting graph from lnd...", end='\r')
@@ -40,10 +44,6 @@ def main():
         else:
             list_outgoing_candidates(lnd)
         sys.exit(0)
-
-    if to_channel is None and first_hop_channel_id is None:
-        argument_parser.print_help()
-        sys.exit(1)
 
     if first_hop_channel_id == -1:
         # pick a random channel as first hop
