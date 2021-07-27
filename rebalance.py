@@ -253,10 +253,7 @@ def list_outgoing_candidates(lnd):
 
 def list_candidates(lnd, candidates):
     index = 0
-    max_channel_capacity = 0
-    for channel in lnd.get_channels():
-        if channel.capacity > max_channel_capacity:
-            max_channel_capacity = channel.capacity
+    max_channel_capacity = get_max_channel_capacity(lnd)
     for candidate in candidates:
         index += 1
         remote_available = max(
@@ -284,6 +281,14 @@ def list_candidates(lnd, candidates):
         print(f"Amount for 50-50: {rebalance_amount}")
         print(get_capacity_and_ratio_bar(candidate, max_channel_capacity))
         print("")
+
+
+def get_max_channel_capacity(lnd):
+    max_channel_capacity = 0
+    for channel in lnd.get_channels():
+        if channel.capacity > max_channel_capacity:
+            max_channel_capacity = channel.capacity
+    return max_channel_capacity
 
 
 def get_rebalance_amount(channel):
