@@ -147,33 +147,42 @@ class Rebalance:
             reverse=reverse
         )
         for channel in sorted_channels:
-            rebalance_amount = self.get_rebalance_amount(channel)
-            if rebalance_amount < 0 and not reverse and not self.arguments.show_all:
-                continue
-            if rebalance_amount > 0 and reverse and not self.arguments.show_all:
-                continue
-            if abs(rebalance_amount) < self.min_amount and not self.arguments.show_all:
-                continue
-            rebalance_amount_formatted = f"{rebalance_amount:10,}"
-            if rebalance_amount > MAX_SATOSHIS_PER_TRANSACTION:
-                rebalance_amount_formatted += (
-                    f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
-                )
+            self.show_channel(channel, reverse)
 
-            print(f"Channel ID:       {format_boring_string(channel.chan_id)}")
-            print(f"Alias:            {format_alias(self.lnd.get_node_alias(channel.remote_pubkey))}")
-            print(f"Pubkey:           {format_boring_string(channel.remote_pubkey)}")
-            print(f"Channel Point:    {format_boring_string(channel.channel_point)}")
-            print(f"Local ratio:      {get_local_ratio(channel):.3f}")
-            print(f"Local fee rate:   {format_ppm(self.lnd.get_ppm_to(channel.chan_id))}")
-            print(f"Capacity:         {channel.capacity:10,}")
-            print(f"Remote available: {format_amount(get_remote_available(channel), 10)}")
-            print(f"Local available:  {format_amount_green(get_local_available(channel), 10)}")
-            print(f"Rebalance amount: {rebalance_amount_formatted}")
-            print(get_capacity_and_ratio_bar(channel, self.lnd.get_max_channel_capacity()))
-            print("")
+    def show_channel(self, channel, reverse=False):
+        rebalance_amount = self.get_rebalance_amount(channel)
+        if not self.arguments.show_all and not self.arguments.show_only:
+            if rebalance_amount < 0 and not reverse:
+                return
+            if rebalance_amount > 0 and reverse:
+                return
+            if abs(rebalance_amount) < self.min_amount:
+                return
+        rebalance_amount_formatted = f"{rebalance_amount:10,}"
+        if rebalance_amount > MAX_SATOSHIS_PER_TRANSACTION:
+            rebalance_amount_formatted += (
+                f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
+            )
+        print(f"Channel ID:       {format_boring_string(channel.chan_id)}")
+        print(f"Alias:            {format_alias(self.lnd.get_node_alias(channel.remote_pubkey))}")
+        print(f"Pubkey:           {format_boring_string(channel.remote_pubkey)}")
+        print(f"Channel Point:    {format_boring_string(channel.channel_point)}")
+        print(f"Local ratio:      {get_local_ratio(channel):.3f}")
+        print(f"Local fee rate:   {format_ppm(self.lnd.get_ppm_to(channel.chan_id))}")
+        print(f"Capacity:         {channel.capacity:10,}")
+        print(f"Remote available: {format_amount(get_remote_available(channel), 10)}")
+        print(f"Local available:  {format_amount_green(get_local_available(channel), 10)}")
+        print(f"Rebalance amount: {rebalance_amount_formatted}")
+        print(get_capacity_and_ratio_bar(channel, self.lnd.get_max_channel_capacity()))
+        print("")
 
     def start(self):
+        if self.arguments.list_candidates and self.arguments.show_only:
+            channel_id = self.parse_channel_id(self.arguments.show_only)
+            channel = self.get_channel_for_channel_id(channel_id)
+            self.show_channel(channel)
+            sys.exit(0)
+
         # get graph once to avoid weird delays in output
         self.output.print_line("Requesting graph from lnd...", end='\r')
         self.lnd.get_graph()
@@ -306,11 +315,18 @@ def get_argument_parser():
         action="store_true",
         help="list candidate channels for rebalance",
     )
-    list_group.add_argument(
+
+    show_options = list_group.add_mutually_exclusive_group()
+    show_options.add_argument(
         "--show-all",
         default=False,
         action="store_true",
         help="also show channels with zero rebalance amount",
+    )
+    show_options.add_argument(
+        "--show-only",
+        type=str,
+        help="only show information about the given channel",
     )
 
     direction_group = list_group.add_mutually_exclusive_group()
