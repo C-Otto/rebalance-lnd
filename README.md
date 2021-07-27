@@ -57,7 +57,7 @@ Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which 
 This list only contains channels where you should increase the outbound liquidity (you can specify `--show-all` to see
 all channels).
 
-You can also see the list of channels where the outbound liquidity should be increased by running `rebalance.py -l -o`.
+You can also see the list of channels where the inbound liquidity should be increased by running `rebalance.py -l -o`.
 
 As an example the following indicates a channel with around 17.7% of the funds
 on the local side:
