@@ -83,7 +83,7 @@ def format_amount(amount, min_width=None):
 
 
 def format_amount_green(amount, min_width=None):
-    return chalk.green(format_amount(amount, min_width))
+    return chalk.green(f"{amount:{min_width},}")
 
 
 def format_boring_string(string):
