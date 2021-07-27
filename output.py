@@ -76,12 +76,14 @@ def format_earning(msat, min_width=None):
     return chalk.green(f"{msat:,} mSAT")
 
 
-def format_amount(amount):
+def format_amount(amount, min_width=None):
+    if min_width:
+        return chalk.yellow(f"{amount:{min_width},}")
     return chalk.yellow(f"{amount:,}")
 
 
-def format_amount_green(amount):
-    return chalk.green(f"{amount:,}")
+def format_amount_green(amount, min_width=None):
+    return chalk.green(format_amount(amount, min_width))
 
 
 def format_boring_string(string):

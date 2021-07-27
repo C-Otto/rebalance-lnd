@@ -266,7 +266,7 @@ def list_candidates(lnd, candidates):
             0, candidate.local_balance - candidate.local_chan_reserve_sat
         )
         rebalance_amount_int = get_rebalance_amount(candidate)
-        rebalance_amount = f"{rebalance_amount_int:,}"
+        rebalance_amount = f"{rebalance_amount_int:10,}"
         if rebalance_amount_int > MAX_SATOSHIS_PER_TRANSACTION:
             rebalance_amount += (
                 f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
@@ -278,9 +278,9 @@ def list_candidates(lnd, candidates):
         print(f"Channel Point:    {format_boring_string(candidate.channel_point)}")
         print(f"Local ratio:      {get_local_ratio(candidate):.3f}")
         print(f"Local fee rate:   {format_ppm(get_local_fee_rate(candidate, lnd))}")
-        print(f"Capacity:         {candidate.capacity:,}")
-        print(f"Remote available: {format_amount(remote_available)}")
-        print(f"Local available:  {format_amount_green(local_available)}")
+        print(f"Capacity:         {candidate.capacity:10,}")
+        print(f"Remote available: {format_amount(remote_available, 10)}")
+        print(f"Local available:  {format_amount_green(local_available, 10)}")
         print(f"Amount for 50-50: {rebalance_amount}")
         print(get_capacity_and_ratio_bar(candidate, max_channel_capacity))
         print("")

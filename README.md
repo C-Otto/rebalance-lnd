@@ -55,10 +55,10 @@ Do not forget to update the Python dependencies as described above.
 ### List of channels
 Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which
 can be rebalanced.
-This list only contains channels where less than 50% of the total funds are on
+This list only contains channels where less than 50% of the available funds are on
 the local side of the channel.
 
-You can also see the list of channels where less than 50% of the total funds
+You can also see the list of channels where less than 50% of the available funds
 are on the remote side of the channel by running `rebalance.py -l -o`.
 
 As an example the following indicates a channel with around 17.7% of the funds
@@ -72,8 +72,8 @@ Channel Point:    abc0123[...]abc:0
 Local ratio:      0.176
 Local fee ratio:  123ppm
 Capacity:         5,000,000
-Remote balance:   4,110,320
-Local balance:    883,364
+Remote available: 4,110,320
+Local available:    883,364
 Amount for 50-50: 1,613,478
 [█████░░░░░░░░░░░░░░░░░░░░░░░]
 ```
