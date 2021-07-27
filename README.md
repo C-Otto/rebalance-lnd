@@ -239,7 +239,8 @@ Please make sure to set realistic fee rates, which at best are already known to 
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [--show-all] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE] [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL] [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [--show-all | --show-only CHANNEL] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE]
+                    [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL] [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
                     [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
@@ -253,6 +254,8 @@ list candidates:
   -l, --list-candidates
                         list candidate channels for rebalance
   --show-all            also show channels with zero rebalance amount
+  --show-only SHOW_ONLY
+                        only show information about the given channel
   -o, --outgoing        lists channels with less than 1,500,00 satoshis inbound liquidity
   -i, --incoming        (default) lists channels with less than 1,500,00 satoshis outbound liquidity
 

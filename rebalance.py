@@ -326,6 +326,7 @@ def get_argument_parser():
     show_options.add_argument(
         "--show-only",
         type=str,
+        metavar="CHANNEL",
         help="only show information about the given channel",
     )
 
