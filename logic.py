@@ -1,5 +1,6 @@
 import math
 
+import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, \
     format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red
 from routes import Routes
@@ -24,7 +25,8 @@ class Logic:
             fee_ppm_limit,
             min_local,
             min_remote,
-            output: Output
+            output: Output,
+            reckless
     ):
         self.lnd = lnd
         self.first_hop_channel = first_hop_channel
@@ -38,6 +40,7 @@ class Logic:
         self.min_local = min_local
         self.min_remote = min_remote
         self.output = output
+        self.reckless = reckless
         if not self.fee_factor:
             self.fee_factor = 1.0
 
@@ -93,7 +96,10 @@ class Logic:
         if self.fee_limit_sat:
             fee_limit_msat = self.fee_limit_sat * 1_000
         elif self.fee_ppm_limit:
-            fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
+            if self.reckless:
+                fee_limit_msat = self.fee_ppm_limit * self.amount / 1_000
+            else:
+                fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
         elif self.last_hop_channel:
             fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
             last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
@@ -322,10 +328,12 @@ class Logic:
         self.output.print_line(f"Unable to find channel with id {channel_id}!")
 
     def initialize_ignored_channels(self, routes, fee_limit_msat, min_ppm_last_hop):
+        if self.reckless:
+            self.output.print_line(output.format_error("Not ignoring economically unviable channels."))
         if self.first_hop_channel:
-            if min_ppm_last_hop:
+            if min_ppm_last_hop and not self.reckless:
                 self.ignore_low_ppm_channels_for_last_hop(min_ppm_last_hop, routes)
-            if not self.last_hop_channel:
+            if not self.last_hop_channel and not self.reckless:
                 self.ignore_last_hops_with_low_inbound(routes)
 
             # avoid me - X - me via the same channel/peer
@@ -336,7 +344,8 @@ class Logic:
                 chan_id, from_pub_key, to_pub_key, show_message=False
             )
         if self.last_hop_channel:
-            self.ignore_first_hops_with_fee_rate_higher_than_last_hop(routes)
+            if not self.reckless:
+                self.ignore_first_hops_with_fee_rate_higher_than_last_hop(routes)
             # avoid me - X - me via the same channel/peer
             chan_id = self.last_hop_channel.chan_id
             from_pub_key = self.lnd.get_own_pubkey()
@@ -344,7 +353,7 @@ class Logic:
             routes.ignore_edge_from_to(
                 chan_id, from_pub_key, to_pub_key, show_message=False
             )
-        if self.last_hop_channel and fee_limit_msat:
+        if self.last_hop_channel and fee_limit_msat and not self.reckless:
             # ignore first hops with high fee rate configured by our node (causing high missed future fees)
             max_fee_rate_first_hop = math.ceil(fee_limit_msat * 1_000 / self.amount)
             for channel in self.lnd.get_channels():

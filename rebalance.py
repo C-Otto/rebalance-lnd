@@ -66,7 +66,11 @@ class Rebalance:
 
     def get_amount(self):
         if self.arguments.amount:
-            return min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
+            if self.arguments.reckless and self.arguments.amount > MAX_SATOSHIS_PER_TRANSACTION:
+                self.output.print_line(output.format_error("Trying to send wumbo transaction"))
+                return self.arguments.amount
+            else:
+                return min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
 
         should_send = 0
         can_send = 0
@@ -195,6 +199,9 @@ class Rebalance:
                   f"nothing to do (see --min-amount)")
             sys.exit(0)
 
+        if self.arguments.reckless:
+            self.output.print_line(output.format_error("Reckless mode enabled!"))
+
         fee_factor = self.arguments.fee_factor
         fee_limit_sat = self.arguments.fee_limit
         fee_ppm_limit = self.arguments.fee_ppm_limit
@@ -210,7 +217,8 @@ class Rebalance:
             fee_ppm_limit,
             self.min_local,
             self.min_remote,
-            self.output
+            self.output,
+            self.arguments.reckless
         ).rebalance()
 
     def get_first_hop_candidates(self):
@@ -242,6 +250,16 @@ def main():
             print("--percentage must be between 1 and 100")
             argument_parser.print_help()
             sys.exit(1)
+
+    if arguments.reckless and not arguments.amount:
+        print("You need to specify an amount for --reckless")
+        argument_parser.print_help()
+        sys.exit(1)
+
+    if arguments.reckless and not arguments.fee_limit and not arguments.fee_ppm_limit:
+        print("You need to specify a fee limit (-fee-limit or --fee-ppm-limit) for --reckless")
+        argument_parser.print_help()
+        sys.exit(1)
 
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
@@ -366,6 +384,14 @@ def get_argument_parser():
         help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
         "out of excluded channels)",
     )
+    rebalance_group.add_argument(
+        "--reckless",
+        action="store_true",
+        default=False,
+        help="Allow rebalance transactions that are not economically viable. "
+             "You might also want to set --min-local 0 and --min-local 0. "
+             "If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit."
+    )
     fee_group = rebalance_group.add_mutually_exclusive_group()
     fee_group.add_argument(
         "--fee-factor",
@@ -375,7 +401,7 @@ def get_argument_parser():
         "income, scaled by this factor. As an example, with --fee-factor 1.5, "
         "routes that cost at most 150%% of the expected earnings are tried. Use values "
         "smaller than 1.0 to restrict routes to only consider those earning "
-        "more/costing less.",
+        "more/costing less. This factor is ignored with --reckless.",
     )
     fee_group.add_argument(
         "--fee-limit",

@@ -182,6 +182,8 @@ However, keep in mind that you will only earn those fees if your node actually f
 The rebalance transaction is not performed if the transaction fees plus the implicit costs (1) are higher than the
 possible future earnings (2).
 
+**If you really want to, you may disable these safety checks with `--reckless`.**
+
 ### Example
 You have lots of funds in channel `11111111` and nothing in channel `22222222`.
 You would like to send funds through channel `11111111` (source channel) through the lightning network, and finally
@@ -237,7 +239,8 @@ Please make sure to set realistic fee rates, which at best are already known to 
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [--show-all] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT] [--min-amount MIN_AMOUNT] [-e EXCLUDE] [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [--show-all] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE] [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL] [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
+                    [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -262,13 +265,20 @@ rebalance:
                         Channel ID of the incoming channel (funds will be sent to this channel). You may also use -1 to choose a random candidate.
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not specified, the amount computed for a perfect rebalance will be used (up to the maximum of 4,294,967 satoshis)
+  -p PERCENTAGE, --percentage PERCENTAGE
+                        Set the amount to a percentage of the computed amount. As an example, if this is set to 50, half of the computed amount will be used. See --amount.
   --min-amount MIN_AMOUNT
                         (Default: 10,000) If the given or computed rebalance amount is below this limit, nothing is done.
+  --min-local MIN_LOCAL
+                        (Default: 1,000,000) Ensure that the channels have at least this amount as outbound liquidity.
+  --min-remote MIN_REMOTE
+                        (Default: 1,000,000) Ensure that the channels have at least this amount as inbound liquidity.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel ID as the outgoing channel (no funds will be taken out of excluded channels)
+  --reckless            Allow rebalance transactions that are not economically viable. You might also want to set --min-local 0 and --min-local 0. If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit.
   --fee-factor FEE_FACTOR
                         (default: 1.0) Compare the costs against the expected income, scaled by this factor. As an example, with --fee-factor 1.5, routes that cost at most 150% of the expected earnings are tried. Use values smaller than 1.0 to restrict
-                        routes to only consider those earning more/costing less.
+                        routes to only consider those earning more/costing less. This factor is ignored with --reckless.
   --fee-limit FEE_LIMIT
                         If set, only consider rebalance transactions that cost up to the given number of satoshis.
   --fee-ppm-limit FEE_PPM_LIMIT
