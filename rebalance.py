@@ -163,12 +163,14 @@ class Rebalance:
             rebalance_amount_formatted += (
                 f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
+        own_ppm = self.lnd.get_ppm_to(channel.chan_id)
+        remote_ppm = self.lnd.get_ppm_from(channel.chan_id)
         print(f"Channel ID:       {format_boring_string(channel.chan_id)}")
         print(f"Alias:            {format_alias(self.lnd.get_node_alias(channel.remote_pubkey))}")
         print(f"Pubkey:           {format_boring_string(channel.remote_pubkey)}")
         print(f"Channel Point:    {format_boring_string(channel.channel_point)}")
         print(f"Local ratio:      {get_local_ratio(channel):.3f}")
-        print(f"Local fee rate:   {format_ppm(self.lnd.get_ppm_to(channel.chan_id))}")
+        print(f"Fee rates:        {format_ppm(own_ppm)} (own), {format_ppm(remote_ppm)} (peer)")
         print(f"Capacity:         {channel.capacity:10,}")
         print(f"Remote available: {format_amount(get_remote_available(channel), 10)}")
         print(f"Local available:  {format_amount_green(get_local_available(channel), 10)}")
