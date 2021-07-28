@@ -176,11 +176,26 @@ class Rebalance:
         print(get_capacity_and_ratio_bar(channel, self.lnd.get_max_channel_capacity()))
         print("")
 
+    #addition list all chanids
+    def list_all_chanids(self, reverse=False):
+        candidates = sorted(
+            self.lnd.get_channels(active_only=True),
+            key=lambda c: self.get_sort_key(c),
+            reverse=reverse
+            )
+        for candidate in candidates:
+            print(f"ChanID: {format_boring_string(candidate.chan_id)} | {format_amount_green(get_local_available(candidate), 10)}|{format_amount(get_remote_available(candidate), 10)} | Alias: {format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))}")
+
     def start(self):
         if self.arguments.list_candidates and self.arguments.show_only:
             channel_id = self.parse_channel_id(self.arguments.show_only)
             channel = self.get_channel_for_channel_id(channel_id)
             self.show_channel(channel)
+            sys.exit(0)
+
+        ##addition list all chanids
+        if self.arguments.listallchanids:
+            self.list_all_chanids(reverse=False)
             sys.exit(0)
 
         if self.arguments.list_candidates:
@@ -280,7 +295,9 @@ def main():
 
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
-    if not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
+
+    #addition list all chanids
+    if not arguments.listallchanids and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -300,6 +317,14 @@ def get_argument_parser():
         default="localhost:10009",
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
+    )
+    #addition list all chanids
+    parser.add_argument(
+       "-la",
+        "--list-chanids",
+        action="store_true",
+        dest="listallchanids",
+        help="list all active candidates' chanids",
     )
     list_group = parser.add_argument_group(
         "list candidates", "Show the unbalanced channels."
