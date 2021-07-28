@@ -193,7 +193,7 @@ class Rebalance:
             self.show_channel(channel)
             sys.exit(0)
 
-        ##addition list all chanids
+        #addition list all chanids
         if self.arguments.listallchanids:
             self.list_all_chanids(reverse=False)
             sys.exit(0)
