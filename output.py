@@ -100,9 +100,15 @@ def format_error(error):
 
 def print_bar(width, length):
     result = chalk.bold("[")
-    for _ in range(0, length):
-        result += chalk.bold(u"\u2588")
-    for _ in range(length, width):
-        result += u"\u2591"
+    if sys.stdout.encoding.lower().startswith('utf'):
+        for _ in range(0, length):
+            result += chalk.bold(u"\u2588")
+        for _ in range(length, width):
+            result += u"\u2591"
+    else:
+        for _ in range(0, length):
+            result += chalk.bold("X")
+        for _ in range(length, width):
+            result += u"."
     result += chalk.bold("]")
     return result
