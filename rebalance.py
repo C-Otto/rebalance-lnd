@@ -178,15 +178,14 @@ class Rebalance:
         print(get_capacity_and_ratio_bar(channel, self.lnd.get_max_channel_capacity()))
         print("")
 
-    #addition list all chanids
-    def list_all_chanids(self, reverse=False):
+    def list_channels_compact(self):
         candidates = sorted(
             self.lnd.get_channels(active_only=True),
             key=lambda c: self.get_sort_key(c),
-            reverse=reverse
+            reverse=False
             )
         for candidate in candidates:
-            print(f"ChanID: {format_boring_string(candidate.chan_id)} | {format_amount_green(get_local_available(candidate), 10)}|{format_amount(get_remote_available(candidate), 10)} | Alias: {format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))}")
+            print(f"{format_boring_string(candidate.chan_id)} | {format_amount_green(get_local_available(candidate), 11)} | {format_amount(get_remote_available(candidate), 11)} | {format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))}")
 
     def start(self):
         if self.arguments.list_candidates and self.arguments.show_only:
@@ -195,9 +194,8 @@ class Rebalance:
             self.show_channel(channel)
             sys.exit(0)
 
-        #addition list all chanids
-        if self.arguments.listallchanids:
-            self.list_all_chanids(reverse=False)
+        if self.arguments.listchannelscompact:
+            self.list_channels_compact()
             sys.exit(0)
 
         if self.arguments.list_candidates:
@@ -298,8 +296,7 @@ def main():
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
 
-    #addition list all chanids
-    if not arguments.listallchanids and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
+    if not arguments.listchannelscompact and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -320,13 +317,12 @@ def get_argument_parser():
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
     )
-    #addition list all chanids
     parser.add_argument(
-       "-la",
-        "--list-chanids",
+       "-cl",
+        "--compact-list",
         action="store_true",
-        dest="listallchanids",
-        help="list all active candidates' chanids",
+        dest="listchannelscompact",
+        help="Shows a compact list of all channels, one per line including id, inbound/outbound liquidity and alias",
     )
     list_group = parser.add_argument_group(
         "list candidates", "Show the unbalanced channels."
