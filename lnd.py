@@ -1,6 +1,6 @@
 import base64
-import codecs
 import os
+from pathlib import Path
 from functools import lru_cache
 from os.path import expanduser
 
@@ -20,9 +20,9 @@ class Lnd:
         # ]
         # grpc_channel = grpc.secure_channel(
         #     server, combined_credentials, channel_options
-        # )
-        self.stub = lnrpc.LightningStub(grpc_channel)
-        self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
+        # # )
+        # self.stub = lnrpc.LightningStub(grpc_channel)
+        # self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
 
         credential_path = os.getenv("LND_CRED_PATH", None)
         if credential_path == None:
@@ -42,55 +42,28 @@ class Lnd:
             cert_filepath=tls
         )
 
-    # @staticmethod
-    # def get_credentials(lnd_dir):
-    #     with open(f"{lnd_dir}/tls.cert", "rb") as f:
-    #         tls_certificate = f.read()
-    #     ssl_credentials = grpc.ssl_channel_credentials(tls_certificate)
-    #     with open(f"{lnd_dir}/data/chain/bitcoin/mainnet/admin.macaroon", "rb") as f:
-    #         macaroon = codecs.encode(f.read(), "hex")
-    #     auth_credentials = grpc.metadata_call_credentials(
-    #         lambda _, callback: callback([("macaroon", macaroon)], None)
-    #     )
-    #     combined_credentials = grpc.composite_channel_credentials(
-    #         ssl_credentials, auth_credentials
-    #     )
-    #     return combined_credentials
-
     @lru_cache(maxsize=None)
     def get_info(self):
-        return self.stub.GetInfo(ln.GetInfoRequest())
+        return self.lnd.get_info()
 
     @lru_cache(maxsize=None)
     def get_node_alias(self, pub_key):
-        return self.stub.GetNodeInfo(
-            ln.NodeInfoRequest(pub_key=pub_key, include_channels=False)
-        ).node.alias
+        return self.lnd.get_node_info(pub_key, include_channels=False).node.alias
 
     def get_own_pubkey(self):
         return self.get_info().identity_pubkey
 
     def generate_invoice(self, memo, amount):
-        invoice_request = ln.Invoice(
-            memo=memo,
-            value=amount,
+        return self.lnd.decode_pay_req(
+            self.lnd.add_invoice(
+                memo=memo,
+                value=amount,
+            ).payment_request
         )
-        add_invoice_response = self.stub.AddInvoice(invoice_request)
-        return self.decode_payment_request(add_invoice_response.payment_request)
-
-    def decode_payment_request(self, payment_request):
-        request = ln.PayReqString(
-            pay_req=payment_request,
-        )
-        return self.stub.DecodePayReq(request)
 
     @lru_cache(maxsize=None)
     def get_channels(self, active_only=False):
-        return self.stub.ListChannels(
-            ln.ListChannelsRequest(
-                active_only=active_only,
-            )
-        ).channels
+        return self.lnd.list_channels(active_only=active_only).channels
 
     @lru_cache(maxsize=None)
     def get_max_channel_capacity(self):
@@ -117,25 +90,36 @@ class Lnd:
             last_hop_pubkey = base64.b16decode(pub_key, True)
         else:
             last_hop_pubkey = None
-        request = ln.QueryRoutesRequest(
-            pub_key=self.get_own_pubkey(),
-            last_hop_pubkey=last_hop_pubkey,
-            amt=amount,
-            ignored_pairs=ignored_pairs,
-            fee_limit=fee_limit,
-            ignored_nodes=ignored_nodes,
-            use_mission_control=True,
-            outgoing_chan_id=first_hop_channel_id,
-        )
+        # request = ln.QueryRoutesRequest(
+        #     pub_key=self.get_own_pubkey(),
+        #     last_hop_pubkey=last_hop_pubkey,
+        #     amt=amount,
+        #     ignored_pairs=ignored_pairs,
+        #     fee_limit=fee_limit,
+        #     ignored_nodes=ignored_nodes,
+        #     use_mission_control=True,
+        #     outgoing_chan_id=first_hop_channel_id,
+        # )
+
         try:
-            response = self.stub.QueryRoutes(request)
+            # response = self.stub.QueryRoutes(request)
+            response = self.lnd.query_routes(
+                pub_key=self.get_own_pubkey(),
+                last_hop_pubkey=last_hop_pubkey,
+                amt=amount,
+                ignored_pairs=ignored_pairs,
+                fee_limit=fee_limit,
+                ignored_nodes=ignored_nodes,
+                use_mission_control=True,
+                outgoing_chan_id=first_hop_channel_id,            
+            )
             return response.routes
         except:
             return None
 
     @lru_cache(maxsize=None)
     def get_edge(self, channel_id):
-        return self.stub.GetChanInfo(ln.ChanInfoRequest(chan_id=channel_id))
+        return self.lnd.get_chan_info(channel_id)
 
     def get_policy_to(self, channel_id):
         edge = self.get_edge(channel_id)
@@ -161,11 +145,12 @@ class Lnd:
         last_hop = route.hops[-1]
         last_hop.mpp_record.payment_addr = payment_request.payment_addr
         last_hop.mpp_record.total_amt_msat = payment_request.num_msat
-        request = lnrouter.SendToRouteRequest(route=route)
-        request.payment_hash = self.hex_string_to_bytes(payment_request.payment_hash)
-        return self.router_stub.SendToRoute(request)
+        # request = lnrouter.SendToRouteRequest(route=route)
+        # request.payment_hash = self.hex_string_to_bytes(payment_request.payment_hash)
 
-    @staticmethod
-    def hex_string_to_bytes(hex_string):
-        decode_hex = codecs.getdecoder("hex_codec")
-        return decode_hex(hex_string)[0]
+        route.hops[-1].mpp_record.total_amt_msat = payment_request.num_msat
+        route.hops[-1].mpp_record.payment_addr = payment_request.payment_addr
+        return self.lnd.send_to_route(
+            pay_hash = bytes.fromhex(payment_request.payment_hash),
+            route=route
+        )
