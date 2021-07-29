@@ -102,17 +102,15 @@ class Logic:
                 fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
         elif self.last_hop_channel:
             fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
-            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
             if fee_rate > MAX_FEE_RATE:
+                last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
                 self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} "
                     f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
-            ppm_from_last_hop = self.lnd.get_ppm_from(self.last_hop_channel.chan_id)
-            acceptable_fee_rate = fee_rate - ppm_from_last_hop
-            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, acceptable_fee_rate, policy) * 1_000
+            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, fee_rate, policy) * 1_000
             fee_limit_msat = max(1_000, fee_limit_msat)
         else:
             return None
