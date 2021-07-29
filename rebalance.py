@@ -185,7 +185,11 @@ class Rebalance:
             reverse=False
             )
         for candidate in candidates:
-            print(f"{format_boring_string(candidate.chan_id)} | {format_amount_green(get_local_available(candidate), 11)} | {format_amount(get_remote_available(candidate), 11)} | {format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))}")
+            id_formatted = format_boring_string(candidate.chan_id)
+            local_formatted = format_amount_green(get_local_available(candidate), 11)
+            remote_formatted = format_amount(get_remote_available(candidate), 11)
+            alias_formatted = format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))
+            print(f"{id_formatted} | {local_formatted} | {remote_formatted} | {alias_formatted}")
 
     def start(self):
         if self.arguments.list_candidates and self.arguments.show_only:
@@ -194,7 +198,7 @@ class Rebalance:
             self.show_channel(channel)
             sys.exit(0)
 
-        if self.arguments.listchannelscompact:
+        if self.arguments.listcompact:
             self.list_channels_compact()
             sys.exit(0)
 
@@ -296,7 +300,7 @@ def main():
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
 
-    if not arguments.listchannelscompact and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
+    if not arguments.listcompact and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -316,13 +320,6 @@ def get_argument_parser():
         default="localhost:10009",
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
-    )
-    parser.add_argument(
-       "-cl",
-        "--compact-list",
-        action="store_true",
-        dest="listchannelscompact",
-        help="Shows a compact list of all channels, one per line including id, inbound/outbound liquidity and alias",
     )
     list_group = parser.add_argument_group(
         "list candidates", "Show the unbalanced channels."
@@ -346,6 +343,13 @@ def get_argument_parser():
         type=str,
         metavar="CHANNEL",
         help="only show information about the given channel",
+    )
+    show_options.add_argument(
+        "-c",
+        "--compact",
+        action="store_true",
+        dest="listcompact",
+        help="Shows a compact list of all channels, one per line including ID, inbound/outbound liquidity, and alias",
     )
 
     direction_group = list_group.add_mutually_exclusive_group()
