@@ -1,8 +1,7 @@
 import math
 
-import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, \
-    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red
+    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1_000
@@ -50,7 +49,7 @@ class Logic:
         first_channel_id = 0
         if self.first_hop_channel:
             first_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey))
-            first_channel_id = format_boring_string(self.first_hop_channel.chan_id)
+            first_channel_id = format_channel_id(self.first_hop_channel.chan_id)
         if self.last_hop_channel:
             last_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey))
         amount_formatted = format_amount(self.amount)
@@ -368,7 +367,7 @@ class Logic:
             if self.low_outbound_liquidity_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
             if channel.chan_id in self.excluded:
-                self.output.print_line(f"Channel {format_boring_string(channel.chan_id)} is excluded:")
+                self.output.print_line(f"Channel {format_channel_id(channel.chan_id)} is excluded:")
                 routes.ignore_first_hop(channel)
 
     def ignore_low_ppm_channels_for_last_hop(self, min_ppm_last_hop, routes):

@@ -24,7 +24,7 @@ class Output:
         self.print_line(route_str)
 
     def get_channel_representation(self, chan_id, pubkey_to, pubkey_from=None):
-        channel_id_formatted = format_boring_string(chan_id)
+        channel_id_formatted = format_channel_id(chan_id)
         if pubkey_from:
             alias_to_formatted = format_alias(self.lnd.get_node_alias(pubkey_to))
             alias_from = format_alias(self.lnd.get_node_alias(pubkey_from))
@@ -90,6 +90,10 @@ def format_amount_green(amount, min_width=None):
 
 def format_boring_string(string):
     return chalk.bg_black(chalk.gray(string))
+
+
+def format_channel_id(channel_id):
+    return format_boring_string(channel_id)
 
 
 def format_warning(warning):

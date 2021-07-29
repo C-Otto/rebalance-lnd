@@ -8,10 +8,10 @@ import sys
 
 from yachalk import chalk
 
-import output
 from lnd import Lnd
 from logic import Logic
-from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, print_bar
+from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, \
+    print_bar, format_channel_id, format_error
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -80,7 +80,7 @@ class Rebalance:
     def get_amount(self):
         if self.arguments.amount:
             if self.arguments.reckless and self.arguments.amount > MAX_SATOSHIS_PER_TRANSACTION:
-                self.output.print_line(output.format_error("Trying to send wumbo transaction"))
+                self.output.print_line(format_error("Trying to send wumbo transaction"))
                 return self.arguments.amount
             else:
                 return min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
@@ -94,8 +94,8 @@ class Rebalance:
             if can_send < 0:
                 from_alias = self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)
                 print(
-                    f"Error: source channel {output.format_boring_string(self.first_hop_channel.chan_id)} to "
-                    f"{output.format_alias(from_alias)} needs to {chalk.green('receive')} funds to be within bounds,"
+                    f"Error: source channel {format_channel_id(self.first_hop_channel.chan_id)} to "
+                    f"{format_alias(from_alias)} needs to {chalk.green('receive')} funds to be within bounds,"
                     f" you want it to {chalk.red('send')} funds. "
                     "Specify amount manually if this was intended."
                 )
@@ -110,8 +110,8 @@ class Rebalance:
             if can_receive < 0:
                 to_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
                 print(
-                    f"Error: target channel {output.format_boring_string(self.last_hop_channel.chan_id)} to "
-                    f"{output.format_alias(to_alias)} needs to {chalk.green('send')} funds to be within bounds, "
+                    f"Error: target channel {format_channel_id(self.last_hop_channel.chan_id)} to "
+                    f"{format_alias(to_alias)} needs to {chalk.green('send')} funds to be within bounds, "
                     f"you want it to {chalk.red('receive')} funds."
                     f" Specify amount manually if this was intended."
                 )
@@ -165,7 +165,7 @@ class Rebalance:
             )
         own_ppm = self.lnd.get_ppm_to(channel.chan_id)
         remote_ppm = self.lnd.get_ppm_from(channel.chan_id)
-        print(f"Channel ID:       {format_boring_string(channel.chan_id)}")
+        print(f"Channel ID:       {format_channel_id(channel.chan_id)}")
         print(f"Alias:            {format_alias(self.lnd.get_node_alias(channel.remote_pubkey))}")
         print(f"Pubkey:           {format_boring_string(channel.remote_pubkey)}")
         print(f"Channel Point:    {format_boring_string(channel.channel_point)}")
@@ -185,7 +185,7 @@ class Rebalance:
             reverse=False
             )
         for candidate in candidates:
-            id_formatted = format_boring_string(candidate.chan_id)
+            id_formatted = format_channel_id(candidate.chan_id)
             local_formatted = format_amount_green(get_local_available(candidate), 11)
             remote_formatted = format_amount(get_remote_available(candidate), 11)
             alias_formatted = format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))
@@ -236,7 +236,7 @@ class Rebalance:
             sys.exit(0)
 
         if self.arguments.reckless:
-            self.output.print_line(output.format_error("Reckless mode enabled!"))
+            self.output.print_line(format_error("Reckless mode enabled!"))
 
         fee_factor = self.arguments.fee_factor
         fee_limit_sat = self.arguments.fee_limit
