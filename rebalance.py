@@ -300,7 +300,8 @@ def main():
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
 
-    if not arguments.listcompact and not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
+    no_channel_id_given = not last_hop_channel_id and not first_hop_channel_id
+    if not arguments.listcompact and not arguments.list_candidates and no_channel_id_given:
         argument_parser.print_help()
         sys.exit(1)
 
