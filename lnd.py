@@ -57,7 +57,7 @@ class Lnd:
         return self.lnd.decode_pay_req(
             self.lnd.add_invoice(
                 memo=memo,
-                value=amount,
+                value=int(amount),
             ).payment_request
         )
 
