@@ -1,6 +1,7 @@
 import math
 
-from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, \
+import output
+from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
     format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
 
