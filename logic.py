@@ -1,6 +1,5 @@
 import math
 
-import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
     format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
@@ -271,7 +270,7 @@ class Logic:
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
             if self.reckless:
-                self.output.print_line(output.format_error("Considering route with high fees"))
+                self.output.print_line(format_error("Considering route with high fees"))
                 return False
             difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
             first_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[0].pub_key))
@@ -333,7 +332,7 @@ class Logic:
 
     def initialize_ignored_channels(self, routes, fee_limit_msat, min_ppm_last_hop):
         if self.reckless:
-            self.output.print_line(output.format_error("Also considering economically unviable channels for routes."))
+            self.output.print_line(format_error("Also considering economically unviable channels for routes."))
         if self.first_hop_channel:
             if min_ppm_last_hop and not self.reckless:
                 self.ignore_low_ppm_channels_for_last_hop(min_ppm_last_hop, routes)
