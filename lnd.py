@@ -11,19 +11,6 @@ MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
 class Lnd:
     def __init__(self, lnd_dir, server):
-        # os.environ["GRPC_SSL_CIPHER_SUITES"] = "HIGH+ECDSA"
-        # lnd_dir = expanduser(lnd_dir)
-        # combined_credentials = self.get_credentials(lnd_dir)
-        # channel_options = [
-        #     ("grpc.max_message_length", MESSAGE_SIZE_MB),
-        #     ("grpc.max_receive_message_length", MESSAGE_SIZE_MB),
-        # ]
-        # grpc_channel = grpc.secure_channel(
-        #     server, combined_credentials, channel_options
-        # # )
-        # self.stub = lnrpc.LightningStub(grpc_channel)
-        # self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
-
         credential_path = os.getenv("LND_CRED_PATH", None)
         if credential_path == None:
             credential_path = Path("/home/skorn/.lnd/")
@@ -33,7 +20,7 @@ class Lnd:
             mac = str(credential_path.joinpath("admin.macaroon").absolute())
             
 
-        node_ip = "192.168.1.58"
+        node_ip = os.getenv("LND_NODE_IP","localhost")
         tls = str(credential_path.joinpath("tls.cert").absolute())
 
         self.lnd = LNDClient(
