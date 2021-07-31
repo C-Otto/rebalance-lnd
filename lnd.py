@@ -13,7 +13,7 @@ class Lnd:
     def __init__(self, lnd_dir, server):
         credential_path = os.getenv("LND_CRED_PATH", None)
         if credential_path == None:
-            credential_path = Path("/home/skorn/.lnd/")
+            credential_path = Path(os.getenv("HOME")).joinpath(".lnd")
             mac = str(credential_path.joinpath("data/chain/bitcoin/mainnet/admin.macaroon").absolute())
         else:
             credential_path = Path(credential_path)
@@ -77,19 +77,8 @@ class Lnd:
             last_hop_pubkey = base64.b16decode(pub_key, True)
         else:
             last_hop_pubkey = None
-        # request = ln.QueryRoutesRequest(
-        #     pub_key=self.get_own_pubkey(),
-        #     last_hop_pubkey=last_hop_pubkey,
-        #     amt=amount,
-        #     ignored_pairs=ignored_pairs,
-        #     fee_limit=fee_limit,
-        #     ignored_nodes=ignored_nodes,
-        #     use_mission_control=True,
-        #     outgoing_chan_id=first_hop_channel_id,
-        # )
 
         try:
-            # response = self.stub.QueryRoutes(request)
             response = self.lnd.query_routes(
                 pub_key=self.get_own_pubkey(),
                 last_hop_pubkey=last_hop_pubkey,
@@ -129,12 +118,6 @@ class Lnd:
         return self.get_policy_from(channel_id).fee_rate_milli_msat
 
     def send_payment(self, payment_request, route):
-        last_hop = route.hops[-1]
-        last_hop.mpp_record.payment_addr = payment_request.payment_addr
-        last_hop.mpp_record.total_amt_msat = payment_request.num_msat
-        # request = lnrouter.SendToRouteRequest(route=route)
-        # request.payment_hash = self.hex_string_to_bytes(payment_request.payment_hash)
-
         route.hops[-1].mpp_record.total_amt_msat = payment_request.num_msat
         route.hops[-1].mpp_record.payment_addr = payment_request.payment_addr
         return self.lnd.send_to_route(
