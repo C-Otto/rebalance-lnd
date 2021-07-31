@@ -1,8 +1,7 @@
 import math
 
-import output
-from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, format_boring_string, \
-    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red
+from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
+    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1_000
@@ -11,8 +10,6 @@ MAX_FEE_RATE = 2_000
 
 
 class Logic:
-    excluded = []
-
     def __init__(
             self,
             lnd,
@@ -32,8 +29,7 @@ class Logic:
         self.first_hop_channel = first_hop_channel
         self.last_hop_channel = last_hop_channel
         self.amount = amount
-        if excluded:
-            self.excluded = excluded
+        self.excluded = excluded
         self.fee_factor = fee_factor
         self.fee_limit_sat = fee_limit_sat
         self.fee_ppm_limit = fee_ppm_limit
@@ -50,7 +46,7 @@ class Logic:
         first_channel_id = 0
         if self.first_hop_channel:
             first_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey))
-            first_channel_id = format_boring_string(self.first_hop_channel.chan_id)
+            first_channel_id = format_channel_id(self.first_hop_channel.chan_id)
         if self.last_hop_channel:
             last_hop_alias_formatted = format_alias(self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey))
         amount_formatted = format_amount(self.amount)
@@ -102,17 +98,15 @@ class Logic:
                 fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
         elif self.last_hop_channel:
             fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
-            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
             if fee_rate > MAX_FEE_RATE:
+                last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
                 self.output.print_line(
                     f"Calculating using capped fee rate {MAX_FEE_RATE} "
                     f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
                 )
                 fee_rate = MAX_FEE_RATE
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
-            ppm_from_last_hop = self.lnd.get_ppm_from(self.last_hop_channel.chan_id)
-            acceptable_fee_rate = fee_rate - ppm_from_last_hop
-            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, acceptable_fee_rate, policy) * 1_000
+            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, fee_rate, policy) * 1_000
             fee_limit_msat = max(1_000, fee_limit_msat)
         else:
             return None
@@ -273,7 +267,7 @@ class Logic:
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
             if self.reckless:
-                self.output.print_line(output.format_error("Considering route with high fees"))
+                self.output.print_line(format_error("Considering route with high fees"))
                 return False
             difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
             first_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[0].pub_key))
@@ -335,7 +329,10 @@ class Logic:
 
     def initialize_ignored_channels(self, routes, fee_limit_msat, min_ppm_last_hop):
         if self.reckless:
-            self.output.print_line(output.format_error("Also considering economically unviable channels for routes."))
+            self.output.print_line(format_error("Also considering economically unviable channels for routes."))
+        for chan_id in self.excluded:
+            self.output.print_line(f"Channel {format_channel_id(chan_id)} is excluded:")
+            routes.ignore_channel(chan_id)
         if self.first_hop_channel:
             if min_ppm_last_hop and not self.reckless:
                 self.ignore_low_ppm_channels_for_last_hop(min_ppm_last_hop, routes)
@@ -369,9 +366,6 @@ class Logic:
         for channel in self.lnd.get_channels():
             if self.low_outbound_liquidity_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
-            if channel.chan_id in self.excluded:
-                self.output.print_line(f"Channel {format_boring_string(channel.chan_id)} is excluded:")
-                routes.ignore_first_hop(channel)
 
     def ignore_low_ppm_channels_for_last_hop(self, min_ppm_last_hop, routes):
         for channel in self.lnd.get_channels():

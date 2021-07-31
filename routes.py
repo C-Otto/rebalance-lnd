@@ -128,6 +128,11 @@ class Routes:
         for hop in ignore:
             self.ignore_hop_on_route(hop, route)
 
+    def ignore_channel(self, chan_id):
+        edge = self.lnd.get_edge(chan_id)
+        self.ignore_edge_from_to(chan_id, edge.node1_pub, edge.node2_pub)
+        self.ignore_edge_from_to(chan_id, edge.node2_pub, edge.node1_pub)
+
     def ignore_edge_from_to(self, chan_id, from_pubkey, to_pubkey, show_message=True):
         pair = {
             "from": base64.b16decode(from_pubkey, True),

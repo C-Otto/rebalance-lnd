@@ -1,3 +1,2 @@
-six==1.16.0
-yachalk==0.1.2
 lnd-grpc-client==0.3.10
+yachalk==0.1.4

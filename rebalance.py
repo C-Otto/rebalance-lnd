@@ -8,10 +8,10 @@ import sys
 
 from yachalk import chalk
 
-import output
 from lnd import Lnd
 from logic import Logic
-from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, print_bar
+from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, \
+    print_bar, format_channel_id, format_error
 
 MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
@@ -80,7 +80,7 @@ class Rebalance:
     def get_amount(self):
         if self.arguments.amount:
             if self.arguments.reckless and self.arguments.amount > MAX_SATOSHIS_PER_TRANSACTION:
-                self.output.print_line(output.format_error("Trying to send wumbo transaction"))
+                self.output.print_line(format_error("Trying to send wumbo transaction"))
                 return self.arguments.amount
             else:
                 return min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
@@ -94,8 +94,8 @@ class Rebalance:
             if can_send < 0:
                 from_alias = self.lnd.get_node_alias(self.first_hop_channel.remote_pubkey)
                 print(
-                    f"Error: source channel {output.format_boring_string(self.first_hop_channel.chan_id)} to "
-                    f"{output.format_alias(from_alias)} needs to {chalk.green('receive')} funds to be within bounds,"
+                    f"Error: source channel {format_channel_id(self.first_hop_channel.chan_id)} to "
+                    f"{format_alias(from_alias)} needs to {chalk.green('receive')} funds to be within bounds,"
                     f" you want it to {chalk.red('send')} funds. "
                     "Specify amount manually if this was intended."
                 )
@@ -110,8 +110,8 @@ class Rebalance:
             if can_receive < 0:
                 to_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
                 print(
-                    f"Error: target channel {output.format_boring_string(self.last_hop_channel.chan_id)} to "
-                    f"{output.format_alias(to_alias)} needs to {chalk.green('send')} funds to be within bounds, "
+                    f"Error: target channel {format_channel_id(self.last_hop_channel.chan_id)} to "
+                    f"{format_alias(to_alias)} needs to {chalk.green('send')} funds to be within bounds, "
                     f"you want it to {chalk.red('receive')} funds."
                     f" Specify amount manually if this was intended."
                 )
@@ -163,12 +163,14 @@ class Rebalance:
             rebalance_amount_formatted += (
                 f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
             )
-        print(f"Channel ID:       {format_boring_string(channel.chan_id)}")
+        own_ppm = self.lnd.get_ppm_to(channel.chan_id)
+        remote_ppm = self.lnd.get_ppm_from(channel.chan_id)
+        print(f"Channel ID:       {format_channel_id(channel.chan_id)}")
         print(f"Alias:            {format_alias(self.lnd.get_node_alias(channel.remote_pubkey))}")
         print(f"Pubkey:           {format_boring_string(channel.remote_pubkey)}")
         print(f"Channel Point:    {format_boring_string(channel.channel_point)}")
         print(f"Local ratio:      {get_local_ratio(channel):.3f}")
-        print(f"Local fee rate:   {format_ppm(self.lnd.get_ppm_to(channel.chan_id))}")
+        print(f"Fee rates:        {format_ppm(own_ppm)} (own), {format_ppm(remote_ppm)} (peer)")
         print(f"Capacity:         {channel.capacity:10,}")
         print(f"Remote available: {format_amount(get_remote_available(channel), 10)}")
         print(f"Local available:  {format_amount_green(get_local_available(channel), 10)}")
@@ -176,11 +178,28 @@ class Rebalance:
         print(get_capacity_and_ratio_bar(channel, self.lnd.get_max_channel_capacity()))
         print("")
 
+    def list_channels_compact(self):
+        candidates = sorted(
+            self.lnd.get_channels(active_only=True),
+            key=lambda c: self.get_sort_key(c),
+            reverse=False
+            )
+        for candidate in candidates:
+            id_formatted = format_channel_id(candidate.chan_id)
+            local_formatted = format_amount_green(get_local_available(candidate), 11)
+            remote_formatted = format_amount(get_remote_available(candidate), 11)
+            alias_formatted = format_alias(self.lnd.get_node_alias(candidate.remote_pubkey))
+            print(f"{id_formatted} | {local_formatted} | {remote_formatted} | {alias_formatted}")
+
     def start(self):
         if self.arguments.list_candidates and self.arguments.show_only:
             channel_id = self.parse_channel_id(self.arguments.show_only)
             channel = self.get_channel_for_channel_id(channel_id)
             self.show_channel(channel)
+            sys.exit(0)
+
+        if self.arguments.listcompact:
+            self.list_channels_compact()
             sys.exit(0)
 
         if self.arguments.list_candidates:
@@ -217,12 +236,15 @@ class Rebalance:
             sys.exit(0)
 
         if self.arguments.reckless:
-            self.output.print_line(output.format_error("Reckless mode enabled!"))
+            self.output.print_line(format_error("Reckless mode enabled!"))
 
         fee_factor = self.arguments.fee_factor
         fee_limit_sat = self.arguments.fee_limit
         fee_ppm_limit = self.arguments.fee_ppm_limit
-        excluded = self.arguments.exclude
+        excluded = []
+        if self.arguments.exclude:
+            for chan_id in self.arguments.exclude:
+                excluded.append(self.parse_channel_id(chan_id))
         return Logic(
             self.lnd,
             self.first_hop_channel,
@@ -280,7 +302,9 @@ def main():
 
     first_hop_channel_id = vars(arguments)["from"]
     last_hop_channel_id = arguments.to
-    if not arguments.list_candidates and last_hop_channel_id is None and first_hop_channel_id is None:
+
+    no_channel_id_given = not last_hop_channel_id and not first_hop_channel_id
+    if not arguments.listcompact and not arguments.list_candidates and no_channel_id_given:
         argument_parser.print_help()
         sys.exit(1)
 
@@ -323,6 +347,13 @@ def get_argument_parser():
         type=str,
         metavar="CHANNEL",
         help="only show information about the given channel",
+    )
+    show_options.add_argument(
+        "-c",
+        "--compact",
+        action="store_true",
+        dest="listcompact",
+        help="Shows a compact list of all channels, one per line including ID, inbound/outbound liquidity, and alias",
     )
 
     direction_group = list_group.add_mutually_exclusive_group()
@@ -404,10 +435,9 @@ def get_argument_parser():
     rebalance_group.add_argument(
         "-e",
         "--exclude",
-        type=int,
+        type=str,
         action="append",
-        help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
-        "out of excluded channels)",
+        help="Exclude the given channel. Can be used multiple times.",
     )
     rebalance_group.add_argument(
         "--reckless",

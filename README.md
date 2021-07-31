@@ -68,7 +68,7 @@ Alias:            The Best Node Ever
 Pubkey:           012345[...]abcdef
 Channel Point:    abc0123[...]abc:0
 Local ratio:      0.176
-Local fee ratio:  123ppm
+Fee rates:        123ppm (own), 456ppm (peer)
 Capacity:         5,000,000
 Remote available: 4,110,320
 Local available:    883,364
@@ -239,8 +239,11 @@ Please make sure to set realistic fee rates, which at best are already known to 
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l] [--show-all | --show-only CHANNEL] [-o | -i] [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE]
-                    [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL] [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
+                    [--show-all | --show-only CHANNEL | -c] [-o | -i]
+                    [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE]
+                    [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL]
+                    [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
                     [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
@@ -254,43 +257,68 @@ list candidates:
   -l, --list-candidates
                         list candidate channels for rebalance
   --show-all            also show channels with zero rebalance amount
-  --show-only SHOW_ONLY
-                        only show information about the given channel
-  -o, --outgoing        lists channels with less than 1,500,00 satoshis inbound liquidity
-  -i, --incoming        (default) lists channels with less than 1,500,00 satoshis outbound liquidity
+  --show-only CHANNEL   only show information about the given channel
+  -c, --compact         Shows a compact list of all channels, one per line
+                        including ID, inbound/outbound liquidity, and alias
+  -o, --outgoing        lists channels with less than 1,500,00 satoshis
+                        inbound liquidity
+  -i, --incoming        (default) lists channels with less than 1,500,00
+                        satoshis outbound liquidity
 
 rebalance:
-  Rebalance a channel. You need to specify at least the 'from' channel (-f) or the 'to' channel (-t).
+  Rebalance a channel. You need to specify at least the 'from' channel (-f)
+  or the 'to' channel (-t).
 
   -f CHANNEL, --from CHANNEL
-                        Channel ID of the outgoing channel (funds will be taken from this channel). You may also specify the ID using the colon notation (12345:12:1), or the x
-                        notation (12345x12x1). You may also use -1 to choose a random candidate.
+                        Channel ID of the outgoing channel (funds will be
+                        taken from this channel). You may also specify the ID
+                        using the colon notation (12345:12:1), or the x
+                        notation (12345x12x1). You may also use -1 to choose a
+                        random candidate.
   -t CHANNEL, --to CHANNEL
-                        Channel ID of the incoming channel (funds will be sent to this channel). You may also specify the ID using the colon notation (12345:12:1), or the x
-                        notation (12345x12x1). You may also use -1 to choose a random candidate.
+                        Channel ID of the incoming channel (funds will be sent
+                        to this channel). You may also specify the ID using
+                        the colon notation (12345:12:1), or the x notation
+                        (12345x12x1). You may also use -1 to choose a random
+                        candidate.
   -a AMOUNT, --amount AMOUNT
-                        Amount of the rebalance, in satoshis. If not specified, the amount computed for a perfect rebalance will be used (up to the maximum of 4,294,967
-                        satoshis)
+                        Amount of the rebalance, in satoshis. If not
+                        specified, the amount computed for a perfect rebalance
+                        will be used (up to the maximum of 4,294,967 satoshis)
   -p PERCENTAGE, --percentage PERCENTAGE
-                        Set the amount to a percentage of the computed amount. As an example, if this is set to 50, half of the computed amount will be used. See --amount.
+                        Set the amount to a percentage of the computed amount.
+                        As an example, if this is set to 50, half of the
+                        computed amount will be used. See --amount.
   --min-amount MIN_AMOUNT
-                        (Default: 10,000) If the given or computed rebalance amount is below this limit, nothing is done.
+                        (Default: 10,000) If the given or computed rebalance
+                        amount is below this limit, nothing is done.
   --min-local MIN_LOCAL
-                        (Default: 1,000,000) Ensure that the channels have at least this amount as outbound liquidity.
+                        (Default: 1,000,000) Ensure that the channels have at
+                        least this amount as outbound liquidity.
   --min-remote MIN_REMOTE
-                        (Default: 1,000,000) Ensure that the channels have at least this amount as inbound liquidity.
+                        (Default: 1,000,000) Ensure that the channels have at
+                        least this amount as inbound liquidity.
   -e EXCLUDE, --exclude EXCLUDE
-                        Exclude the given channel ID as the outgoing channel (no funds will be taken out of excluded channels)
-  --reckless            Allow rebalance transactions that are not economically viable. You might also want to set --min-local 0 and --min-local 0. If set, you also need to set
-                        --amount and either --fee-limit or --fee-ppm-limit.
+                        Exclude the given channel. Can be used multiple times.
+  --reckless            Allow rebalance transactions that are not economically
+                        viable. You might also want to set --min-local 0 and
+                        --min-local 0. If set, you also need to set --amount
+                        and either --fee-limit or --fee-ppm-limit.
   --fee-factor FEE_FACTOR
-                        (default: 1.0) Compare the costs against the expected income, scaled by this factor. As an example, with --fee-factor 1.5, routes that cost at most
-                        150% of the expected earnings are tried. Use values smaller than 1.0 to restrict routes to only consider those earning more/costing less. This factor
-                        is ignored with --reckless.
+                        (default: 1.0) Compare the costs against the expected
+                        income, scaled by this factor. As an example, with
+                        --fee-factor 1.5, routes that cost at most 150% of the
+                        expected earnings are tried. Use values smaller than
+                        1.0 to restrict routes to only consider those earning
+                        more/costing less. This factor is ignored with
+                        --reckless.
   --fee-limit FEE_LIMIT
-                        If set, only consider rebalance transactions that cost up to the given number of satoshis.
+                        If set, only consider rebalance transactions that cost
+                        up to the given number of satoshis.
   --fee-ppm-limit FEE_PPM_LIMIT
-                        If set, only consider rebalance transactions that cost up to the given number of satoshis per 1M satoshis sent.
+                        If set, only consider rebalance transactions that cost
+                        up to the given number of satoshis per 1M satoshis
+                        sent.
 ```
 
 ## Contributing
