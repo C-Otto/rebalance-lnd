@@ -241,7 +241,9 @@ class Rebalance:
         fee_factor = self.arguments.fee_factor
         fee_limit_sat = self.arguments.fee_limit
         fee_ppm_limit = self.arguments.fee_ppm_limit
-        excluded = self.arguments.exclude
+        excluded = []
+        for chan_id in self.arguments.exclude:
+            excluded.append(self.parse_channel_id(chan_id))
         return Logic(
             self.lnd,
             self.first_hop_channel,
@@ -432,10 +434,9 @@ def get_argument_parser():
     rebalance_group.add_argument(
         "-e",
         "--exclude",
-        type=int,
+        type=str,
         action="append",
-        help="Exclude the given channel ID as the outgoing channel (no funds will be taken "
-        "out of excluded channels)",
+        help="Exclude the given channel. Can be used multiple times.",
     )
     rebalance_group.add_argument(
         "--reckless",
