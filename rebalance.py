@@ -242,8 +242,9 @@ class Rebalance:
         fee_limit_sat = self.arguments.fee_limit
         fee_ppm_limit = self.arguments.fee_ppm_limit
         excluded = []
-        for chan_id in self.arguments.exclude:
-            excluded.append(self.parse_channel_id(chan_id))
+        if self.arguments.exclude:
+            for chan_id in self.arguments.exclude:
+                excluded.append(self.parse_channel_id(chan_id))
         return Logic(
             self.lnd,
             self.first_hop_channel,
