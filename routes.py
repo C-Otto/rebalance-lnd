@@ -1,6 +1,6 @@
 import base64
 
-MAX_ROUTES_TO_REQUEST = 300
+MAX_ROUTES_TO_REQUEST = 100
 
 
 class Routes:
