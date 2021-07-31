@@ -11,23 +11,27 @@ MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
 class Lnd:
     def __init__(self, lnd_dir, server):
-        credential_path = os.getenv("LND_CRED_PATH", None)
-        if credential_path == None:
-            credential_path = Path(os.getenv("HOME")).joinpath(".lnd")
-            mac = str(credential_path.joinpath("data/chain/bitcoin/mainnet/admin.macaroon").absolute())
-        else:
-            credential_path = Path(credential_path)
-            mac = str(credential_path.joinpath("admin.macaroon").absolute())
-            
 
-        node_ip = os.getenv("LND_NODE_IP","localhost")
-        tls = str(credential_path.joinpath("tls.cert").absolute())
+        mac, tls = self.get_credentials(lnd_dir)
 
         self.lnd = LNDClient(
-            f"{node_ip}:10009",
+            server,
             macaroon_filepath=mac,
             cert_filepath=tls
         )
+
+    @staticmethod
+    def get_credentials(lnd_dir=None):
+        if lnd_dir == "~/.lnd":
+            credential_path = Path(lnd_dir).expanduser()
+            mac = str(credential_path.joinpath("data/chain/bitcoin/mainnet/admin.macaroon").absolute())
+        else:
+            credential_path = os.getenv("LND_CRED_PATH")
+            credential_path = Path(credential_path)
+            mac = str(credential_path.joinpath("admin.macaroon").absolute())
+
+        tls = str(credential_path.joinpath("tls.cert").absolute())
+        return mac, tls
 
     @lru_cache(maxsize=None)
     def get_info(self):
