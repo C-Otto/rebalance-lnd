@@ -124,6 +124,7 @@ class Rebalance:
         else:
             amount = should_receive
 
+        amount = int(amount)
         if amount >= 0:
             return min(amount, MAX_SATOSHIS_PER_TRANSACTION)
         return max(amount, -MAX_SATOSHIS_PER_TRANSACTION)
