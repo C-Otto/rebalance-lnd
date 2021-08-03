@@ -34,7 +34,7 @@ You need to install Python 3. You also need to install the gRPC dependencies whi
 $ pip install -r requirements.txt
 ```
 
-If this fails, make sure you are running Python 3.
+If this fails, make sure you are running Python 3. You might want to try `pip3` instead of `pip`.
 
 To test if your installation works, you can run `rebalance.py` without any arguments.
 Depending on your system, you can do this in one of the following ways:
