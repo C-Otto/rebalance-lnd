@@ -1,5 +1,6 @@
 import math
 
+import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
     format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
@@ -140,25 +141,23 @@ class Logic:
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
-            last_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[-2].pub_key))
-            first_hop_alias = format_alias(self.lnd.get_node_alias(route.hops[0].pub_key))
+            last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
+            first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
             first_hop_ppm = self.lnd.get_ppm_to(route.hops[0].chan_id)
             last_hop_ppm = self.lnd.get_ppm_to(route.hops[-1].chan_id)
-            first_hop_ppm_formatted = format_ppm(first_hop_ppm)
-            last_hop_ppm_formatted = format_ppm(last_hop_ppm)
             self.output.print_line("")
-            sats_formatted = format_fee_sat(int(route.hops[-1].amt_to_forward))
-            self.output.print_line(
-                f"Increased outbound liquidity on {last_hop_alias} ({last_hop_ppm_formatted}) by "
-                f"{sats_formatted}"
+            self.output.print_line(output.format_success(
+                f"Increased outbound liquidity on {last_hop_alias} ({last_hop_ppm:,}ppm) "
+                f"by {int(route.hops[-1].amt_to_forward):,} sat"
+            ))
+            self.output.print_line(output.format_success(
+                f"Increased inbound liquidity on {first_hop_alias} ({first_hop_ppm:,}ppm configured for outbound)")
             )
-            self.output.print_line(f"Increased inbound liquidity on {first_hop_alias} "
-                                   f"({first_hop_ppm_formatted} configured for outbound)")
-            fees_formatted = format_fee_msat(route.total_fees_msat)
-            ppm_formatted = format_ppm(route_ppm)
-            self.output.print_line(f"Fee: {route.total_fees:,} sats ({fees_formatted}, {ppm_formatted})")
+            self.output.print_line(output.format_success(
+                f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {route_ppm:,}ppm)"
+            ))
             self.output.print_line("")
-            self.output.print_line("Successful route:")
+            self.output.print_line(output.format_success("Successful route:"))
             self.output.print_route(route)
             return True
         else:

@@ -92,6 +92,10 @@ def format_boring_string(string):
     return chalk.bg_black(chalk.gray(string))
 
 
+def format_success(string):
+    return chalk.bg_cyan(chalk.white_bright(string))
+
+
 def format_channel_id(channel_id):
     return format_boring_string(channel_id)
 
