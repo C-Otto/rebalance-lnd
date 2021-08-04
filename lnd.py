@@ -1,5 +1,6 @@
 import base64
 import codecs
+import genericpath
 import os
 from functools import lru_cache
 from os.path import expanduser
@@ -17,7 +18,15 @@ MESSAGE_SIZE_MB = 50 * 1024 * 1024
 class Lnd:
     def __init__(self, lnd_dir, server):
         os.environ["GRPC_SSL_CIPHER_SUITES"] = "HIGH+ECDSA"
-        lnd_dir = expanduser(lnd_dir)
+        if lnd_dir == "_DEFAULT_":
+            lnd_dir = "~/.lnd"
+            lnd_dir2 = "~/umbrel/lnd"
+            lnd_dir = expanduser(lnd_dir)
+            lnd_dir2 = expanduser(lnd_dir2)
+            if not os.path.isdir(lnd_dir) and os.path.isdir(lnd_dir2):
+                lnd_dir = lnd_dir2
+        else:
+            lnd_dir = expanduser(lnd_dir)
         combined_credentials = self.get_credentials(lnd_dir)
         channel_options = [
             ("grpc.max_message_length", MESSAGE_SIZE_MB),

@@ -316,7 +316,7 @@ def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--lnddir",
-        default="~/.lnd",
+        default="_DEFAULT_",
         dest="lnddir",
         help="(default ~/.lnd) lnd directory",
     )

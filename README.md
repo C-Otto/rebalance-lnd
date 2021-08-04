@@ -24,6 +24,7 @@ Example:
 
 You need to have admin rights to control this node.
 By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
+If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
 ### Python Dependencies
@@ -248,7 +249,7 @@ usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --lnddir LNDDIR       (default ~/.lnd) lnd directory
+  --lnddir LNDDIR       (default ~/.lnd and ~/umbrel/lnd) lnd directory
   --grpc GRPC           (default localhost:10009) lnd gRPC endpoint
 
 list candidates:
