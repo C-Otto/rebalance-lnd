@@ -73,7 +73,7 @@ Fee rates:        123ppm (own), 456ppm (peer)
 Capacity:         5,000,000
 Remote available: 4,110,320
 Local available:    883,364
-Rebalance amount:   616,636
+Rebalance amount:   116,636
 [█████░░░░░░░░░░░░░░░░░░░░░░░]
 ```
 
