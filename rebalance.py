@@ -364,7 +364,7 @@ def get_argument_parser():
         action="store_const",
         const=False,
         dest="incoming",
-        help="lists channels with less than 1,000,00 satoshis inbound liquidity",
+        help="lists channels with less than 1,000,00 (--min-remote) satoshis inbound liquidity",
     )
     direction_group.add_argument(
         "-i",
@@ -372,7 +372,7 @@ def get_argument_parser():
         action="store_const",
         const=True,
         dest="incoming",
-        help="(default) lists channels with less than 1,000,00 satoshis outbound liquidity",
+        help="(default) lists channels with less than 1,000,00 (--min-local) satoshis outbound liquidity",
     )
 
     rebalance_group = parser.add_argument_group(
