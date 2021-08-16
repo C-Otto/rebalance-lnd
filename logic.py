@@ -254,16 +254,16 @@ class Logic:
         policy_first_hop = self.lnd.get_policy_to(route.hops[0].chan_id)
         amount_msat = route.total_amt_msat
         missed_fee_msat = self.compute_fee(
-            amount_msat, policy_first_hop.fee_rate_milli_msat, policy_first_hop
-        )
+            amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
+        ) * 1_000
         policy_last_hop = self.lnd.get_policy_to(route.hops[-1].chan_id)
         fee_rate_last_hop = policy_last_hop.fee_rate_milli_msat
         original_fee_rate_last_hop = fee_rate_last_hop
         if fee_rate_last_hop > MAX_FEE_RATE:
             fee_rate_last_hop = MAX_FEE_RATE
         expected_income_msat = self.fee_factor * self.compute_fee(
-            amount_msat, fee_rate_last_hop, policy_last_hop
-        )
+            amount_msat / 1_000, fee_rate_last_hop, policy_last_hop
+        ) * 1_000
         rebalance_fee_msat = route.total_fees_msat
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
         if high_fees:
@@ -307,8 +307,8 @@ class Logic:
         return high_fees
 
     @staticmethod
-    def compute_fee(amount, fee_rate, policy):
-        expected_fee = amount / 1_000_000 * fee_rate + policy.fee_base_msat / 1_000
+    def compute_fee(amount_sat, fee_rate, policy):
+        expected_fee = amount_sat / 1_000_000 * fee_rate + policy.fee_base_msat / 1_000
         return expected_fee
 
     def generate_invoice(self):
