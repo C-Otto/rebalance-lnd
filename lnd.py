@@ -1,6 +1,5 @@
 import base64
 import codecs
-import genericpath
 import os
 from functools import lru_cache
 from os.path import expanduser
@@ -9,8 +8,10 @@ import grpc
 
 from grpc_generated import router_pb2 as lnrouter
 from grpc_generated import router_pb2_grpc as lnrouterrpc
-from grpc_generated import rpc_pb2 as ln
-from grpc_generated import rpc_pb2_grpc as lnrpc
+from grpc_generated import lightning_pb2 as ln
+from grpc_generated import lightning_pb2_grpc as lnrpc
+from grpc_generated import invoices_pb2 as invoices
+from grpc_generated import invoices_pb2_grpc as invoicesrpc
 
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
@@ -37,6 +38,7 @@ class Lnd:
         )
         self.stub = lnrpc.LightningStub(grpc_channel)
         self.router_stub = lnrouterrpc.RouterStub(grpc_channel)
+        self.invoices_stub = invoicesrpc.InvoicesStub(grpc_channel)
 
     @staticmethod
     def get_credentials(lnd_dir):
@@ -73,6 +75,10 @@ class Lnd:
         )
         add_invoice_response = self.stub.AddInvoice(invoice_request)
         return self.decode_payment_request(add_invoice_response.payment_request)
+
+    def cancel_invoice(self, payment_hash):
+        payment_hash_bytes = self.hex_string_to_bytes(payment_hash)
+        return self.invoices_stub.CancelInvoice(invoices.CancelInvoiceMsg(payment_hash=payment_hash_bytes))
 
     def decode_payment_request(self, payment_request):
         request = ln.PayReqString(

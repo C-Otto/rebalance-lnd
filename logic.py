@@ -89,6 +89,7 @@ class Logic:
             if success:
                 return True
         self.output.print_line("Could not find any suitable route")
+        self.lnd.cancel_invoice(payment_request.payment_hash)
         return False
 
     def get_fee_limit_msat(self):
