@@ -65,9 +65,11 @@ class Logic:
 
         fee_limit_msat = self.get_fee_limit_msat()
         payment_request = self.generate_invoice()
-        min_ppm_last_hop = None
+        min_fee_last_hop = None
         if self.first_hop_channel:
-            min_ppm_last_hop = self.fee_factor * self.lnd.get_ppm_to(self.first_hop_channel.chan_id)
+            fee_rate_first_hop = self.lnd.get_ppm_to(self.first_hop_channel.chan_id)
+            policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
+            min_fee_last_hop = self.compute_fee(self.amount, fee_rate_first_hop, policy_first_hop) * 1_000
         routes = Routes(
             self.lnd,
             payment_request,
@@ -77,7 +79,7 @@ class Logic:
             self.output
         )
 
-        self.initialize_ignored_channels(routes, fee_limit_msat, min_ppm_last_hop)
+        self.initialize_ignored_channels(routes, fee_limit_msat, min_fee_last_hop)
 
         tried_routes = []
         while routes.has_next():
@@ -326,15 +328,15 @@ class Logic:
                 return channel
         self.output.print_line(f"Unable to find channel with id {channel_id}!")
 
-    def initialize_ignored_channels(self, routes, fee_limit_msat, min_ppm_last_hop):
+    def initialize_ignored_channels(self, routes, fee_limit_msat, min_fee_last_hop):
         if self.reckless:
             self.output.print_line(format_error("Also considering economically unviable channels for routes."))
         for chan_id in self.excluded:
             self.output.print_line(f"Channel {format_channel_id(chan_id)} is excluded:")
             routes.ignore_channel(chan_id)
         if self.first_hop_channel:
-            if min_ppm_last_hop and not self.reckless:
-                self.ignore_low_ppm_channels_for_last_hop(min_ppm_last_hop, routes)
+            if min_fee_last_hop and not self.reckless:
+                self.ignore_cheap_channels_for_last_hop(min_fee_last_hop, routes)
             if not self.last_hop_channel and not self.reckless:
                 self.ignore_last_hops_with_low_inbound(routes)
 
@@ -366,11 +368,13 @@ class Logic:
             if self.low_outbound_liquidity_after_sending(channel, self.amount):
                 routes.ignore_first_hop(channel, show_message=False)
 
-    def ignore_low_ppm_channels_for_last_hop(self, min_ppm_last_hop, routes):
+    def ignore_cheap_channels_for_last_hop(self, min_fee_last_hop, routes):
         for channel in self.lnd.get_channels():
             channel_id = channel.chan_id
             ppm = self.lnd.get_ppm_to(channel_id)
-            if ppm < min_ppm_last_hop:
+            policy = self.lnd.get_policy_to(channel_id)
+            fee = self.compute_fee(self.amount, self.fee_factor * ppm, policy) * 1_000
+            if fee < min_fee_last_hop:
                 routes.ignore_edge_from_to(
                     channel_id, channel.remote_pubkey, self.lnd.get_own_pubkey(), show_message=False
                 )
