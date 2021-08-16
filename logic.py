@@ -69,7 +69,7 @@ class Logic:
         if self.first_hop_channel:
             fee_rate_first_hop = self.lnd.get_ppm_to(self.first_hop_channel.chan_id)
             policy_first_hop = self.lnd.get_policy_to(self.first_hop_channel.chan_id)
-            min_fee_last_hop = self.compute_fee(self.amount, fee_rate_first_hop, policy_first_hop) * 1_000
+            min_fee_last_hop = self.compute_fee(self.amount, fee_rate_first_hop, policy_first_hop)
         routes = Routes(
             self.lnd,
             payment_request,
@@ -373,7 +373,7 @@ class Logic:
             channel_id = channel.chan_id
             ppm = self.lnd.get_ppm_to(channel_id)
             policy = self.lnd.get_policy_to(channel_id)
-            fee = self.compute_fee(self.amount, self.fee_factor * ppm, policy) * 1_000
+            fee = self.compute_fee(self.amount, self.fee_factor * ppm, policy)
             if fee < min_fee_last_hop:
                 routes.ignore_edge_from_to(
                     channel_id, channel.remote_pubkey, self.lnd.get_own_pubkey(), show_message=False
