@@ -107,7 +107,7 @@ class Logic:
                 )
                 fee_rate = MAX_FEE_RATE
             policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
-            fee_limit_msat = self.fee_factor * self.compute_fee(self.amount, fee_rate, policy) * 1_000
+            fee_limit_msat = self.compute_fee(self.amount, self.fee_factor * fee_rate, policy) * 1_000
             fee_limit_msat = max(1_000, fee_limit_msat)
         else:
             return None
