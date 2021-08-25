@@ -445,7 +445,7 @@ def get_argument_parser():
         action="store_true",
         default=False,
         help="Allow rebalance transactions that are not economically viable. "
-             "You might also want to set --min-local 0 and --min-local 0. "
+             "You might also want to set --min-local 0 and --min-remote 0. "
              "If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit."
     )
     fee_group = rebalance_group.add_mutually_exclusive_group()
