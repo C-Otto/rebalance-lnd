@@ -240,8 +240,8 @@ Please make sure to set realistic fee rates, which at best are already known to 
 
 ### Command line arguments
 ```
-usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
-                    [--show-all | --show-only CHANNEL | -c] [-o | -i]
+usage: rebalance.py [-h] [--lnddir LNDDIR] [--network NETWORK] [--grpc GRPC]
+                    [-l] [--show-all | --show-only CHANNEL | -c] [-o | -i]
                     [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE]
                     [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL]
                     [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
@@ -249,7 +249,9 @@ usage: rebalance.py [-h] [--lnddir LNDDIR] [--grpc GRPC] [-l]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --lnddir LNDDIR       (default ~/.lnd and ~/umbrel/lnd) lnd directory
+  --lnddir LNDDIR       (default ~/.lnd) lnd directory
+  --network NETWORK     (default mainnet) lnd network (mainnet, testnet,
+                        simnet, ...)
   --grpc GRPC           (default localhost:10009) lnd gRPC endpoint
 
 list candidates:
@@ -261,10 +263,10 @@ list candidates:
   --show-only CHANNEL   only show information about the given channel
   -c, --compact         Shows a compact list of all channels, one per line
                         including ID, inbound/outbound liquidity, and alias
-  -o, --outgoing        lists channels with less than 1,500,00 satoshis
-                        inbound liquidity
-  -i, --incoming        (default) lists channels with less than 1,500,00
-                        satoshis outbound liquidity
+  -o, --outgoing        lists channels with less than 1,000,000 (--min-remote)
+                        satoshis inbound liquidity
+  -i, --incoming        (default) lists channels with less than 1,000,000
+                        (--min-local) satoshis outbound liquidity
 
 rebalance:
   Rebalance a channel. You need to specify at least the 'from' channel (-f)
@@ -303,7 +305,7 @@ rebalance:
                         Exclude the given channel. Can be used multiple times.
   --reckless            Allow rebalance transactions that are not economically
                         viable. You might also want to set --min-local 0 and
-                        --min-local 0. If set, you also need to set --amount
+                        --min-remote 0. If set, you also need to set --amount
                         and either --fee-limit or --fee-ppm-limit.
   --fee-factor FEE_FACTOR
                         (default: 1.0) Compare the costs against the expected

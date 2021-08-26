@@ -324,7 +324,7 @@ def get_argument_parser():
         "--network", 
         default='mainnet',
         dest='network',
-        help='(default mainnet) lnd network.'
+        help='(default mainnet) lnd network (mainnet, testnet, simnet, ...)'
     )
     parser.add_argument(
         "--grpc",
