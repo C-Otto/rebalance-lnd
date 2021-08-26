@@ -18,7 +18,7 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 class Rebalance:
     def __init__(self, arguments):
-        self.lnd = Lnd(arguments.lnddir, arguments.grpc)
+        self.lnd = Lnd(arguments.lnddir, arguments.grpc, arguments.network)
         self.output = Output(self.lnd)
         self.min_amount = arguments.min_amount
         self.arguments = arguments
@@ -319,6 +319,12 @@ def get_argument_parser():
         default="_DEFAULT_",
         dest="lnddir",
         help="(default ~/.lnd) lnd directory",
+    )
+    parser.add_argument(
+        "--network", 
+        default='mainnet',
+        dest='network',
+        help='(default mainnet) lnd network.'
     )
     parser.add_argument(
         "--grpc",
