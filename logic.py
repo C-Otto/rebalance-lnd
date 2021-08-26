@@ -327,7 +327,7 @@ class Logic:
                 if not hasattr(channel, "remote_balance"):
                     channel.remote_balance = 0
                 return channel
-        self.output.print_line(f"Unable to find channel with id {channel_id}!")
+        raise Exception(f"Unable to find channel with id {channel_id}!")
 
     def initialize_ignored_channels(self, routes, fee_limit_msat, min_fee_last_hop):
         if self.reckless:
