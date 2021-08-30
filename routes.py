@@ -106,7 +106,7 @@ class Routes:
 
     def ignore_high_fee_hops(self, route):
         ignore = []
-        max_fee_msat = 0
+        max_fee_msat = -1
         max_fee_hop = None
         for hop in route.hops:
             if route.hops[-2].chan_id == hop.chan_id and self.last_hop_channel:
