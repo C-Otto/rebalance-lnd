@@ -68,6 +68,12 @@ def format_fee_msat_red(fee_msat, min_length=None):
     return chalk.red(f"{fee_msat:,} mSAT")
 
 
+def format_fee_msat_white(fee_msat, min_length=None):
+    if min_length:
+        return chalk.white_bright(f"{fee_msat:{min_length},} mSAT")
+    return chalk.white_bright(f"{fee_msat:,} mSAT")
+
+
 def format_fee_sat(fee_sat):
     return chalk.cyan(f"{fee_sat:,} sats")
 

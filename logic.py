@@ -2,7 +2,7 @@ import math
 
 import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
-    format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
+    format_warning, format_error, format_earning, format_fee_msat_red, format_fee_msat_white, format_channel_id
 from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1_000
@@ -144,28 +144,59 @@ class Logic:
         response = self.lnd.send_payment(payment_request, route)
         is_successful = response.failure.code == 0
         if is_successful:
-            last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
-            first_hop_alias = self.lnd.get_node_alias(route.hops[0].pub_key)
-            first_hop_ppm = self.lnd.get_ppm_to(route.hops[0].chan_id)
-            last_hop_ppm = self.lnd.get_ppm_to(route.hops[-1].chan_id)
-            self.output.print_line("")
-            self.output.print_line(output.format_success(
-                f"Increased outbound liquidity on {last_hop_alias} ({last_hop_ppm:,}ppm) "
-                f"by {int(route.hops[-1].amt_to_forward):,} sat"
-            ))
-            self.output.print_line(output.format_success(
-                f"Increased inbound liquidity on {first_hop_alias} ({first_hop_ppm:,}ppm configured for outbound)")
-            )
-            self.output.print_line(output.format_success(
-                f"Fee: {route.total_fees:,} sats ({route.total_fees_msat:,} mSAT, {route_ppm:,}ppm)"
-            ))
-            self.output.print_line("")
-            self.output.print_line(output.format_success("Successful route:"))
-            self.output.print_route(route)
+            self.print_success_statistics(route, route_ppm)
             return True
         else:
             self.handle_error(response, route, routes)
             return False
+
+    def print_success_statistics(self, route, route_ppm):
+        first_hop = route.hops[0]
+        last_hop = route.hops[-1]
+        amount = last_hop.amt_to_forward
+        amount_msat = last_hop.amt_to_forward_msat
+        rebalance_fee_msat = route.total_fees_msat
+        policy_last_hop = self.lnd.get_policy_to(last_hop.chan_id)
+        policy_first_hop = self.lnd.get_policy_to(first_hop.chan_id)
+
+        last_hop_alias = self.lnd.get_node_alias(route.hops[-2].pub_key)
+        first_hop_alias = self.lnd.get_node_alias(first_hop.pub_key)
+        first_hop_ppm = self.lnd.get_ppm_to(first_hop.chan_id)
+        last_hop_ppm = self.lnd.get_ppm_to(last_hop.chan_id)
+        self.output.print_line("")
+        self.output.print_line(output.format_success(
+            f"Increased outbound liquidity on {last_hop_alias} ({last_hop_ppm:,}ppm) "
+            f"by {int(amount):,} sat"
+        ))
+        self.output.print_line(output.format_success(
+            f"Increased inbound liquidity on {first_hop_alias} ({first_hop_ppm:,}ppm configured for outbound)")
+        )
+        self.output.print_line(output.format_success(
+            f"Fee: {route.total_fees:,} sats ({rebalance_fee_msat :,} mSAT, {route_ppm:,}ppm)"
+        ))
+        self.output.print_line("")
+        self.output.print_line(output.format_success("Successful route:"))
+        self.output.print_route(route)
+
+        missed_fee_msat = self.compute_fee(
+            amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
+        ) * 1_000
+        expected_income_msat = self.compute_fee(
+            amount_msat / 1_000, policy_last_hop.fee_rate_milli_msat, policy_last_hop
+        ) * 1_000
+        difference_msat = -rebalance_fee_msat - missed_fee_msat + expected_income_msat
+        future_income_formatted = format_earning(math.floor(expected_income_msat), 8)
+        self.output.print_line(
+            f"  {future_income_formatted}: "
+            f"expected future fee income for inbound channel (with {last_hop_alias})"
+        )
+        missed_fee_formatted = format_fee_msat(math.ceil(missed_fee_msat), 8)
+        difference_formatted = format_fee_msat_white(math.ceil(difference_msat), 8)
+        transaction_fees_formatted = format_fee_msat(int(rebalance_fee_msat), 8)
+        self.output.print_line(f"- {transaction_fees_formatted}: rebalance transaction fees")
+        self.output.print_line(f"- {missed_fee_formatted}: "
+                               f"missing out on future fees for outbound channel (with {first_hop_alias})")
+        self.output.print_line(f"= {difference_formatted}: potential profit!")
 
     def handle_error(self, response, route, routes):
         code = response.failure.code
