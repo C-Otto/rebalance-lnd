@@ -27,6 +27,19 @@ By default, this script connects to `localhost:10009`, using the macaroon file i
 If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
+### rebalance-lnd itself
+
+You need to download the files that are part of this project, for example using [git](https://git-scm.com/):
+
+```
+cd /some/where/
+git clone https://github.com/C-Otto/rebalance-lnd.git
+cd rebalance-lnd/
+```
+
+Alternatively, you may also download the files in a ZIP file offered by GitHub:
+https://github.com/C-Otto/rebalance-lnd/archive/refs/heads/main.zip
+
 ### Python Dependencies
 
 You need to install Python 3. You also need to install the gRPC dependencies which can be done by running:
