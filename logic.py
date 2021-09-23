@@ -2,7 +2,7 @@ import math
 
 import output
 from output import Output, format_alias, format_fee_msat, format_ppm, format_amount, \
-    format_fee_sat, format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
+    format_warning, format_error, format_earning, format_fee_msat_red, format_channel_id
 from routes import Routes
 
 DEFAULT_BASE_FEE_SAT_MSAT = 1_000
@@ -319,7 +319,7 @@ class Logic:
             memo = f"Rebalance of channel with ID {self.first_hop_channel.chan_id}"
         return self.lnd.generate_invoice(memo, self.amount)
 
-    def get_channel_for_channel_id(self, channel_id):
+    def get_channel_for_channel_id(self, channel_id, clear_cache_if_not_found=True):
         for channel in self.lnd.get_channels():
             if channel.chan_id == channel_id:
                 if not hasattr(channel, "local_balance"):
@@ -327,6 +327,9 @@ class Logic:
                 if not hasattr(channel, "remote_balance"):
                     channel.remote_balance = 0
                 return channel
+        if clear_cache_if_not_found:
+            self.lnd.get_channels.cache_clear()
+            return self.get_channel_for_channel_id(channel_id, clear_cache_if_not_found=False)
         raise Exception(f"Unable to find channel with id {channel_id}!")
 
     def initialize_ignored_channels(self, routes, fee_limit_msat, min_fee_last_hop):
