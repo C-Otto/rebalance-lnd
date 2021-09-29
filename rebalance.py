@@ -78,12 +78,15 @@ class Rebalance:
         return 0
 
     def get_amount(self):
+        amount = None
         if self.arguments.amount:
             if self.arguments.reckless and self.arguments.amount > MAX_SATOSHIS_PER_TRANSACTION:
                 self.output.print_line(format_error("Trying to send wumbo transaction"))
                 return self.arguments.amount
             else:
-                return min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
+                amount = min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
+                if not self.arguments.adjust_amount_to_limits:
+                    return amount
 
         should_send = 0
         can_send = 0
@@ -118,16 +121,22 @@ class Rebalance:
                 return 0
 
         if self.first_hop_channel and self.last_hop_channel:
-            amount = max(min(can_receive, should_send), min(can_send, should_receive))
+            computed_amount = max(min(can_receive, should_send), min(can_send, should_receive))
         elif self.first_hop_channel:
-            amount = should_send
+            computed_amount = should_send
         else:
-            amount = should_receive
+            computed_amount = should_receive
 
-        amount = int(amount)
-        if amount >= 0:
-            return min(amount, MAX_SATOSHIS_PER_TRANSACTION)
-        return max(amount, -MAX_SATOSHIS_PER_TRANSACTION)
+        computed_amount = int(computed_amount)
+        if computed_amount >= 0:
+            computed_amount = min(computed_amount, MAX_SATOSHIS_PER_TRANSACTION)
+        computed_amount = max(computed_amount, -MAX_SATOSHIS_PER_TRANSACTION)
+        if amount is not None:
+            if computed_amount >= 0:
+                computed_amount = min(amount, computed_amount)
+            else:
+                computed_amount = max(-amount, computed_amount)
+        return computed_amount
 
     def get_amount_can_send(self, channel):
         return get_local_available(channel) - self.get_scaled_min_local(channel)
@@ -296,6 +305,11 @@ def main():
         argument_parser.print_help()
         sys.exit(1)
 
+    if arguments.reckless and arguments.adjust_amount_to_limits:
+        print("You must not use -A/--adjust-amount-to-limits in combination with --reckless")
+        argument_parser.print_help()
+        sys.exit(1)
+
     if arguments.reckless and not arguments.fee_limit and not arguments.fee_ppm_limit:
         print("You need to specify a fee limit (-fee-limit or --fee-ppm-limit) for --reckless")
         argument_parser.print_help()
@@ -405,6 +419,14 @@ def get_argument_parser():
              "You may also use -1 to choose a random candidate.",
     )
     amount_group = rebalance_group.add_mutually_exclusive_group()
+    rebalance_group.add_argument(
+        "-A",
+        "--adjust-amount-to-limits",
+        action="store_true",
+        help="If set, adjust the amount to the limits (--min-local and --min-remote). The script will exit if the "
+             "adjusted amount is below the --min-amount threshold. As such, this switch can be used if you do NOT want "
+             "to rebalance if the channel is within the limits.",
+    )
     amount_group.add_argument(
         "-a",
         "--amount",
@@ -452,7 +474,8 @@ def get_argument_parser():
         default=False,
         help="Allow rebalance transactions that are not economically viable. "
              "You might also want to set --min-local 0 and --min-remote 0. "
-             "If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit."
+             "If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit, and you must not enable "
+             "--adjust-fee-to-limits (-A)."
     )
     fee_group = rebalance_group.add_mutually_exclusive_group()
     fee_group.add_argument(

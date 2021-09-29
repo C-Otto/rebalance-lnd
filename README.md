@@ -143,6 +143,17 @@ Note that for smaller channels these criteria cannot be met.
 If that is the case, a ratio of 50% is targeted instead: the destination channel receives up to 50% outbound
 liquidity, and for the sending channel at least 50% outbound liquidity are maintained.
 
+### Limiting the automatically determined amount
+If you use both `-a` to specify an amount and `-A` (shorthand for `--adjust-amount-to-limits`), the computed amount is
+adjusted to the given amount. If, for example, you send funds to a channel that lacks 500,000sat to reach the 
+`--min-local` value, the computed amount is 500,000sat. If you invoke the script with `-A -a 90000` this amount is 
+reduced to 90,000sat. If the adjusted amount is below the `--min-amount` setting, the script stops.
+
+This way, using both options (`-a xxx -A`) you can start a rebalance attempt with the given amount, which will only be
+attempted if it is necessary. Thus, you may want to run `./rebalance.py -t xxx -A -a 50000` in a loop or cron job to 
+automatically send up to 50,000sat to channel `xxx` until it has reached the `--min-local` limit. If the channel already
+satisfies the `--min-local` limit, the script exits and does not attempt to send any funds.
+
 ### Only specifying one channel 
 
 Instead of specifying both `--from` and `--to`, you can also just pick one of those options.
@@ -255,7 +266,7 @@ Please make sure to set realistic fee rates, which at best are already known to 
 ```
 usage: rebalance.py [-h] [--lnddir LNDDIR] [--network NETWORK] [--grpc GRPC]
                     [-l] [--show-all | --show-only CHANNEL | -c] [-o | -i]
-                    [-f CHANNEL] [-t CHANNEL] [-a AMOUNT | -p PERCENTAGE]
+                    [-f CHANNEL] [-t CHANNEL] [-A] [-a AMOUNT | -p PERCENTAGE]
                     [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL]
                     [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
                     [--fee-factor FEE_FACTOR | --fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
@@ -297,6 +308,12 @@ rebalance:
                         the colon notation (12345:12:1), or the x notation
                         (12345x12x1). You may also use -1 to choose a random
                         candidate.
+  -A, --adjust-amount-to-limits
+                        If set, adjust the amount to the limits (--min-local
+                        and --min-remote). The script will exit if the
+                        adjusted amount is below the --min-amount threshold.
+                        As such, this switch can be used if you do NOT want to
+                        rebalance if the channel is within the limits.
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
@@ -319,7 +336,8 @@ rebalance:
   --reckless            Allow rebalance transactions that are not economically
                         viable. You might also want to set --min-local 0 and
                         --min-remote 0. If set, you also need to set --amount
-                        and either --fee-limit or --fee-ppm-limit.
+                        and either --fee-limit or --fee-ppm-limit, and you
+                        must not enable --adjust-fee-to-limits (-A).
   --fee-factor FEE_FACTOR
                         (default: 1.0) Compare the costs against the expected
                         income, scaled by this factor. As an example, with
