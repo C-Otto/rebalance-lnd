@@ -337,7 +337,7 @@ rebalance:
                         viable. You might also want to set --min-local 0 and
                         --min-remote 0. If set, you also need to set --amount
                         and either --fee-limit or --fee-ppm-limit, and you
-                        must not enable --adjust-fee-to-limits (-A).
+                        must not enable --adjust-amount-to-limits (-A).
   --fee-factor FEE_FACTOR
                         (default: 1.0) Compare the costs against the expected
                         income, scaled by this factor. As an example, with
