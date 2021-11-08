@@ -238,12 +238,12 @@ class Rebalance:
 
         if amount == 0:
             print(f"Amount is {format_amount(0)} sat, nothing to do")
-            sys.exit(0)
+            sys.exit(1)
 
         if amount < self.min_amount:
             print(f"Amount {format_amount(amount)} sat is below limit of {format_amount(self.min_amount)} sat, "
                   f"nothing to do (see --min-amount)")
-            sys.exit(0)
+            sys.exit(1)
 
         if self.arguments.reckless:
             self.output.print_line(format_error("Reckless mode enabled!"))
