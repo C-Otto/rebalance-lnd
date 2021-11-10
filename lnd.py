@@ -138,7 +138,11 @@ class Lnd:
 
     @lru_cache(maxsize=None)
     def get_edge(self, channel_id):
-        return self.stub.GetChanInfo(ln.ChanInfoRequest(chan_id=channel_id))
+        try:
+            return self.stub.GetChanInfo(ln.ChanInfoRequest(chan_id=channel_id))
+        except:
+            print(f"Unable to find channel edge {channel_id}")
+            raise
 
     def get_policy_to(self, channel_id):
         edge = self.get_edge(channel_id)
