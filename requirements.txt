@@ -2,4 +2,4 @@ googleapis-common-protos==1.53.0
 grpcio==1.41.1
 protobuf==3.19.1
 six==1.16.0
-yachalk==0.1.4
+yachalk==0.1.5
