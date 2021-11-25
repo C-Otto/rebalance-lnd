@@ -477,8 +477,7 @@ def get_argument_parser():
              "If set, you also need to set --amount and either --fee-limit or --fee-ppm-limit, and you must not enable "
              "--adjust-amount-to-limits (-A)."
     )
-    fee_group = rebalance_group.add_mutually_exclusive_group()
-    fee_group.add_argument(
+    rebalance_group.add_argument(
         "--fee-factor",
         default=1.0,
         type=float,
@@ -488,6 +487,7 @@ def get_argument_parser():
         "smaller than 1.0 to restrict routes to only consider those earning "
         "more/costing less. This factor is ignored with --reckless.",
     )
+    fee_group = rebalance_group.add_mutually_exclusive_group()
     fee_group.add_argument(
         "--fee-limit",
         type=int,

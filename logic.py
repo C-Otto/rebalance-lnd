@@ -93,6 +93,7 @@ class Logic:
         return False
 
     def get_fee_limit_msat(self):
+        fee_limit_msat = None
         if self.fee_limit_sat:
             fee_limit_msat = self.fee_limit_sat * 1_000
         elif self.fee_ppm_limit:
@@ -100,20 +101,26 @@ class Logic:
                 fee_limit_msat = self.fee_ppm_limit * self.amount / 1_000
             else:
                 fee_limit_msat = max(1_000, self.fee_ppm_limit * self.amount / 1_000)
-        elif self.last_hop_channel:
-            fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
-            if fee_rate > MAX_FEE_RATE:
-                last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
-                self.output.print_line(
-                    f"Calculating using capped fee rate {MAX_FEE_RATE} "
-                    f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
-                )
-                fee_rate = MAX_FEE_RATE
-            policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
-            fee_limit_msat = self.compute_fee(self.amount, self.fee_factor * fee_rate, policy) * 1_000
-            fee_limit_msat = max(1_000, fee_limit_msat)
-        else:
+        elif not self.last_hop_channel:
             return None
+
+        fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
+        if fee_rate > MAX_FEE_RATE:
+            last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
+            self.output.print_line(
+                f"Calculating using capped fee rate {MAX_FEE_RATE} "
+                f"for inbound channel (with {last_hop_alias}, original fee rate {fee_rate})"
+            )
+            fee_rate = MAX_FEE_RATE
+        policy = self.lnd.get_policy_to(self.last_hop_channel.chan_id)
+        if fee_limit_msat:
+            fee_limit_msat = min(
+                fee_limit_msat,
+                self.compute_fee(self.amount, self.fee_factor * fee_rate, policy) * 1_000
+            )
+        else:
+            fee_limit_msat = self.compute_fee(self.amount, self.fee_factor * fee_rate, policy) * 1_000
+        fee_limit_msat = max(1_000, fee_limit_msat)
 
         ppm_limit = int(fee_limit_msat / self.amount * 1_000)
 
