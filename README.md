@@ -14,7 +14,14 @@ Aside from paid fees, your total liquidity does not change.
 
 ## Installation
 
-### lnd
+There are two options for installing rebalance-lnd.
+
+1. Using Python
+1. Using Docker
+
+### Using Python
+
+#### lnd
 
 This script needs an active `lnd` (tested with v0.13.0, https://github.com/lightningnetwork/lnd) instance running.
 If you compile `lnd` yourself, you need to include the `routerrpc` build tag:
@@ -27,11 +34,11 @@ By default, this script connects to `localhost:10009`, using the macaroon file i
 If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
-### rebalance-lnd itself
+#### rebalance-lnd itself
 
 You need to download the files that are part of this project, for example using [git](https://git-scm.com/):
 
-```
+```sh
 cd /some/where/
 git clone https://github.com/C-Otto/rebalance-lnd.git
 cd rebalance-lnd/
@@ -40,23 +47,57 @@ cd rebalance-lnd/
 Alternatively, you may also download the files in a ZIP file offered by GitHub:
 https://github.com/C-Otto/rebalance-lnd/archive/refs/heads/main.zip
 
-### Python Dependencies
+#### Python Dependencies
 
 You need to install Python 3. You also need to install the gRPC dependencies which can be done by running:
 
-```
-$ pip install -r requirements.txt
+```sh
+pip install -r requirements.txt
 ```
 
 If this fails, make sure you are running Python 3. You might want to try `pip3` instead of `pip`.
 
 To test if your installation works, you can run `rebalance.py` without any arguments.
 Depending on your system, you can do this in one of the following ways:
- - `python3 rebalance.py`
- - `./rebalance.py`
- - `python rebalance.py`
+
+- `python3 rebalance.py`
+- `./rebalance.py`
+- `python rebalance.py`
+
+### Using Docker
+
+Using the containerized version of rebalance-lnd spares you from the installation of python and its dependencies.
+You start by fetching the latest version of the dedicated docker container.
+
+```sh
+docker pull rebalancelnd/rebalance-lnd:latest
+```
+
+You can now have the docker image interact with your lnd installation:
+
+```sh
+docker run --rm --network=host --add-host=host.docker.internal:host-gateway -it -v /home/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc host.docker.internal:10009 --show-all
+```
+
+The above command assumes `/home/lnd` is your lnd configuration directory. Please adjust as required.
+
+#### Note for Umbrel/Umbrel-OS users
+
+To inject rebalance-lnd into your umbrel network you can run it using the following command line:
+
+```sh
+docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009 --show-all
+```
+
+Optionally you can create an alias in your shells environment file like so:
+
+```sh
+alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
+```
 
 ## Updating
+
+If you use docker, update the image running `docker pull rebalancelnd/rebalance-lnd:latest` again, otherwise follow these steps to update the python version:
 
 If you already have a version of `rebalance-lnd` checked out via `git`, you can just use `git pull` to update to the
 latest version. You may also delete everything and start over with a fresh installation, as the script does not store
@@ -67,6 +108,7 @@ Do not forget to update the Python dependencies as described above.
 # Usage
 
 ### List of channels
+
 Run `rebalance.py -l` (or `rebalance.py -l -i`) to see a list of channels which can be rebalanced.
 This list only contains channels where you should increase the outbound liquidity (you can specify `--show-all` to see
 all channels).
@@ -76,7 +118,7 @@ You can also see the list of channels where the inbound liquidity should be incr
 As an example the following indicates a channel with around 17.7% of the funds
 on the local side:
 
-```
+```sh
 Channel ID:       11111111
 Alias:            The Best Node Ever
 Pubkey:           012345[...]abcdef
@@ -94,13 +136,15 @@ By sending 116,636 satoshis to yourself using this channel, an outbound liquidit
 This number is shown as "Rebalance amount" (where negative amounts indicate that you need to increase your inbound
 liquidity).
 
-The last line shows a graphical representation of the channel. 
+The last line shows a graphical representation of the channel.
 The total width is determined by the channel's capacity, where your largest channel (maximum capacity) occupies the full
 width of your terminal.
 The bar (`█`) indicates the funds on the local side of the channel, i.e. your outbound liquidity.
 
 ## Rebalancing a channel
+
 ### Basic Scenario
+
 In this scenario you already know what you want to do, possibly because you identified a channel with high
 outbound liquidity.
 
@@ -113,7 +157,7 @@ liquidity:
 
 You can achieve this by running:
 
-```
+```sh
 rebalance.py --amount 100000 --from 11111111 --to 22222222
 ```
 
@@ -128,10 +172,10 @@ If you do not specify the amount, i.e. you invoke `rebalance.py --from 11111111 
 automatically determines the amount.
 For this two main constraints are taken into consideration:
 
-After the rebalance transaction is finished, 
+After the rebalance transaction is finished,
 
- - the destination channel (`22222222`) should have (up to) 1,000,000 satoshis outbound liquidity
- - the source channel (`11111111`) should have (at least) 1,000,000 satoshis outbound liquidity
+- the destination channel (`22222222`) should have (up to) 1,000,000 satoshis outbound liquidity
+- the source channel (`11111111`) should have (at least) 1,000,000 satoshis outbound liquidity
 
 If the source channel has enough surplus outbound liquidity, the script constructs a transaction that ensures
 1,000,000 satoshis of outbound liquidity in the destination channel.
@@ -144,17 +188,18 @@ If that is the case, a ratio of 50% is targeted instead: the destination channel
 liquidity, and for the sending channel at least 50% outbound liquidity are maintained.
 
 ### Limiting the automatically determined amount
+
 If you use both `-a` to specify an amount and `-A` (shorthand for `--adjust-amount-to-limits`), the computed amount is
-adjusted to the given amount. If, for example, you send funds to a channel that lacks 500,000sat to reach the 
-`--min-local` value, the computed amount is 500,000sat. If you invoke the script with `-A -a 90000` this amount is 
+adjusted to the given amount. If, for example, you send funds to a channel that lacks 500,000sat to reach the
+`--min-local` value, the computed amount is 500,000sat. If you invoke the script with `-A -a 90000` this amount is
 reduced to 90,000sat. If the adjusted amount is below the `--min-amount` setting, the script stops.
 
 This way, using both options (`-a xxx -A`) you can start a rebalance attempt with the given amount, which will only be
-attempted if it is necessary. Thus, you may want to run `./rebalance.py -t xxx -A -a 50000` in a loop or cron job to 
+attempted if it is necessary. Thus, you may want to run `./rebalance.py -t xxx -A -a 50000` in a loop or cron job to
 automatically send up to 50,000sat to channel `xxx` until it has reached the `--min-local` limit. If the channel already
 satisfies the `--min-local` limit, the script exits and does not attempt to send any funds.
 
-### Only specifying one channel 
+### Only specifying one channel
 
 Instead of specifying both `--from` and `--to`, you can also just pick one of those options.
 The script then considers all of your other channels as possible "partners", still taking into account the constraints
@@ -168,7 +213,7 @@ Likewise, when only specifying `--from`, the script only considers target channe
 satoshis of outbound liquidity after receiving the payment.
 
 If you also let the script determine the amount, e.g. you run `rebalance.py --to 22222222`, the script first
-computes the amount that is necessary to reach 1,000,000 satoshis of outbound liquidity in channel `22222222`, 
+computes the amount that is necessary to reach 1,000,000 satoshis of outbound liquidity in channel `22222222`,
 and then tries to find source channels for the computed amount.
 
 ### Safety Checks and Limitations
@@ -210,6 +255,7 @@ possible future earnings (2).
 **If you really want to, you may disable these safety checks with `--reckless`.**
 
 ### Example
+
 You have lots of funds in channel `11111111` and nothing in channel `22222222`.
 You would like to send funds through channel `11111111` (source channel) through the lightning network, and finally
 back into channel `22222222`.
@@ -248,7 +294,7 @@ Note that the script rejects routes/channels that are deemed uneconomical based 
 You can use `--fee-ppm-limit` as another alternative to specify a fee limit.
 In this case the amount sent as part of the rebalance is considered, so that the fee is at most
 
-```
+```sh
 amount * fee-ppm-limit / 1_000_000
 ```
 
@@ -263,7 +309,8 @@ rebalance transactions without earning anything in return.
 Please make sure to set realistic fee rates, which at best are already known to attract forwardings.
 
 ### Command line arguments
-```
+
+```sh
 usage: rebalance.py [-h] [--lnddir LNDDIR] [--network NETWORK] [--grpc GRPC]
                     [-l] [--show-all | --show-only CHANNEL | -c] [-o | -i]
                     [-f CHANNEL] [-t CHANNEL] [-A] [-a AMOUNT | -p PERCENTAGE]
@@ -363,11 +410,13 @@ Feel free to submit issues and pull requests on https://github.com/C-Otto/rebala
 
 You can also send donations via keysend.
 For example, to send 500 satoshis to C-Otto with a message "Thank you for rebalance-lnd":
-```
+
+```sh
 lncli sendpayment --amt=500 --data 7629168=5468616e6b20796f7520666f7220726562616c616e63652d6c6e64 --keysend --dest=027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71
 ```
 
 You can also specify an arbitrary message:
-```
+
+```sh
 lncli sendpayment --amt=500 --data 7629168=$(echo -n "your message here" | xxd -pu -c 10000) --keysend --dest=027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71
 ```
