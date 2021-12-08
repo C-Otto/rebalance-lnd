@@ -76,7 +76,7 @@ docker pull rebalancelnd/rebalance-lnd:latest
 You can now have the docker image interact with your lnd installation:
 
 ```sh
-docker run --rm --network=host --add-host=host.docker.internal:host-gateway -it -v /home/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc host.docker.internal:10009 --show-all
+docker run --rm --network=host --add-host=host.docker.internal:host-gateway -it -v /home/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc host.docker.internal:10009
 ```
 
 The above command assumes `/home/lnd` is your lnd configuration directory. Please adjust as required.
@@ -86,7 +86,7 @@ The above command assumes `/home/lnd` is your lnd configuration directory. Pleas
 To inject rebalance-lnd into your umbrel network you can run it using the following command line:
 
 ```sh
-docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009 --show-all
+docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009
 ```
 
 Optionally you can create an alias in your shells environment file like so:
