@@ -1,7 +1,7 @@
 FROM python:3.10-alpine3.14 
 
 RUN apk add --update --no-cache linux-headers gcc g++ git openssh-client \
-    && apk add grpc libstdc++ --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
+    && apk add libstdc++ --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
     && git clone --depth=1 https://github.com/C-Otto/rebalance-lnd.git \
     && rm -rf rebalance-lnd/.github \
     && cd rebalance-lnd \
