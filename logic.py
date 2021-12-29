@@ -104,7 +104,7 @@ class Logic:
         elif not self.last_hop_channel:
             return None
 
-        if self.last_hop_channel:
+        if self.last_hop_channel and not self.reckless:
             fee_rate = self.lnd.get_ppm_to(self.last_hop_channel.chan_id)
             if fee_rate > MAX_FEE_RATE:
                 last_hop_alias = self.lnd.get_node_alias(self.last_hop_channel.remote_pubkey)
@@ -121,7 +121,8 @@ class Logic:
                 )
             else:
                 fee_limit_msat = self.compute_fee(self.amount, self.fee_factor * fee_rate, policy) * 1_000
-        fee_limit_msat = max(1_000, fee_limit_msat)
+        if not self.reckless:
+            fee_limit_msat = max(1_000, fee_limit_msat)
 
         ppm_limit = int(fee_limit_msat / self.amount * 1_000)
 
