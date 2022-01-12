@@ -1,5 +1,5 @@
 googleapis-common-protos==1.54.0
-grpcio==1.42.0
+grpcio==1.43.0
 protobuf==3.19.3
 six==1.16.0
 yachalk==0.1.5
