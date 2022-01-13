@@ -6,7 +6,7 @@ setup(
     version='2.1',
     description='A script that can be used to balance lightning channels of a LND node',
     author='Carsten Otto',
-    author_email='carsten@c-otto.de',
+    author_email='bitcoin@c-otto.de',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
