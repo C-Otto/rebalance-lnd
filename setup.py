@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='rebalance-lnd',
-    version='2.1',
+    version='2.2',
     description='A script that can be used to balance lightning channels of a LND node',
     author='Carsten Otto',
     author_email='bitcoin@c-otto.de',
