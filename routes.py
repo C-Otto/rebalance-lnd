@@ -129,7 +129,10 @@ class Routes:
             self.ignore_hop_on_route(hop, route)
 
     def ignore_channel(self, chan_id):
-        edge = self.lnd.get_edge(chan_id)
+        try:
+            edge = self.lnd.get_edge(chan_id)
+        except Exception:
+            return
         self.ignore_edge_from_to(chan_id, edge.node1_pub, edge.node2_pub)
         self.ignore_edge_from_to(chan_id, edge.node2_pub, edge.node1_pub)
 
