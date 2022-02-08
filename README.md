@@ -14,10 +14,11 @@ Aside from paid fees, your total liquidity does not change.
 
 ## Installation
 
-There are two options for installing rebalance-lnd.
+There are three options for installing rebalance-lnd.
 
 1. Using Python
 1. Using Docker
+1. Using Umbrel's app store
 
 ### Using Python
 
@@ -94,6 +95,10 @@ Optionally you can create an alias in your shells environment file like so:
 ```sh
 alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
 ```
+
+### Using Umbrel's app store
+
+The [`lightning-shell`](https://github.com/ibz/lightning-shell) app available in the Umbrel app store comes with rebalance-lnd installed and configured. It should just work out of the box!
 
 ## Updating
 
