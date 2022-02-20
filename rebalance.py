@@ -18,7 +18,7 @@ MAX_SATOSHIS_PER_TRANSACTION = 4294967
 
 class Rebalance:
     def __init__(self, arguments):
-        self.lnd = Lnd(arguments.lnddir, arguments.grpc, arguments.network)
+        self.lnd = Lnd(arguments.macaroon_hex, arguments.tls_cert, arguments.grpc)
         self.output = Output(self.lnd)
         self.min_amount = arguments.min_amount
         self.arguments = arguments
@@ -329,10 +329,16 @@ def main():
 def get_argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--lnddir",
+        "--macaroon_hex",
         default="_DEFAULT_",
-        dest="lnddir",
-        help="(default ~/.lnd) lnd directory",
+        dest="macaroon_hex",
+        help="hex encoded admin macaroon",
+    )
+    parser.add_argument(
+        "--tls_cert",
+        default="_DEFAULT_",
+        dest="tls_cert",
+        help="base64 encoded tls cert",
     )
     parser.add_argument(
         "--network", 
