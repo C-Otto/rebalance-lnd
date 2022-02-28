@@ -14,11 +14,12 @@ Aside from paid fees, your total liquidity does not change.
 
 ## Installation
 
-There are three options for installing rebalance-lnd.
+There are several options for installing rebalance-lnd.
 
-1. Using Python
-1. Using Docker
-1. Using Umbrel's app store
+1. [Using Python](#using-python)
+1. [Using Docker](#using-docker)
+1. [Using Umbrel's app store](#using-umbrels-app-store)
+1. [Using the RaspiBolt manual installation guide on any Debian-based OS](#using-the-raspibolt-guide) 
 
 ### Using Python
 
@@ -109,6 +110,10 @@ latest version. You may also delete everything and start over with a fresh insta
 any data that needs to be kept.
 
 Do not forget to update the Python dependencies as described above.
+
+### Using the RaspiBolt guide
+
+If you run a node on a Debian-based OS, you can follow the [RaspiBolt guide](https://raspibolt.org/bonus/lightning/rebalance-lnd.html) that explains how to manually install, use, update and uninstall rebalance-lnd on your node.
 
 # Usage
 
