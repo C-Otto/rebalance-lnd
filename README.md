@@ -113,7 +113,7 @@ Do not forget to update the Python dependencies as described above.
 
 ### Using the RaspiBolt guide
 
-If you run a node on a Debian-based OS, you can follow the [RaspiBolt guide]([https://raspibolt.org/bonus/lightning/rebalance-lnd.html](https://raspibolt.org/guide/bonus/lightning/rebalance-lnd.html)) that explains how to manually install, use, update and uninstall rebalance-lnd on your node.
+If you run a node on a Debian-based OS, you can follow the [RaspiBolt guide](https://raspibolt.org/guide/bonus/lightning/rebalance-lnd.html) that explains how to manually install, use, update and uninstall rebalance-lnd on your node.
 
 # Usage
 
