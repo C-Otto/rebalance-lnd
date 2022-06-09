@@ -22,10 +22,14 @@ class Lnd:
         if lnd_dir == "_DEFAULT_":
             lnd_dir = "~/.lnd"
             lnd_dir2 = "~/umbrel/lnd"
+            lnd_dir3 = "~/umbrel/app-data/lightning/data/lnd"
             lnd_dir = expanduser(lnd_dir)
             lnd_dir2 = expanduser(lnd_dir2)
+            lnd_dir3 = expanduser(lnd_dir3)
             if not os.path.isdir(lnd_dir) and os.path.isdir(lnd_dir2):
                 lnd_dir = lnd_dir2
+            if not os.path.isdir(lnd_dir) and os.path.isdir(lnd_dir3):
+                lnd_dir = lnd_dir3
         else:
             lnd_dir = expanduser(lnd_dir)
         

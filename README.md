@@ -33,7 +33,8 @@ Example:
 
 You need to have admin rights to control this node.
 By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
-If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
+If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon` 
+(or `~/umbrel/app-data/lightning/data/lnd/data/chain/bitcoin/mainnet/admin.macaroon`).
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
 #### rebalance-lnd itself
@@ -96,6 +97,8 @@ Optionally you can create an alias in your shells environment file like so:
 ```sh
 alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
 ```
+
+For more recent versions of Umbrel please use `/home/umbrel/umbrel/app-data/lightning/data/lnd` instead of `/home/umbrel/umbrel/lnd`.
 
 ### Using Umbrel's app store
 
