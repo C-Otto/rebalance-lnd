@@ -92,7 +92,7 @@ To inject rebalance-lnd into your umbrel network you can run it using the follow
 docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009
 ```
 
-Optionally you can create an alias in your shells environment file like so:
+Optionally you can create an alias in your shell's environment file like so:
 
 ```sh
 alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
@@ -112,7 +112,7 @@ To inject rebalance-lnd into your BTCPayServer network you can run it using the 
 docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009
 ```
 
-Optionally you can create an alias in your shells environment file like so:
+Optionally you can create an alias in your shell's environment file like so:
 
 ```sh
 alias rebalance-lnd="docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009"
