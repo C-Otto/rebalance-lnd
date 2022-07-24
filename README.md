@@ -104,6 +104,20 @@ For more recent versions of Umbrel please use `/home/umbrel/umbrel/app-data/ligh
 
 The [`lightning-shell`](https://github.com/ibz/lightning-shell) app available in the Umbrel app store comes with rebalance-lnd installed and configured. It should just work out of the box!
 
+#### Note for BTCPayServer Users
+
+To inject rebalance-lnd into your BTCPayServer network you can run it using the following command line:
+
+```sh
+docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009
+```
+
+Optionally you can create an alias in your shells environment file like so:
+
+```sh
+alias rebalance-lnd="docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009"
+```
+
 ## Updating
 
 If you use docker, update the image running `docker pull rebalancelnd/rebalance-lnd:latest` again, otherwise follow these steps to update the python version:
