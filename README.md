@@ -109,13 +109,13 @@ The [`lightning-shell`](https://github.com/ibz/lightning-shell) app available in
 To inject rebalance-lnd into your BTCPayServer network you can run it using the following command line:
 
 ```sh
-docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009 -l
+docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009
 ```
 
 Optionally you can create an alias in your shells environment file like so:
 
 ```sh
-alias rebalance-lnd="docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009 -l"
+alias rebalance-lnd="docker run --rm --network=generated_default -it -v /var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data:/root/.lnd rebalancelnd/rebalance-lnd --grpc lnd_bitcoin:10009"
 ```
 
 ## Updating
