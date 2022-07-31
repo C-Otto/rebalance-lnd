@@ -145,10 +145,12 @@ class Rebalance:
         return get_remote_available(channel) - self.get_scaled_min_remote(channel)
 
     def get_channel_for_channel_id(self, channel_id):
+        if not channel_id:
+            return None
         for channel in self.lnd.get_channels():
             if channel.chan_id == channel_id:
                 return channel
-        return None
+        raise Exception(f"Unable to find channel with ID {channel_id}")
 
     def list_channels(self, reverse=False):
         sorted_channels = sorted(
