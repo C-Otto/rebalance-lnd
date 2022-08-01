@@ -32,7 +32,7 @@ class Lnd:
                 lnd_dir = lnd_dir3
         else:
             lnd_dir = expanduser(lnd_dir)
-        
+
         combined_credentials = self.get_credentials(lnd_dir, network)
         channel_options = [
             ("grpc.max_message_length", MESSAGE_SIZE_MB),
@@ -93,11 +93,8 @@ class Lnd:
 
     @lru_cache(maxsize=None)
     def get_channels(self, active_only=False):
-        return self.stub.ListChannels(
-            ln.ListChannelsRequest(
-                active_only=active_only,
-            )
-        ).channels
+        channels = self.stub.ListChannels(ln.ListChannelsRequest(active_only=active_only, )).channels
+        return [c for c in channels if self.is_zombie(c.chan_id) is False]
 
     @lru_cache(maxsize=None)
     def get_max_channel_capacity(self):
@@ -180,3 +177,12 @@ class Lnd:
     def hex_string_to_bytes(hex_string):
         decode_hex = codecs.getdecoder("hex_codec")
         return decode_hex(hex_string)[0]
+
+    @lru_cache(maxsize=None)
+    def is_zombie(self, channel_id):
+        try:
+            self.get_edge(channel_id)
+        except:
+            print(f"Unable to load channel {channel_id}!")
+            return True
+        return False
