@@ -337,7 +337,7 @@ def get_argument_parser():
         help="(default ~/.lnd) lnd directory",
     )
     parser.add_argument(
-        "--network", 
+        "--network",
         default='mainnet',
         dest='network',
         help='(default mainnet) lnd network (mainnet, testnet, simnet, ...)'
@@ -493,13 +493,14 @@ def get_argument_parser():
     fee_group.add_argument(
         "--fee-limit",
         type=int,
-        help="If set, only consider rebalance transactions that cost up to the given number of satoshis."
+        help="If set, only consider rebalance transactions that cost up to the given number of satoshis. Note that "
+             "the first hop costs are considered, even though you don't have to pay them."
     )
     fee_group.add_argument(
         "--fee-ppm-limit",
         type=int,
         help="If set, only consider rebalance transactions that cost up to the given number of satoshis per "
-             "1M satoshis sent."
+             "1M satoshis sent. Note that the first hop costs are considered, even though you don't have to pay them."
     )
     return parser
 
