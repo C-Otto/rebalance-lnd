@@ -1,0 +1,13 @@
+services:
+  rebalance-lnd:
+    container_name: rebalance-lnd
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+    entrypoint: ["sleep", "infinity"]
