@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-alpine3.14 
 
 ENV PIP_NO_CACHE_DIR=off \
 	PIP_DISABLE_PIP_VERSION_CHECK=on
@@ -6,8 +6,13 @@ ENV PIP_NO_CACHE_DIR=off \
 COPY requirements.txt ./
 
 # System deps:
-RUN apt-get update && apt-get upgrade -y \
-	# Clean cache:
-	&& apt-get clean -y && rm -rf /var/lib/apt/lists/* \
+RUN apk add --update --no-cache  \
+	linux-headers \
+	gcc \
+	g++ \
+	git openssh-client \
+	&& apk add libstdc++ --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted \
 	# Install python packages
-	&& pip install -r requirements.txt
+	&& pip install -r requirements.txt \
+	# Remove system deps
+	&& apk del linux-headers gcc g++ git openssh-client

@@ -3,9 +3,9 @@ up: ## Docker compose up, start container
 down: ## Docker compose down
 	docker compose down --remove-orphans
 shell: ## Shell into container
-	docker compose exec rebalance-lnd bash
+	docker compose exec rebalance-lnd sh
 test: ## Run tests
-	docker compose exec rebalance-lnd python -m unittest discover tests/
+	docker compose exec rebalance-lnd python -m unittest discover tests/ -v
 
 .PHONY: help
 help:
