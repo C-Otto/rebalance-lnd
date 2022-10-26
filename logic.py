@@ -302,8 +302,11 @@ class Logic:
         original_fee_rate_last_hop = fee_rate_last_hop
         if fee_rate_last_hop > MAX_FEE_RATE:
             fee_rate_last_hop = MAX_FEE_RATE
+
+        last_hop = route.hops[-1]
+        amount_arriving_at_target_channel = last_hop.amt_to_forward_msat
         expected_income_msat = self.fee_factor * self.compute_fee(
-            amount_msat / 1_000, fee_rate_last_hop, policy_last_hop
+            amount_arriving_at_target_channel / 1_000, fee_rate_last_hop, policy_last_hop
         ) * 1_000
         rebalance_fee_msat = route.total_fees_msat
         high_fees = rebalance_fee_msat + missed_fee_msat > expected_income_msat
