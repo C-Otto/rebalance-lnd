@@ -248,8 +248,6 @@ and then tries to find source channels for the computed amount.
 Note that, by default, nothing is done if the amount (either given or computed) is smaller than 10,000 satoshis.
 You can change this number using `--min-amount`.
 
-The maximum amount you can send in one transaction currently is limited (by the protocol) to 4,294,967 satoshis.
-
 Furthermore, a rebalance transaction is only sent if it is economically viable as described below.
 This way, by default, you only send rebalance transactions that improve your node's situation, for example by providing
 outbound liquidity to channels where you charge a lot, and taking those funds out of channels where you charge less.
@@ -392,7 +390,7 @@ rebalance:
   -a AMOUNT, --amount AMOUNT
                         Amount of the rebalance, in satoshis. If not
                         specified, the amount computed for a perfect rebalance
-                        will be used (up to the maximum of 4,294,967 satoshis)
+                        will be used
   -p PERCENTAGE, --percentage PERCENTAGE
                         Set the amount to a percentage of the computed amount.
                         As an example, if this is set to 50, half of the

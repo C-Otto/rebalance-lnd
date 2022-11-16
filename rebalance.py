@@ -13,9 +13,6 @@ from logic import Logic
 from output import Output, format_alias, format_ppm, format_amount, format_amount_green, format_boring_string, \
     print_bar, format_channel_id, format_error
 
-MAX_SATOSHIS_PER_TRANSACTION = 4294967
-
-
 class Rebalance:
     def __init__(self, arguments):
         self.lnd = Lnd(arguments.lnddir, arguments.grpc, arguments.network)
@@ -80,13 +77,9 @@ class Rebalance:
     def get_amount(self):
         amount = None
         if self.arguments.amount:
-            if self.arguments.reckless and self.arguments.amount > MAX_SATOSHIS_PER_TRANSACTION:
-                self.output.print_line(format_error("Trying to send wumbo transaction"))
-                return self.arguments.amount
-            else:
-                amount = min(self.arguments.amount, MAX_SATOSHIS_PER_TRANSACTION)
-                if not self.arguments.adjust_amount_to_limits:
-                    return amount
+            amount = self.arguments.amount
+            if not self.arguments.adjust_amount_to_limits:
+                return amount
 
         should_send = 0
         can_send = 0
@@ -128,9 +121,6 @@ class Rebalance:
             computed_amount = should_receive
 
         computed_amount = int(computed_amount)
-        if computed_amount >= 0:
-            computed_amount = min(computed_amount, MAX_SATOSHIS_PER_TRANSACTION)
-        computed_amount = max(computed_amount, -MAX_SATOSHIS_PER_TRANSACTION)
         if amount is not None:
             if computed_amount >= 0:
                 computed_amount = min(amount, computed_amount)
@@ -171,10 +161,6 @@ class Rebalance:
             if abs(rebalance_amount) < self.min_amount:
                 return
         rebalance_amount_formatted = f"{rebalance_amount:10,}"
-        if rebalance_amount > MAX_SATOSHIS_PER_TRANSACTION:
-            rebalance_amount_formatted += (
-                f" (max per transaction: {MAX_SATOSHIS_PER_TRANSACTION:,})"
-            )
         own_ppm = self.lnd.get_ppm_to(channel.chan_id)
         remote_ppm = self.lnd.get_ppm_from(channel.chan_id)
         print(f"Channel ID:       {format_channel_id(channel.chan_id)}")
@@ -434,8 +420,7 @@ def get_argument_parser():
         "--amount",
         type=int,
         help="Amount of the rebalance, in satoshis. If not specified, "
-             "the amount computed for a perfect rebalance will be used"
-             " (up to the maximum of 4,294,967 satoshis)",
+             "the amount computed for a perfect rebalance will be used",
     )
     amount_group.add_argument(
         "-p",
