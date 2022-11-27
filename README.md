@@ -89,16 +89,16 @@ The above command assumes `/home/lnd` is your lnd configuration directory. Pleas
 To inject rebalance-lnd into your umbrel network you can run it using the following command line:
 
 ```sh
-docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009
+docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/app-data/lightning/data/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009
 ```
 
 Optionally you can create an alias in your shell's environment file like so:
 
 ```sh
-alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
+alias rebalance-lnd="docker run --rm --network=umbrel_main_network -it -v /home/umbrel/umbrel/app-data/lightning/data/lnd:/root/.lnd rebalancelnd/rebalance-lnd --grpc 10.21.21.9:10009"
 ```
 
-For more recent versions of Umbrel please use `/home/umbrel/umbrel/app-data/lightning/data/lnd` instead of `/home/umbrel/umbrel/lnd`.
+For older versions of Umbrel please use `/home/umbrel/umbrel/lnd` instead of `/home/umbrel/umbrel/app-data/lightning/data/lnd`.
 
 ### Using Umbrel's app store
 
