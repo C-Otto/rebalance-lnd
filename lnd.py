@@ -92,8 +92,8 @@ class Lnd:
         return self.stub.DecodePayReq(request)
 
     @lru_cache(maxsize=None)
-    def get_channels(self, active_only=False):
-        channels = self.stub.ListChannels(ln.ListChannelsRequest(active_only=active_only, )).channels
+    def get_channels(self, active_only=False, public_only=False, private_only=False):
+        channels = self.stub.ListChannels(ln.ListChannelsRequest(active_only=active_only,public_only=public_only,private_only=private_only)).channels
         return [c for c in channels if self.is_zombie(c.chan_id) is False]
 
     @lru_cache(maxsize=None)

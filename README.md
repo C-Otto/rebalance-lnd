@@ -406,6 +406,9 @@ rebalance:
                         least this amount as inbound liquidity.
   -e EXCLUDE, --exclude EXCLUDE
                         Exclude the given channel. Can be used multiple times.
+  --exclude-private     Exclude private channels. This will not affect channel
+                        ID used at --to and/or --from but will take effect if
+                        you used -1 to get a random channel.
   --reckless            Allow rebalance transactions that are not economically
                         viable. You might also want to set --min-local 0 and
                         --min-remote 0. If set, you also need to set --amount
