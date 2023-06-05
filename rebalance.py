@@ -142,6 +142,9 @@ class Rebalance:
                 return channel
         raise Exception(f"Unable to find channel with ID {channel_id}")
 
+    def get_private_channels(self):
+        return self.lnd.get_channels(active_only=True,private_only=True),
+
     def list_channels(self, reverse=False):
         sorted_channels = sorted(
             self.lnd.get_channels(active_only=True),
@@ -243,6 +246,10 @@ class Rebalance:
         if self.arguments.exclude:
             for chan_id in self.arguments.exclude:
                 excluded.append(self.parse_channel_id(chan_id))
+        if self.arguments.exclude_private:
+            private_channels = self.get_private_channels(self)
+            for channel in private_channels:
+                excluded.append(self.parse_channel_id(channel.chan_id))
         return Logic(
             self.lnd,
             self.first_hop_channel,
@@ -260,7 +267,7 @@ class Rebalance:
 
     def get_first_hop_candidates(self):
         result = []
-        for channel in self.lnd.get_channels(active_only=True):
+        for channel in self.lnd.get_channels(active_only=True, public_only=self.arguments.exclude_private):
             if self.get_rebalance_amount(channel) < 0:
                 result.append(channel)
         return result
@@ -454,6 +461,12 @@ def get_argument_parser():
         type=str,
         action="append",
         help="Exclude the given channel. Can be used multiple times.",
+    )
+    rebalance_group.add_argument(
+        "--exclude-private",
+        action="store_true",
+        default=False,
+        help="Exclude private channels. This won't affect channel ID used at --to and/or --from but will take effect if you used -1 to get a random channel.",
     )
     rebalance_group.add_argument(
         "--reckless",
