@@ -19,7 +19,7 @@ There are several options for installing rebalance-lnd.
 1. [Using Python](#using-python)
 1. [Using Docker](#using-docker)
 1. [Using Umbrel's app store](#using-umbrels-app-store)
-1. [Using the RaspiBolt manual installation guide on any Debian-based OS](#using-the-raspibolt-guide) 
+1. [Using the RaspiBolt manual installation guide on any Debian-based OS](#using-the-raspibolt-guide)
 
 ### Using Python
 
@@ -33,7 +33,7 @@ Example:
 
 You need to have admin rights to control this node.
 By default, this script connects to `localhost:10009`, using the macaroon file in `~/.lnd/data/chain/bitcoin/mainnet/admin.macaroon`.
-If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon` 
+If this does not help, it also tries to find the file in `~/umbrel/lnd/data/chain/bitcoin/mainnet/admin.macaroon`
 (or `~/umbrel/app-data/lightning/data/lnd/data/chain/bitcoin/mainnet/admin.macaroon`).
 If you need to change this, please have a look at the optional arguments `--grpc` and `--lnddir`.
 
@@ -341,7 +341,7 @@ usage: rebalance.py [-h] [--lnddir LNDDIR] [--network NETWORK] [--grpc GRPC]
                     [-f CHANNEL] [-t CHANNEL] [-A] [-a AMOUNT | -p PERCENTAGE]
                     [--min-amount MIN_AMOUNT] [--min-local MIN_LOCAL]
                     [--min-remote MIN_REMOTE] [-e EXCLUDE] [--reckless]
-                    [--fee-factor FEE_FACTOR]
+                    [--ignore-missed-fee] [--fee-factor FEE_FACTOR]
                     [--fee-limit FEE_LIMIT | --fee-ppm-limit FEE_PPM_LIMIT]
 
 optional arguments:
@@ -414,6 +414,7 @@ rebalance:
                         --min-remote 0. If set, you also need to set --amount
                         and either --fee-limit or --fee-ppm-limit, and you
                         must not enable --adjust-amount-to-limits (-A).
+  --ignore-missed-fee   Ignore missed fee from source channel.
   --fee-factor FEE_FACTOR
                         (default: 1.0) Compare the costs against the expected
                         income, scaled by this factor. As an example, with

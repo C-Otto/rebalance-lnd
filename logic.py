@@ -24,7 +24,8 @@ class Logic:
             min_local,
             min_remote,
             output: Output,
-            reckless
+            reckless,
+            ignore_missed_fee
     ):
         self.lnd = lnd
         self.first_hop_channel = first_hop_channel
@@ -38,6 +39,7 @@ class Logic:
         self.min_remote = min_remote
         self.output = output
         self.reckless = reckless
+        self.ignore_missed_fee = ignore_missed_fee
         if not self.fee_factor:
             self.fee_factor = 1.0
 
@@ -187,9 +189,12 @@ class Logic:
         self.output.print_line(output.format_success("Successful route:"))
         self.output.print_route(route)
 
-        missed_fee_msat = self.compute_fee(
-            amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
-        ) * 1_000
+        if self.ignore_missed_fee:
+            missed_fee_msat = 0
+        else:
+            missed_fee_msat = self.compute_fee(
+                amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
+            ) * 1_000
         expected_income_msat = self.compute_fee(
             amount_msat / 1_000, policy_last_hop.fee_rate_milli_msat, policy_last_hop
         ) * 1_000
@@ -203,8 +208,11 @@ class Logic:
         difference_formatted = format_fee_msat_white(math.ceil(difference_msat), 8)
         transaction_fees_formatted = format_fee_msat(int(rebalance_fee_msat), 8)
         self.output.print_line(f"- {transaction_fees_formatted}: rebalance transaction fees")
-        self.output.print_line(f"- {missed_fee_formatted}: "
-                               f"missing out on future fees for outbound channel (with {first_hop_alias})")
+        if not self.ignore_missed_fee:
+            self.output.print_line(
+                f"- {missed_fee_formatted}: "
+                f"missing out on future fees for outbound channel (with {first_hop_alias})"
+            )
         self.output.print_line(f"= {difference_formatted}: potential profit!")
 
     def handle_error(self, response, route, routes):
@@ -294,9 +302,12 @@ class Logic:
     def fees_too_high(self, route, routes):
         policy_first_hop = self.lnd.get_policy_to(route.hops[0].chan_id)
         amount_msat = route.total_amt_msat
-        missed_fee_msat = self.compute_fee(
-            amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
-        ) * 1_000
+        if self.ignore_missed_fee:
+            missed_fee_msat = 0
+        else:
+            missed_fee_msat = self.compute_fee(
+                amount_msat / 1_000, policy_first_hop.fee_rate_milli_msat, policy_first_hop
+            ) * 1_000
         policy_last_hop = self.lnd.get_policy_to(route.hops[-1].chan_id)
         fee_rate_last_hop = policy_last_hop.fee_rate_milli_msat
         original_fee_rate_last_hop = fee_rate_last_hop
@@ -344,8 +355,9 @@ class Logic:
             missed_fee_formatted = format_fee_msat(math.ceil(missed_fee_msat), 8)
             difference_formatted = format_fee_msat_red(math.ceil(difference_msat), 8)
             self.output.print_line(f"- {transaction_fees_formatted}: rebalance transaction fees")
-            self.output.print_line(f"- {missed_fee_formatted}: "
-                                   f"missing out on future fees for outbound channel (with {first_hop_alias})")
+            if not self.ignore_missed_fee:
+                self.output.print_line(f"- {missed_fee_formatted}: "
+                    f"missing out on future fees for outbound channel (with {first_hop_alias})")
             self.output.print_line(f"= {difference_formatted}")
             routes.ignore_high_fee_hops(route)
         return high_fees
