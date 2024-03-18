@@ -238,6 +238,9 @@ class Rebalance:
 
         if self.arguments.reckless:
             self.output.print_line(format_error("Reckless mode enabled!"))
+        
+        if self.arguments.ignore_missed_fee:
+            self.output.print_line(format_error("Ignoring missed fee!"))
 
         fee_factor = self.arguments.fee_factor
         fee_limit_sat = self.arguments.fee_limit
@@ -262,7 +265,8 @@ class Rebalance:
             self.min_local,
             self.min_remote,
             self.output,
-            self.arguments.reckless
+            self.arguments.reckless,
+            self.arguments.ignore_missed_fee
         ).rebalance()
 
     def get_first_hop_candidates(self):
@@ -486,6 +490,12 @@ def get_argument_parser():
         "routes that cost at most 150%% of the expected earnings are tried. Use values "
         "smaller than 1.0 to restrict routes to only consider those earning "
         "more/costing less. This factor is ignored with --reckless.",
+    )
+    rebalance_group.add_argument(
+        "--ignore-missed-fee",
+        action="store_true",
+        default=False,
+        help="(default: False) Ignore missed fee from source channel.",
     )
     fee_group = rebalance_group.add_mutually_exclusive_group()
     fee_group.add_argument(
