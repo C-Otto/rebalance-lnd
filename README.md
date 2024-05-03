@@ -25,7 +25,7 @@ There are several options for installing rebalance-lnd.
 
 #### lnd
 
-This script needs an active `lnd` (tested with v0.13.0, https://github.com/lightningnetwork/lnd) instance running.
+This script needs an active `lnd` (tested with v0.17.5, https://github.com/lightningnetwork/lnd) instance running.
 If you compile `lnd` yourself, you need to include the `routerrpc` build tag:
 
 Example:
