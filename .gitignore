@@ -3,3 +3,4 @@
 venv/
 grpc_generated/*.proto
 **/__pycache__
+*.proto

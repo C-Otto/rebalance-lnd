@@ -130,6 +130,7 @@ class Lnd:
             ignored_nodes=ignored_nodes,
             use_mission_control=True,
             outgoing_chan_id=first_hop_channel_id,
+            time_pref=-1
         )
         try:
             response = self.stub.QueryRoutes(request)
